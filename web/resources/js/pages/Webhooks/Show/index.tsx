@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import MailboxLayout from '@/layouts/MailboxLayout';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Button, LinkButton } from '@/components/Button';
@@ -9,10 +8,11 @@ import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   webhook: Webhook;
 }
 
-export default function WebhookShow({ mailbox, webhook }: Props) {
+export default function WebhookShow({ mailbox, allMailboxes, webhook }: Props) {
   const [testResult, setTestResult] = useState<{
     loading: boolean;
     status_code?: number;
@@ -35,11 +35,8 @@ export default function WebhookShow({ mailbox, webhook }: Props) {
   };
 
   return (
-    <AppLayout>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Header>
-        <S.BackLink as={Link} href={`/mailboxes/${mailbox.id}/webhooks`}>
-          &larr; Back to Webhooks
-        </S.BackLink>
         <S.HeaderRow>
           <S.TitleSection>
             <S.Title>{webhook.name}</S.Title>
@@ -164,6 +161,6 @@ export default function WebhookShow({ mailbox, webhook }: Props) {
           </S.CardContent>
         </Card>
       </S.RulesCard>
-    </AppLayout>
+    </MailboxLayout>
   );
 }

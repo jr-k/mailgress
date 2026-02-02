@@ -67,7 +67,8 @@ export const MailboxList = styled.div``;
 
 export const MailboxItem = styled.a`
   display: block;
-  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  height: 48px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
   transition: background-color 0.15s ease;
 
@@ -84,21 +85,37 @@ export const MailboxRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
+`;
+
+export const MailboxInfo = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const MailboxName = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.gray[900]};
+  white-space: nowrap;
 `;
 
 export const MailboxDescription = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.gray[400]};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 export const MailboxStats = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.gray[500]};
+  white-space: nowrap;
+  margin-left: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const EmptyState = styled.div`

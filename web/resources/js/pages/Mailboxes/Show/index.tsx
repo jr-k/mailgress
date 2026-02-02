@@ -1,21 +1,20 @@
 import { useState } from 'react';
-import { Link, router, usePage } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import MailboxLayout from '@/layouts/MailboxLayout';
 import { Badge } from '@/components/Badge';
-import { LinkButton } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Mailbox, Email, Pagination, PageProps } from '@/types';
 import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   emails: Email[];
   pagination: Pagination;
   search: string;
 }
 
-export default function MailboxShow({ mailbox, emails, pagination, search }: Props) {
-  const { auth } = usePage<Props>().props;
+export default function MailboxShow({ mailbox, allMailboxes, emails, pagination, search }: Props) {
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(emails[0] || null);
   const [searchQuery, setSearchQuery] = useState(search || '');
 
@@ -35,24 +34,12 @@ export default function MailboxShow({ mailbox, emails, pagination, search }: Pro
   };
 
   return (
-    <MailboxLayout mailbox={mailbox}>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Header>
         <S.HeaderRow>
           <div>
-            {/* Title removed as it's in breadcrumb, or we can keep a sub-title */}
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Emails</h2>
-            {mailbox.description && <S.Description>{mailbox.description}</S.Description>}
           </div>
-          <S.Actions>
-            <LinkButton href={`/mailboxes/${mailbox.id}/webhooks`} variant="secondary">
-              Webhooks
-            </LinkButton>
-            {auth?.user.is_admin && (
-              <LinkButton href={`/mailboxes/${mailbox.id}/edit`} variant="secondary">
-                Edit
-              </LinkButton>
-            )}
-          </S.Actions>
         </S.HeaderRow>
       </S.Header>
 

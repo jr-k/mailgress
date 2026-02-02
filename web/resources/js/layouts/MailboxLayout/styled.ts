@@ -3,26 +3,35 @@ import styled from 'styled-components';
 export const Container = styled.div`
   display: flex;
   min-height: calc(100vh - 64px);
+  margin: -${({ theme }) => theme.spacing[8]} -${({ theme }) => theme.spacing[4]};
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    margin: -${({ theme }) => theme.spacing[8]} -${({ theme }) => theme.spacing[6]};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
+    margin: -${({ theme }) => theme.spacing[8]} -${({ theme }) => theme.spacing[8]};
+  }
 `;
 
 export const Sidebar = styled.aside<{ $isOpen?: boolean }>`
+  position: fixed;
+  top: 64px;
+  left: 0;
+  bottom: 0;
   width: 240px;
-  padding: ${({ theme }) => theme.spacing[4]} 0;
+  padding: ${({ theme }) => theme.spacing[6]} 0;
   border-right: 1px solid ${({ theme }) => theme.colors.gray[200]};
-  flex-shrink: 0;
   background: ${({ theme }) => theme.colors.white};
   display: flex;
   flex-direction: column;
+  z-index: 40;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    position: fixed;
-    top: 64px;
-    left: 0;
-    bottom: 0;
-    z-index: 40;
     transform: translateX(${({ $isOpen }) => ($isOpen ? '0' : '-100%')});
     transition: transform ${({ theme }) => theme.transitions.smooth};
     box-shadow: ${({ $isOpen, theme }) => ($isOpen ? theme.shadows.lg : 'none')};
+    width: 280px;
   }
 `;
 
@@ -88,6 +97,24 @@ export const BackLink = styled.a`
     width: 1rem;
     height: 1rem;
   }
+`;
+
+export const MailboxHeader = styled.div`
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const MailboxEmail = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.primary[600]};
+  word-break: break-all;
+`;
+
+export const MailboxDescription = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.gray[500]};
+  margin-top: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const MailboxSwitcher = styled.div`
@@ -203,11 +230,22 @@ export const SidebarLink = styled.a<{ $active?: boolean }>`
 
 export const Content = styled.div`
   flex: 1;
-  padding: ${({ theme }) => theme.spacing[6]};
+  margin-left: 240px;
+  padding: ${({ theme }) => theme.spacing[8]};
   overflow-x: hidden;
   min-width: 0;
+  background: ${({ theme }) => theme.colors.gray[50]};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    margin-left: 0;
     padding: ${({ theme }) => theme.spacing[4]};
   }
+`;
+
+export const ContentSheet = styled.div`
+  width: 100%;
+  max-width: 1000px;
 `;

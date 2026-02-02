@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import MailboxLayout from '@/layouts/MailboxLayout';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Mailbox, Webhook, WebhookDelivery, Pagination, PageProps } from '@/types';
@@ -7,12 +7,13 @@ import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   webhook: Webhook;
   deliveries: WebhookDelivery[];
   pagination: Pagination;
 }
 
-export default function WebhookDeliveries({ mailbox, webhook, deliveries, pagination }: Props) {
+export default function WebhookDeliveries({ mailbox, allMailboxes, webhook, deliveries, pagination }: Props) {
   const handleRetry = async (deliveryId: number) => {
     await fetch(`/deliveries/${deliveryId}/retry`, { method: 'POST' });
     window.location.reload();
@@ -37,11 +38,8 @@ export default function WebhookDeliveries({ mailbox, webhook, deliveries, pagina
   };
 
   return (
-    <AppLayout>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Header>
-        <S.BackLink as={Link} href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`}>
-          &larr; Back to Webhook
-        </S.BackLink>
         <S.Title>Delivery History</S.Title>
         <S.Subtitle>{webhook.name}</S.Subtitle>
       </S.Header>
@@ -127,6 +125,6 @@ export default function WebhookDeliveries({ mailbox, webhook, deliveries, pagina
           )}
         </S.TableWrapper>
       </Card>
-    </AppLayout>
+    </MailboxLayout>
   );
 }

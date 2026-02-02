@@ -62,7 +62,7 @@ func NewServer(
 	userHandler := handler.NewUserHandler(inertia, userService, avatarService)
 	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService)
 	emailHandler := handler.NewEmailHandler(inertia, emailService, mailboxService, storage)
-	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, dispatcher)
+	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher)
 	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService)
 	tagHandler := handler.NewTagHandler(inertia, tagService)
 

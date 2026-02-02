@@ -10,10 +10,11 @@ import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   webhooks: Webhook[];
 }
 
-export default function WebhooksIndex({ mailbox, webhooks }: Props) {
+export default function WebhooksIndex({ mailbox, allMailboxes, webhooks }: Props) {
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; webhook: Webhook | null }>({
     isOpen: false,
     webhook: null,
@@ -36,7 +37,7 @@ export default function WebhooksIndex({ mailbox, webhooks }: Props) {
   };
 
   return (
-    <MailboxLayout mailbox={mailbox}>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Header>
         <S.HeaderRow>
           <S.Title>Webhooks</S.Title>

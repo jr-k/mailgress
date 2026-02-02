@@ -66,12 +66,12 @@ export default function Dashboard({ mailboxes, mailboxCount, emailCount, domainC
             mailboxes.slice(0, 5).map((mailbox) => (
               <S.MailboxItem as={Link} key={mailbox.id} href={`/mailboxes/${mailbox.id}`}>
                 <S.MailboxRow>
-                  <div>
+                  <S.MailboxInfo>
                     <S.MailboxName>{getEmailAddress(mailbox)}</S.MailboxName>
                     {mailbox.description && (
                       <S.MailboxDescription>{mailbox.description}</S.MailboxDescription>
                     )}
-                  </div>
+                  </S.MailboxInfo>
                   <S.MailboxStats>
                     {mailbox.stats?.email_count || 0} emails
                   </S.MailboxStats>

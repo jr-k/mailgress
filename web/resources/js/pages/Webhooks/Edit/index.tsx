@@ -10,11 +10,12 @@ import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   webhook: Webhook;
   error?: string;
 }
 
-export default function WebhookEdit({ mailbox, webhook, error }: Props) {
+export default function WebhookEdit({ mailbox, allMailboxes, webhook, error }: Props) {
   const [rules, setRules] = useState<Partial<WebhookRule>[]>(webhook.rules || []);
 
   const { data, setData, put, processing } = useForm({
@@ -49,7 +50,7 @@ export default function WebhookEdit({ mailbox, webhook, error }: Props) {
   };
 
   return (
-    <MailboxLayout mailbox={mailbox}>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Container>
         <S.Header>
           <S.Title>Edit Webhook</S.Title>

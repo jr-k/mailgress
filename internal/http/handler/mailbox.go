@@ -236,6 +236,11 @@ func (h *MailboxHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if mailbox.DomainID != nil {
+		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
+		mailbox.Domain = domain
+	}
+
 	users, _ := h.userService.List(r.Context())
 	domains, _ := h.domainService.ListActive(r.Context())
 	allTags, _ := h.tagService.List(r.Context())

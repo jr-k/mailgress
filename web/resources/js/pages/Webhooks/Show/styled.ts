@@ -4,18 +4,6 @@ export const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[6]};
 `;
 
-export const BackLink = styled.a`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
-  display: inline-block;
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
-  }
-`;
-
 export const HeaderRow = styled.div`
   display: flex;
   justify-content: space-between;

@@ -6,11 +6,13 @@ import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input, Select, Checkbox, Label } from '@/components/Input';
 import { TagSelector } from '@/components/TagSelector';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { Mailbox, User, Domain, Tag, PageProps } from '@/types';
 import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   users: User[];
   domains: Domain[];
   allTags: Tag[];
@@ -18,9 +20,10 @@ interface Props extends PageProps {
   error?: string;
 }
 
-export default function MailboxEdit({ mailbox, users, domains, allTags, mailboxTags, error }: Props) {
+export default function MailboxEdit({ mailbox, allMailboxes, users, domains, allTags, mailboxTags, error }: Props) {
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(mailboxTags.map((t) => t.id));
   const [tagsSaving, setTagsSaving] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   const { data, setData, put, processing } = useForm({
     slug: mailbox.slug,
@@ -48,17 +51,17 @@ export default function MailboxEdit({ mailbox, users, domains, allTags, mailboxT
     put(`/mailboxes/${mailbox.id}`);
   };
 
-  const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this mailbox? All emails will be lost.')) {
-      router.delete(`/mailboxes/${mailbox.id}`);
-    }
+  const handleDeleteConfirm = () => {
+    router.delete(`/mailboxes/${mailbox.id}`, {
+      onFinish: () => setDeleteModalOpen(false),
+    });
   };
 
   const selectedDomain = domains.find((d) => String(d.id) === data.domain_id);
   const selectedTags = allTags.filter((t) => selectedTagIds.includes(t.id));
 
   return (
-    <MailboxLayout mailbox={mailbox} breadcrumbs={[{ label: 'Settings' }]}>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Container>
         <S.Header>
           <S.Title>Settings</S.Title>
@@ -149,7 +152,7 @@ export default function MailboxEdit({ mailbox, users, domains, allTags, mailboxT
               </div>
 
               <S.FormActions>
-                <Button type="button" variant="danger" onClick={handleDelete}>
+                <Button type="button" variant="danger" onClick={() => setDeleteModalOpen(true)}>
                   Delete Mailbox
                 </Button>
                 <S.FormActionsRight>
@@ -165,6 +168,16 @@ export default function MailboxEdit({ mailbox, users, domains, allTags, mailboxT
           </S.FormCard>
         </Card>
       </S.Container>
+
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Mailbox"
+        description="Are you sure you want to delete this mailbox? All emails will be lost."
+        confirmText="Delete"
+        variant="danger"
+      />
     </MailboxLayout>
   );
 }

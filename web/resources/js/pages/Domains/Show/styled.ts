@@ -42,7 +42,7 @@ export const InfoGrid = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
   background-color: ${({ theme }) => theme.colors.gray[50]};
   border-radius: ${({ theme }) => theme.radii.md};
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
 `;
 
 export const InfoItem = styled.div``;

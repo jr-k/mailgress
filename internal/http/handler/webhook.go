@@ -17,6 +17,7 @@ type WebhookHandler struct {
 	webhookService  *service.WebhookService
 	deliveryService *service.DeliveryService
 	mailboxService  *service.MailboxService
+	domainService   *service.DomainService
 	dispatcher      *webhook.Dispatcher
 }
 
@@ -25,6 +26,7 @@ func NewWebhookHandler(
 	webhookService *service.WebhookService,
 	deliveryService *service.DeliveryService,
 	mailboxService *service.MailboxService,
+	domainService *service.DomainService,
 	dispatcher *webhook.Dispatcher,
 ) *WebhookHandler {
 	return &WebhookHandler{
@@ -32,6 +34,7 @@ func NewWebhookHandler(
 		webhookService:  webhookService,
 		deliveryService: deliveryService,
 		mailboxService:  mailboxService,
+		domainService:   domainService,
 		dispatcher:      dispatcher,
 	}
 }
@@ -66,6 +69,10 @@ func (h *WebhookHandler) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mailbox, _ := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if mailbox.DomainID != nil {
+		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
+		mailbox.Domain = domain
+	}
 	webhooks, _ := h.webhookService.ListByMailbox(r.Context(), mailboxID)
 
 	for _, wh := range webhooks {
@@ -86,6 +93,10 @@ func (h *WebhookHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mailbox, _ := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if mailbox.DomainID != nil {
+		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
+		mailbox.Domain = domain
+	}
 
 	h.inertia.Render(w, r, "Webhooks/Create", gonertia.Props{
 		"mailbox": mailbox,
@@ -171,6 +182,10 @@ func (h *WebhookHandler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mailbox, _ := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if mailbox.DomainID != nil {
+		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
+		mailbox.Domain = domain
+	}
 	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
 	if err != nil || wh.MailboxID != mailboxID {
 		h.inertia.Render(w, r, "Errors/NotFound", nil)
@@ -199,6 +214,10 @@ func (h *WebhookHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mailbox, _ := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if mailbox.DomainID != nil {
+		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
+		mailbox.Domain = domain
+	}
 	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
 	if err != nil || wh.MailboxID != mailboxID {
 		h.inertia.Render(w, r, "Errors/NotFound", nil)
@@ -362,6 +381,10 @@ func (h *WebhookHandler) Deliveries(w http.ResponseWriter, r *http.Request) {
 	total, _ := h.deliveryService.CountByWebhook(r.Context(), webhookID)
 
 	mailbox, _ := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if mailbox.DomainID != nil {
+		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
+		mailbox.Domain = domain
+	}
 
 	h.inertia.Render(w, r, "Webhooks/Deliveries", gonertia.Props{
 		"mailbox":    mailbox,

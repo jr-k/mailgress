@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AppLayout from '@/layouts/AppLayout';
-import { Card } from '@/components/Card';
+import { Card, CardBody } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { LinkButton } from '@/components/Button';
 import { Domain, DNSRecord, DNSCheckResult, PageProps } from '@/types';
@@ -77,6 +77,7 @@ export default function DomainsShow({ domain, dnsRecords }: Props) {
       </S.Header>
 
       <Card>
+        <CardBody>
         <S.InfoGrid>
           <S.InfoItem>
             <S.InfoLabel>Status</S.InfoLabel>
@@ -227,6 +228,7 @@ export default function DomainsShow({ domain, dnsRecords }: Props) {
             </S.VerificationResults>
           )}
         </S.VerificationSection>
+        </CardBody>
       </Card>
     </AppLayout>
   );

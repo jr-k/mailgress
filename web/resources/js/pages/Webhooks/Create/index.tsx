@@ -10,10 +10,11 @@ import * as S from './styled';
 
 interface Props extends PageProps {
   mailbox: Mailbox;
+  allMailboxes: Mailbox[];
   error?: string;
 }
 
-export default function WebhookCreate({ mailbox, error }: Props) {
+export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
   const [rules, setRules] = useState<Partial<WebhookRule>[]>([]);
   const [customHeaders, setCustomHeaders] = useState<{ key: string; value: string }[]>([]);
   const [payloadType, setPayloadType] = useState<'default' | 'json' | 'key_value'>('default');
@@ -87,7 +88,7 @@ export default function WebhookCreate({ mailbox, error }: Props) {
   };
 
   return (
-    <MailboxLayout mailbox={mailbox}>
+    <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Container>
         <S.Header>
           <S.Title>Create Webhook</S.Title>

@@ -178,3 +178,49 @@ export const FilterGroup = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing[3]};
 `;
+
+export const IconButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: ${({ theme }) => theme.colors.gray[500]};
+  text-decoration: none;
+  border-radius: ${({ theme }) => theme.radii.md};
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.gray[700]};
+    background-color: ${({ theme }) => theme.colors.gray[100]};
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
+
+export const IconDeleteButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: ${({ theme }) => theme.colors.gray[500]};
+  background: none;
+  border: none;
+  border-radius: ${({ theme }) => theme.radii.md};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.red[600]};
+    background-color: ${({ theme }) => theme.colors.red[50]};
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+`;
