@@ -22,9 +22,9 @@ AND (subject LIKE ? OR from_address LIKE ?);
 -- name: CreateEmail :one
 INSERT INTO emails (
     mailbox_id, message_id, from_address, to_address, subject,
-    date, headers, text_body, html_body, raw_size, received_at
+    date, headers, text_body, html_body, raw_size, is_read, received_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP)
 RETURNING *;
 
 -- name: DeleteEmail :exec
@@ -47,3 +47,12 @@ SELECT
     COUNT(*) as email_count,
     MAX(received_at) as last_email_at
 FROM emails WHERE mailbox_id = ?;
+
+-- name: MarkEmailAsRead :exec
+UPDATE emails SET is_read = 1 WHERE id = ?;
+
+-- name: MarkEmailAsUnread :exec
+UPDATE emails SET is_read = 0 WHERE id = ?;
+
+-- name: CountUnreadByMailbox :one
+SELECT COUNT(*) FROM emails WHERE mailbox_id = ? AND is_read = 0;

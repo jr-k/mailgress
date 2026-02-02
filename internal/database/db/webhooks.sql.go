@@ -23,19 +23,22 @@ func (q *Queries) CountWebhooksByMailbox(ctx context.Context, mailboxID int64) (
 
 const createWebhook = `-- name: CreateWebhook :one
 INSERT INTO webhooks (
-    mailbox_id, name, url, headers, hmac_secret,
+    mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret,
     timeout_sec, max_retries, include_body, include_attachments, is_active,
     created_at, updated_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-RETURNING id, mailbox_id, name, url, headers, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+RETURNING id, mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at
 `
 
 type CreateWebhookParams struct {
 	MailboxID          int64          `json:"mailbox_id"`
 	Name               string         `json:"name"`
 	Url                string         `json:"url"`
+	Method             string         `json:"method"`
 	Headers            sql.NullString `json:"headers"`
+	PayloadType        string         `json:"payload_type"`
+	CustomPayload      sql.NullString `json:"custom_payload"`
 	HmacSecret         sql.NullString `json:"hmac_secret"`
 	TimeoutSec         int64          `json:"timeout_sec"`
 	MaxRetries         int64          `json:"max_retries"`
@@ -49,7 +52,10 @@ func (q *Queries) CreateWebhook(ctx context.Context, arg CreateWebhookParams) (W
 		arg.MailboxID,
 		arg.Name,
 		arg.Url,
+		arg.Method,
 		arg.Headers,
+		arg.PayloadType,
+		arg.CustomPayload,
 		arg.HmacSecret,
 		arg.TimeoutSec,
 		arg.MaxRetries,
@@ -63,7 +69,10 @@ func (q *Queries) CreateWebhook(ctx context.Context, arg CreateWebhookParams) (W
 		&i.MailboxID,
 		&i.Name,
 		&i.Url,
+		&i.Method,
 		&i.Headers,
+		&i.PayloadType,
+		&i.CustomPayload,
 		&i.HmacSecret,
 		&i.TimeoutSec,
 		&i.MaxRetries,
@@ -86,7 +95,7 @@ func (q *Queries) DeleteWebhook(ctx context.Context, id int64) error {
 }
 
 const getWebhookByID = `-- name: GetWebhookByID :one
-SELECT id, mailbox_id, name, url, headers, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at FROM webhooks WHERE id = ? LIMIT 1
+SELECT id, mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at FROM webhooks WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetWebhookByID(ctx context.Context, id int64) (Webhook, error) {
@@ -97,7 +106,10 @@ func (q *Queries) GetWebhookByID(ctx context.Context, id int64) (Webhook, error)
 		&i.MailboxID,
 		&i.Name,
 		&i.Url,
+		&i.Method,
 		&i.Headers,
+		&i.PayloadType,
+		&i.CustomPayload,
 		&i.HmacSecret,
 		&i.TimeoutSec,
 		&i.MaxRetries,
@@ -111,7 +123,7 @@ func (q *Queries) GetWebhookByID(ctx context.Context, id int64) (Webhook, error)
 }
 
 const listActiveWebhooksByMailbox = `-- name: ListActiveWebhooksByMailbox :many
-SELECT id, mailbox_id, name, url, headers, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at FROM webhooks WHERE mailbox_id = ? AND is_active = 1 ORDER BY created_at DESC
+SELECT id, mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at FROM webhooks WHERE mailbox_id = ? AND is_active = 1 ORDER BY created_at DESC
 `
 
 func (q *Queries) ListActiveWebhooksByMailbox(ctx context.Context, mailboxID int64) ([]Webhook, error) {
@@ -128,7 +140,10 @@ func (q *Queries) ListActiveWebhooksByMailbox(ctx context.Context, mailboxID int
 			&i.MailboxID,
 			&i.Name,
 			&i.Url,
+			&i.Method,
 			&i.Headers,
+			&i.PayloadType,
+			&i.CustomPayload,
 			&i.HmacSecret,
 			&i.TimeoutSec,
 			&i.MaxRetries,
@@ -152,7 +167,7 @@ func (q *Queries) ListActiveWebhooksByMailbox(ctx context.Context, mailboxID int
 }
 
 const listWebhooksByMailbox = `-- name: ListWebhooksByMailbox :many
-SELECT id, mailbox_id, name, url, headers, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at FROM webhooks WHERE mailbox_id = ? ORDER BY created_at DESC
+SELECT id, mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at FROM webhooks WHERE mailbox_id = ? ORDER BY created_at DESC
 `
 
 func (q *Queries) ListWebhooksByMailbox(ctx context.Context, mailboxID int64) ([]Webhook, error) {
@@ -169,7 +184,10 @@ func (q *Queries) ListWebhooksByMailbox(ctx context.Context, mailboxID int64) ([
 			&i.MailboxID,
 			&i.Name,
 			&i.Url,
+			&i.Method,
 			&i.Headers,
+			&i.PayloadType,
+			&i.CustomPayload,
 			&i.HmacSecret,
 			&i.TimeoutSec,
 			&i.MaxRetries,
@@ -194,17 +212,20 @@ func (q *Queries) ListWebhooksByMailbox(ctx context.Context, mailboxID int64) ([
 
 const updateWebhook = `-- name: UpdateWebhook :one
 UPDATE webhooks
-SET name = ?, url = ?, headers = ?, hmac_secret = ?,
+SET name = ?, url = ?, method = ?, headers = ?, payload_type = ?, custom_payload = ?, hmac_secret = ?,
     timeout_sec = ?, max_retries = ?, include_body = ?, include_attachments = ?,
     is_active = ?, updated_at = CURRENT_TIMESTAMP
 WHERE id = ?
-RETURNING id, mailbox_id, name, url, headers, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at
+RETURNING id, mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at
 `
 
 type UpdateWebhookParams struct {
 	Name               string         `json:"name"`
 	Url                string         `json:"url"`
+	Method             string         `json:"method"`
 	Headers            sql.NullString `json:"headers"`
+	PayloadType        string         `json:"payload_type"`
+	CustomPayload      sql.NullString `json:"custom_payload"`
 	HmacSecret         sql.NullString `json:"hmac_secret"`
 	TimeoutSec         int64          `json:"timeout_sec"`
 	MaxRetries         int64          `json:"max_retries"`
@@ -218,7 +239,10 @@ func (q *Queries) UpdateWebhook(ctx context.Context, arg UpdateWebhookParams) (W
 	row := q.db.QueryRowContext(ctx, updateWebhook,
 		arg.Name,
 		arg.Url,
+		arg.Method,
 		arg.Headers,
+		arg.PayloadType,
+		arg.CustomPayload,
 		arg.HmacSecret,
 		arg.TimeoutSec,
 		arg.MaxRetries,
@@ -233,7 +257,10 @@ func (q *Queries) UpdateWebhook(ctx context.Context, arg UpdateWebhookParams) (W
 		&i.MailboxID,
 		&i.Name,
 		&i.Url,
+		&i.Method,
 		&i.Headers,
+		&i.PayloadType,
+		&i.CustomPayload,
 		&i.HmacSecret,
 		&i.TimeoutSec,
 		&i.MaxRetries,

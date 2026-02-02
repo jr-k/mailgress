@@ -116,6 +116,14 @@ func (s *DeliveryService) CountByWebhook(ctx context.Context, webhookID int64) (
 	return s.queries.CountDeliveriesByWebhook(ctx, webhookID)
 }
 
+func (s *DeliveryService) CancelRetryingByWebhook(ctx context.Context, webhookID int64) error {
+	return s.queries.CancelRetryingByWebhook(ctx, webhookID)
+}
+
+func (s *DeliveryService) DeleteAllByWebhook(ctx context.Context, webhookID int64) error {
+	return s.queries.DeleteAllByWebhook(ctx, webhookID)
+}
+
 func (s *DeliveryService) toDomain(dbDelivery db.WebhookDelivery) *domain.WebhookDelivery {
 	delivery := &domain.WebhookDelivery{
 		ID:        dbDelivery.ID,

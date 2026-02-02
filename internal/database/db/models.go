@@ -46,6 +46,7 @@ type Email struct {
 	HtmlBody    sql.NullString `json:"html_body"`
 	RawSize     int64          `json:"raw_size"`
 	ReceivedAt  time.Time      `json:"received_at"`
+	IsRead      int64          `json:"is_read"`
 }
 
 type Mailbox struct {
@@ -109,7 +110,10 @@ type Webhook struct {
 	MailboxID          int64          `json:"mailbox_id"`
 	Name               string         `json:"name"`
 	Url                string         `json:"url"`
+	Method             string         `json:"method"`
 	Headers            sql.NullString `json:"headers"`
+	PayloadType        string         `json:"payload_type"`
+	CustomPayload      sql.NullString `json:"custom_payload"`
 	HmacSecret         sql.NullString `json:"hmac_secret"`
 	TimeoutSec         int64          `json:"timeout_sec"`
 	MaxRetries         int64          `json:"max_retries"`

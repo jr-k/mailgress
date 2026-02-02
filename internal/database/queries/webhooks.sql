@@ -9,16 +9,16 @@ SELECT * FROM webhooks WHERE mailbox_id = ? AND is_active = 1 ORDER BY created_a
 
 -- name: CreateWebhook :one
 INSERT INTO webhooks (
-    mailbox_id, name, url, headers, hmac_secret,
+    mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret,
     timeout_sec, max_retries, include_body, include_attachments, is_active,
     created_at, updated_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 RETURNING *;
 
 -- name: UpdateWebhook :one
 UPDATE webhooks
-SET name = ?, url = ?, headers = ?, hmac_secret = ?,
+SET name = ?, url = ?, method = ?, headers = ?, payload_type = ?, custom_payload = ?, hmac_secret = ?,
     timeout_sec = ?, max_retries = ?, include_body = ?, include_attachments = ?,
     is_active = ?, updated_at = CURRENT_TIMESTAMP
 WHERE id = ?

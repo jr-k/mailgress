@@ -75,6 +75,7 @@ export interface Email {
   html_body: string;
   raw_size: number;
   received_at: string;
+  is_read: boolean;
   attachments: Attachment[];
   has_attachments: boolean;
 }
@@ -93,7 +94,10 @@ export interface Webhook {
   mailbox_id: number;
   name: string;
   url: string;
+  method: string;
   headers: Record<string, string>;
+  payload_type: string;
+  custom_payload?: string;
   hmac_secret?: string;
   timeout_sec: number;
   max_retries: number;

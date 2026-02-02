@@ -433,3 +433,105 @@ func (h *MailboxHandler) SetTags(w http.ResponseWriter, r *http.Request) {
 		"tags":    tags,
 	})
 }
+
+func (h *MailboxHandler) MarkEmailAsRead(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+
+	mailboxID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Mailbox not found"})
+		return
+	}
+
+	emailID, err := strconv.ParseInt(chi.URLParam(r, "emailId"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Email not found"})
+		return
+	}
+
+	mailbox, err := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if err != nil || (!user.IsAdmin && (mailbox.OwnerID == nil || *mailbox.OwnerID != user.ID)) {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Forbidden"})
+		return
+	}
+
+	if err := h.emailService.MarkAsRead(r.Context(), emailID); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to mark as read"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+}
+
+func (h *MailboxHandler) MarkEmailAsUnread(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+
+	mailboxID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Mailbox not found"})
+		return
+	}
+
+	emailID, err := strconv.ParseInt(chi.URLParam(r, "emailId"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Email not found"})
+		return
+	}
+
+	mailbox, err := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if err != nil || (!user.IsAdmin && (mailbox.OwnerID == nil || *mailbox.OwnerID != user.ID)) {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Forbidden"})
+		return
+	}
+
+	if err := h.emailService.MarkAsUnread(r.Context(), emailID); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to mark as unread"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+}
+
+func (h *MailboxHandler) DeleteEmail(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+
+	mailboxID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Mailbox not found"})
+		return
+	}
+
+	emailID, err := strconv.ParseInt(chi.URLParam(r, "emailId"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Email not found"})
+		return
+	}
+
+	mailbox, err := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if err != nil || (!user.IsAdmin && (mailbox.OwnerID == nil || *mailbox.OwnerID != user.ID)) {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Forbidden"})
+		return
+	}
+
+	if err := h.emailService.Delete(r.Context(), emailID); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to delete email"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+}

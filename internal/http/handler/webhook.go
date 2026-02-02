@@ -141,6 +141,7 @@ func (h *WebhookHandler) Store(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name               string            `json:"name"`
 		URL                string            `json:"url"`
+		Method             string            `json:"method"`
 		HMACSecret         string            `json:"hmac_secret"`
 		Headers            map[string]string `json:"headers"`
 		TimeoutSec         int               `json:"timeout_sec"`
@@ -175,6 +176,7 @@ func (h *WebhookHandler) Store(w http.ResponseWriter, r *http.Request) {
 		MailboxID:          mailboxID,
 		Name:               req.Name,
 		URL:                req.URL,
+		Method:             req.Method,
 		Headers:            req.Headers,
 		HMACSecret:         req.HMACSecret,
 		TimeoutSec:         req.TimeoutSec,
@@ -280,8 +282,11 @@ func (h *WebhookHandler) Update(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Name               string            `json:"name"`
 		URL                string            `json:"url"`
+		Method             string            `json:"method"`
 		HMACSecret         string            `json:"hmac_secret"`
 		Headers            map[string]string `json:"headers"`
+		PayloadType        string            `json:"payload_type"`
+		CustomPayload      string            `json:"custom_payload"`
 		TimeoutSec         int               `json:"timeout_sec"`
 		MaxRetries         int               `json:"max_retries"`
 		IncludeBody        bool              `json:"include_body"`
@@ -304,7 +309,10 @@ func (h *WebhookHandler) Update(w http.ResponseWriter, r *http.Request) {
 		ID:                 webhookID,
 		Name:               req.Name,
 		URL:                req.URL,
+		Method:             req.Method,
 		Headers:            req.Headers,
+		PayloadType:        req.PayloadType,
+		CustomPayload:      req.CustomPayload,
 		HMACSecret:         req.HMACSecret,
 		TimeoutSec:         req.TimeoutSec,
 		MaxRetries:         req.MaxRetries,
@@ -329,7 +337,7 @@ func (h *WebhookHandler) Update(w http.ResponseWriter, r *http.Request) {
 		h.webhookService.CreateRule(r.Context(), webhookID, rule.RuleGroup, rule.Field, rule.Operator, rule.Value, rule.HeaderName)
 	}
 
-	h.inertia.Location(w, r, "/mailboxes/"+strconv.FormatInt(mailboxID, 10)+"/webhooks/"+strconv.FormatInt(webhookID, 10))
+	h.inertia.Location(w, r, "/mailboxes/"+strconv.FormatInt(mailboxID, 10)+"/webhooks/"+strconv.FormatInt(webhookID, 10)+"/edit")
 }
 
 func (h *WebhookHandler) Delete(w http.ResponseWriter, r *http.Request) {
@@ -462,4 +470,58 @@ func (h *WebhookHandler) Retry(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "queued"})
+}
+
+func (h *WebhookHandler) CancelRetrying(w http.ResponseWriter, r *http.Request) {
+	mailboxID, ok := h.checkMailboxAccess(w, r)
+	if !ok {
+		return
+	}
+
+	webhookID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
+	if err != nil || wh.MailboxID != mailboxID {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	if err := h.deliveryService.CancelRetryingByWebhook(r.Context(), webhookID); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+func (h *WebhookHandler) DeleteAllDeliveries(w http.ResponseWriter, r *http.Request) {
+	mailboxID, ok := h.checkMailboxAccess(w, r)
+	if !ok {
+		return
+	}
+
+	webhookID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
+	if err != nil || wh.MailboxID != mailboxID {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	if err := h.deliveryService.DeleteAllByWebhook(r.Context(), webhookID); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
 }

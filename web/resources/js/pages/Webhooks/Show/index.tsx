@@ -81,6 +81,10 @@ export default function WebhookShow({ mailbox, allMailboxes, webhook }: Props) {
                 <S.DefinitionValue>{webhook.url}</S.DefinitionValue>
               </div>
               <div>
+                <S.DefinitionTerm>Method</S.DefinitionTerm>
+                <S.DefinitionValue>{webhook.method}</S.DefinitionValue>
+              </div>
+              <div>
                 <S.DefinitionTerm>Timeout</S.DefinitionTerm>
                 <S.DefinitionValue>{webhook.timeout_sec} seconds</S.DefinitionValue>
               </div>

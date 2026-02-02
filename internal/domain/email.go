@@ -18,6 +18,7 @@ type Email struct {
 	HTMLBody    string            `json:"html_body"`
 	RawSize     int64             `json:"raw_size"`
 	ReceivedAt  time.Time         `json:"received_at"`
+	IsRead      bool              `json:"is_read"`
 
 	Attachments    []Attachment `json:"attachments,omitempty"`
 	HasAttachments bool         `json:"has_attachments"`

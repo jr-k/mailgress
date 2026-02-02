@@ -52,13 +52,24 @@ func (q *Queries) CountSearchEmails(ctx context.Context, arg CountSearchEmailsPa
 	return count, err
 }
 
+const countUnreadByMailbox = `-- name: CountUnreadByMailbox :one
+SELECT COUNT(*) FROM emails WHERE mailbox_id = ? AND is_read = 0
+`
+
+func (q *Queries) CountUnreadByMailbox(ctx context.Context, mailboxID int64) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUnreadByMailbox, mailboxID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createEmail = `-- name: CreateEmail :one
 INSERT INTO emails (
     mailbox_id, message_id, from_address, to_address, subject,
-    date, headers, text_body, html_body, raw_size, received_at
+    date, headers, text_body, html_body, raw_size, is_read, received_at
 )
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-RETURNING id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, CURRENT_TIMESTAMP)
+RETURNING id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at, is_read
 `
 
 type CreateEmailParams struct {
@@ -101,6 +112,7 @@ func (q *Queries) CreateEmail(ctx context.Context, arg CreateEmailParams) (Email
 		&i.HtmlBody,
 		&i.RawSize,
 		&i.ReceivedAt,
+		&i.IsRead,
 	)
 	return i, err
 }
@@ -138,7 +150,7 @@ func (q *Queries) DeleteOldEmailsByMailbox(ctx context.Context, arg DeleteOldEma
 }
 
 const getEmailByID = `-- name: GetEmailByID :one
-SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at FROM emails WHERE id = ? LIMIT 1
+SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at, is_read FROM emails WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetEmailByID(ctx context.Context, id int64) (Email, error) {
@@ -157,6 +169,7 @@ func (q *Queries) GetEmailByID(ctx context.Context, id int64) (Email, error) {
 		&i.HtmlBody,
 		&i.RawSize,
 		&i.ReceivedAt,
+		&i.IsRead,
 	)
 	return i, err
 }
@@ -181,7 +194,7 @@ func (q *Queries) GetMailboxStats(ctx context.Context, mailboxID int64) (GetMail
 }
 
 const listEmailsByMailbox = `-- name: ListEmailsByMailbox :many
-SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at FROM emails
+SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at, is_read FROM emails
 WHERE mailbox_id = ?
 ORDER BY received_at DESC
 LIMIT ? OFFSET ?
@@ -215,6 +228,7 @@ func (q *Queries) ListEmailsByMailbox(ctx context.Context, arg ListEmailsByMailb
 			&i.HtmlBody,
 			&i.RawSize,
 			&i.ReceivedAt,
+			&i.IsRead,
 		); err != nil {
 			return nil, err
 		}
@@ -229,8 +243,26 @@ func (q *Queries) ListEmailsByMailbox(ctx context.Context, arg ListEmailsByMailb
 	return items, nil
 }
 
+const markEmailAsRead = `-- name: MarkEmailAsRead :exec
+UPDATE emails SET is_read = 1 WHERE id = ?
+`
+
+func (q *Queries) MarkEmailAsRead(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, markEmailAsRead, id)
+	return err
+}
+
+const markEmailAsUnread = `-- name: MarkEmailAsUnread :exec
+UPDATE emails SET is_read = 0 WHERE id = ?
+`
+
+func (q *Queries) MarkEmailAsUnread(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, markEmailAsUnread, id)
+	return err
+}
+
 const searchEmails = `-- name: SearchEmails :many
-SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at FROM emails
+SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at, is_read FROM emails
 WHERE mailbox_id = ?
 AND (subject LIKE ? OR from_address LIKE ?)
 ORDER BY received_at DESC
@@ -273,6 +305,7 @@ func (q *Queries) SearchEmails(ctx context.Context, arg SearchEmailsParams) ([]E
 			&i.HtmlBody,
 			&i.RawSize,
 			&i.ReceivedAt,
+			&i.IsRead,
 		); err != nil {
 			return nil, err
 		}

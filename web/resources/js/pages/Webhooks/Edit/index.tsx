@@ -15,19 +15,52 @@ interface Props extends PageProps {
   error?: string;
 }
 
+const parseCustomPayload = (
+  payloadType: string,
+  customPayload?: string
+): { jsonBody: string; keyValueBody: { key: string; value: string }[] } => {
+  const defaultJson = '{\n  "email": "{{email.address}}",\n  "subject": "{{email.subject}}"\n}';
+  const defaultKeyValue = [{ key: '', value: '' }];
+
+  if (!customPayload) {
+    return { jsonBody: defaultJson, keyValueBody: defaultKeyValue };
+  }
+
+  if (payloadType === 'json') {
+    return { jsonBody: customPayload, keyValueBody: defaultKeyValue };
+  }
+
+  if (payloadType === 'key_value') {
+    try {
+      const parsed = JSON.parse(customPayload);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return { jsonBody: defaultJson, keyValueBody: parsed };
+      }
+    } catch {
+      // ignore parse errors
+    }
+  }
+
+  return { jsonBody: defaultJson, keyValueBody: defaultKeyValue };
+};
+
 export default function WebhookEdit({ mailbox, allMailboxes, webhook, error }: Props) {
   const [rules, setRules] = useState<Partial<WebhookRule>[]>(webhook.rules || []);
   const [customHeaders, setCustomHeaders] = useState<{ key: string; value: string }[]>(
     Object.entries(webhook.headers || {}).map(([key, value]) => ({ key, value }))
   );
-  const [payloadType, setPayloadType] = useState<'default' | 'json' | 'key_value'>('default');
-  const [jsonBody, setJsonBody] = useState('{\n  "email": "{{email.address}}",\n  "subject": "{{email.subject}}"\n}');
-  const [keyValueBody, setKeyValueBody] = useState<{ key: string; value: string }[]>([{ key: '', value: '' }]);
+
+  const initialPayload = parseCustomPayload(webhook.payload_type, webhook.custom_payload);
+  const [payloadType, setPayloadType] = useState<'default' | 'json' | 'key_value'>(
+    (webhook.payload_type as 'default' | 'json' | 'key_value') || 'default'
+  );
+  const [jsonBody, setJsonBody] = useState(initialPayload.jsonBody);
+  const [keyValueBody, setKeyValueBody] = useState<{ key: string; value: string }[]>(initialPayload.keyValueBody);
 
   const { data, setData, put, processing, transform } = useForm({
     name: webhook.name,
     url: webhook.url,
-    method: 'POST',
+    method: webhook.method || 'POST',
     hmac_secret: webhook.hmac_secret || '',
     timeout_sec: webhook.timeout_sec,
     max_retries: webhook.max_retries,

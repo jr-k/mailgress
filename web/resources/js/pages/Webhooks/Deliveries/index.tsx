@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from '@inertiajs/react';
 import MailboxLayout from '@/layouts/MailboxLayout';
 import { Card } from '@/components/Card';
@@ -15,10 +16,28 @@ interface Props extends PageProps {
 }
 
 export default function WebhookDeliveries({ mailbox, allMailboxes, webhook, deliveries, pagination }: Props) {
+  const [loading, setLoading] = useState<string | null>(null);
+
   const handleRetry = async (deliveryId: number) => {
     await fetch(`/deliveries/${deliveryId}/retry`, { method: 'POST' });
     window.location.reload();
   };
+
+  const handleCancelRetrying = async () => {
+    if (!confirm('Are you sure you want to cancel all retrying deliveries?')) return;
+    setLoading('cancel');
+    await fetch(`/mailboxes/${mailbox.id}/webhooks/${webhook.id}/deliveries/cancel-retrying`, { method: 'POST' });
+    window.location.reload();
+  };
+
+  const handleDeleteAll = async () => {
+    if (!confirm('Are you sure you want to delete ALL delivery history? This cannot be undone.')) return;
+    setLoading('delete');
+    await fetch(`/mailboxes/${mailbox.id}/webhooks/${webhook.id}/deliveries`, { method: 'DELETE' });
+    window.location.reload();
+  };
+
+  const hasRetrying = deliveries.some(d => d.status === 'retrying');
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleString();
@@ -45,9 +64,21 @@ export default function WebhookDeliveries({ mailbox, allMailboxes, webhook, deli
           <S.Title>Delivery History</S.Title>
           <S.Subtitle>{webhook.name}</S.Subtitle>
         </div>
-        <LinkButton href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`} variant="secondary">
-          Back to Information
-        </LinkButton>
+        <S.HeaderActions>
+          {hasRetrying && (
+            <S.WarningButton onClick={handleCancelRetrying} disabled={loading !== null}>
+              {loading === 'cancel' ? 'Cancelling...' : 'Cancel Retrying'}
+            </S.WarningButton>
+          )}
+          {deliveries.length > 0 && (
+            <S.DangerButton onClick={handleDeleteAll} disabled={loading !== null}>
+              {loading === 'delete' ? 'Deleting...' : 'Delete All'}
+            </S.DangerButton>
+          )}
+          <LinkButton href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`} variant="secondary">
+            Back to Information
+          </LinkButton>
+        </S.HeaderActions>
       </S.Header>
 
       <Card>

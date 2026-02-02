@@ -189,6 +189,18 @@ func (s *EmailService) DeleteOldEmailsByMailbox(ctx context.Context, mailboxID i
 	})
 }
 
+func (s *EmailService) MarkAsRead(ctx context.Context, id int64) error {
+	return s.queries.MarkEmailAsRead(ctx, id)
+}
+
+func (s *EmailService) MarkAsUnread(ctx context.Context, id int64) error {
+	return s.queries.MarkEmailAsUnread(ctx, id)
+}
+
+func (s *EmailService) CountUnreadByMailbox(ctx context.Context, mailboxID int64) (int64, error) {
+	return s.queries.CountUnreadByMailbox(ctx, mailboxID)
+}
+
 func parseDateTime(s string) (time.Time, error) {
 	formats := []string{
 		time.RFC3339,
@@ -212,6 +224,7 @@ func (s *EmailService) toDomain(dbEmail db.Email) *domain.Email {
 		ToAddress:   dbEmail.ToAddress,
 		RawSize:     dbEmail.RawSize,
 		ReceivedAt:  dbEmail.ReceivedAt,
+		IsRead:      dbEmail.IsRead == 1,
 	}
 	if dbEmail.MessageID.Valid {
 		email.MessageID = dbEmail.MessageID.String

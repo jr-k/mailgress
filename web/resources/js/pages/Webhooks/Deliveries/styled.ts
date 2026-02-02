@@ -117,3 +117,57 @@ export const PageLink = styled.a`
     color: ${({ theme }) => theme.colors.primary[800]};
   }
 `;
+
+export const HeaderActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+  align-items: center;
+`;
+
+export const DangerButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.red[600]};
+  border: 1px solid ${({ theme }) => theme.colors.red[700]};
+  border-radius: ${({ theme }) => theme.radii.md};
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.red[700]};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+export const WarningButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.yellow[500]};
+  border: 1px solid ${({ theme }) => theme.colors.yellow[700]};
+  border-radius: ${({ theme }) => theme.radii.md};
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.yellow[600]};
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;

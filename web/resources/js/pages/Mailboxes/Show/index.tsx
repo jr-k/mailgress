@@ -4,6 +4,7 @@ import MailboxLayout from '@/layouts/MailboxLayout';
 import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
+import { ConfirmModal } from '@/components/ConfirmModal';
 import { Mailbox, Email, Pagination, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -15,13 +16,16 @@ interface Props extends PageProps {
   search: string;
 }
 
-export default function MailboxShow({ mailbox, allMailboxes, emails, pagination, search }: Props) {
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(emails?.[0] || null);
+export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmails, pagination, search }: Props) {
+  const [emails, setEmails] = useState<Email[]>(initialEmails);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(initialEmails?.[0] || null);
   const [searchQuery, setSearchQuery] = useState(search || '');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
-    setSelectedEmail(emails?.[0] || null);
-  }, [emails]);
+    setEmails(initialEmails);
+    setSelectedEmail(initialEmails?.[0] || null);
+  }, [initialEmails]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,6 +34,39 @@ export default function MailboxShow({ mailbox, allMailboxes, emails, pagination,
 
   const handleRefresh = () => {
     router.reload({ only: ['emails', 'pagination'] });
+  };
+
+  const handleSelectEmail = (email: Email) => {
+    if (selectedEmail?.id === email.id) {
+      setSelectedEmail(null);
+    } else {
+      setSelectedEmail(email);
+      if (!email.is_read) {
+        fetch(`/mailboxes/${mailbox.id}/emails/${email.id}/read`, { method: 'POST' });
+        setEmails(emails.map(e => e.id === email.id ? { ...e, is_read: true } : e));
+      }
+    }
+  };
+
+  const handleMarkAsUnread = async () => {
+    if (!selectedEmail) return;
+    await fetch(`/mailboxes/${mailbox.id}/emails/${selectedEmail.id}/unread`, { method: 'POST' });
+    setEmails(emails.map(e => e.id === selectedEmail.id ? { ...e, is_read: false } : e));
+    setSelectedEmail({ ...selectedEmail, is_read: false });
+  };
+
+  const handleDeleteClick = () => {
+    if (!selectedEmail) return;
+    setDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedEmail) return;
+    await fetch(`/mailboxes/${mailbox.id}/emails/${selectedEmail.id}`, { method: 'DELETE' });
+    const newEmails = emails.filter(e => e.id !== selectedEmail.id);
+    setEmails(newEmails);
+    setSelectedEmail(newEmails[0] || null);
+    setDeleteModalOpen(false);
   };
 
   const formatDate = (dateStr: string) => {
@@ -80,27 +117,59 @@ export default function MailboxShow({ mailbox, allMailboxes, emails, pagination,
               <S.EmptyState>No emails found</S.EmptyState>
             ) : (
               emails.map((email) => (
-                <S.EmailItem
-                  key={email.id}
-                  $selected={selectedEmail?.id === email.id}
-                  onClick={() => setSelectedEmail(email)}
-                >
-                  <S.EmailHeader>
-                    <S.EmailFrom><S.EmailClaim>From</S.EmailClaim> {email.from_address}</S.EmailFrom>
-                    <S.EmailDate>{formatDate(email.received_at)}</S.EmailDate>
-                  </S.EmailHeader>
-                  <S.EmailSubject><S.EmailClaim>Subj</S.EmailClaim> {email.subject || '(No subject)'}</S.EmailSubject>
-                  <S.EmailPreview>
-                    {email.text_body?.substring(0, 100) ||
-                      email.html_body?.substring(0, 100) ||
-                      '(No content)'}
-                  </S.EmailPreview>
-                  {email.has_attachments && (
-                    <S.AttachmentBadge>
-                      <Badge variant="gray">Attachments</Badge>
-                    </S.AttachmentBadge>
+                <div key={email.id}>
+                  <S.EmailItem
+                    $selected={selectedEmail?.id === email.id}
+                    $unread={!email.is_read}
+                    onClick={() => handleSelectEmail(email)}
+                  >
+                    <S.EmailHeader>
+                      <S.EmailFrom $unread={!email.is_read}><S.EmailClaim>From</S.EmailClaim> {email.from_address}</S.EmailFrom>
+                      <S.EmailDate>{formatDate(email.received_at)}</S.EmailDate>
+                    </S.EmailHeader>
+                    <S.EmailSubject $unread={!email.is_read}><S.EmailClaim>Sub</S.EmailClaim> {email.subject || '(No subject)'}</S.EmailSubject>
+                    <S.EmailPreview>
+                      {email.text_body?.substring(0, 100) ||
+                        email.html_body?.substring(0, 100) ||
+                        '(No content)'}
+                    </S.EmailPreview>
+                    {email.has_attachments && (
+                      <S.AttachmentBadge>
+                        <Badge variant="gray">Attachments</Badge>
+                      </S.AttachmentBadge>
+                    )}
+                  </S.EmailItem>
+                  {selectedEmail?.id === email.id && (
+                    <S.MobileEmailDetail>
+                      <S.MobileEmailDetailContent>
+                        <S.MobileEmailMeta>
+                          <div><S.MetaLabel>To:</S.MetaLabel> <S.MetaValue>{email.to_address}</S.MetaValue></div>
+                          <div><S.MetaLabel>Date:</S.MetaLabel> <S.MetaValue>{email.date ? formatDate(email.date) : formatDate(email.received_at)}</S.MetaValue></div>
+                          <div><S.MetaLabel>Size:</S.MetaLabel> <S.MetaValue>{formatSize(email.raw_size)}</S.MetaValue></div>
+                        </S.MobileEmailMeta>
+                        {email.attachments && email.attachments.length > 0 && (
+                          <S.AttachmentsSection>
+                            <S.AttachmentsTitle>Attachments</S.AttachmentsTitle>
+                            <S.AttachmentsList>
+                              {email.attachments.map((att) => (
+                                <S.AttachmentLink key={att.id} href={att.download_url}>
+                                  {att.filename} ({formatSize(att.size)})
+                                </S.AttachmentLink>
+                              ))}
+                            </S.AttachmentsList>
+                          </S.AttachmentsSection>
+                        )}
+                        <S.MobileEmailBody>
+                          {email.html_body ? (
+                            <S.HtmlBody dangerouslySetInnerHTML={{ __html: email.html_body }} />
+                          ) : (
+                            <S.TextBody>{email.text_body || '(No content)'}</S.TextBody>
+                          )}
+                        </S.MobileEmailBody>
+                      </S.MobileEmailDetailContent>
+                    </S.MobileEmailDetail>
                   )}
-                </S.EmailItem>
+                </div>
               ))
             )}
           </S.EmailListItems>
@@ -140,9 +209,25 @@ export default function MailboxShow({ mailbox, allMailboxes, emails, pagination,
           {selectedEmail ? (
             <S.EmailDetailContent>
               <S.EmailDetailHeader>
-                <S.EmailDetailSubject>
-                  {selectedEmail.subject || '(No subject)'}
-                </S.EmailDetailSubject>
+                <S.EmailDetailTitleRow>
+                  <S.EmailDetailSubject>
+                    {selectedEmail.subject || '(No subject)'}
+                  </S.EmailDetailSubject>
+                  <S.EmailActions>
+                    {selectedEmail.is_read && (
+                      <S.ActionButton onClick={handleMarkAsUnread} title="Mark as unread">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </S.ActionButton>
+                    )}
+                    <S.ActionButton onClick={handleDeleteClick} $danger title="Delete email">
+                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </S.ActionButton>
+                  </S.EmailActions>
+                </S.EmailDetailTitleRow>
                 <S.EmailMeta>
                   <div>
                     <S.MetaLabel>From:</S.MetaLabel> <S.MetaValue>{selectedEmail.from_address}</S.MetaValue>
@@ -198,6 +283,16 @@ export default function MailboxShow({ mailbox, allMailboxes, emails, pagination,
           )}
         </S.EmailDetail>
       </S.SplitView>
+
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Email"
+        description={`Are you sure you want to delete this email from "${selectedEmail?.from_address || ''}"? This action cannot be undone.`}
+        confirmText="Delete"
+        variant="danger"
+      />
     </MailboxLayout>
   );
 }

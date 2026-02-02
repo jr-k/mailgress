@@ -53,7 +53,7 @@ func main() {
 	domainService := service.NewDomainService(queries)
 	tagService := service.NewTagService(queries)
 
-	dispatcher := webhook.NewDispatcher(cfg, webhookService, deliveryService)
+	dispatcher := webhook.NewDispatcher(cfg, webhookService, deliveryService, emailService)
 	dispatcher.Start()
 
 	smtpServer := smtpserver.NewServer(cfg, mailboxService, emailService, domainService, store, dispatcher)

@@ -126,6 +126,9 @@ func NewServer(
 		r.Put("/mailboxes/{id}", mailboxHandler.Update)
 		r.Delete("/mailboxes/{id}", mailboxHandler.Delete)
 		r.Put("/mailboxes/{id}/tags", mailboxHandler.SetTags)
+		r.Post("/mailboxes/{id}/emails/{emailId}/read", mailboxHandler.MarkEmailAsRead)
+		r.Post("/mailboxes/{id}/emails/{emailId}/unread", mailboxHandler.MarkEmailAsUnread)
+		r.Delete("/mailboxes/{id}/emails/{emailId}", mailboxHandler.DeleteEmail)
 
 		r.Get("/mailboxes/{mailboxId}/emails/{id}", emailHandler.Show)
 		r.Get("/attachments/{id}/download", emailHandler.DownloadAttachment)
@@ -140,6 +143,8 @@ func NewServer(
 		r.Post("/mailboxes/{mailboxId}/webhooks/{id}/test", webhookHandler.Test)
 		r.Get("/mailboxes/{mailboxId}/webhooks/{id}/deliveries", webhookHandler.Deliveries)
 		r.Post("/deliveries/{id}/retry", webhookHandler.Retry)
+		r.Post("/mailboxes/{mailboxId}/webhooks/{id}/deliveries/cancel-retrying", webhookHandler.CancelRetrying)
+		r.Delete("/mailboxes/{mailboxId}/webhooks/{id}/deliveries", webhookHandler.DeleteAllDeliveries)
 
 		r.Group(func(r chi.Router) {
 			r.Use(authMiddleware.RequireAdmin)

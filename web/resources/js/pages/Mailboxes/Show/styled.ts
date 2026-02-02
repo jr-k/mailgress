@@ -2,12 +2,22 @@ import styled from 'styled-components';
 
 export const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[6]};
+
+  @media (max-width: 768px) {
+    margin-bottom: ${({ theme }) => theme.spacing[4]};
+  }
 `;
 
 export const HeaderRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing[2]};
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 `;
 
 export const Description = styled.p`
@@ -22,6 +32,12 @@ export const SplitView = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border.primary};
   box-shadow: ${({ theme }) => theme.shadows.sm};
   overflow: hidden;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    height: auto;
+    max-height: calc(100vh - 180px);
+  }
 `;
 
 export const EmailList = styled.div`
@@ -30,6 +46,14 @@ export const EmailList = styled.div`
   border-right: 1px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   flex-direction: column;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
+    flex: 1;
+    overflow: hidden;
+  }
 `;
 
 export const SearchBox = styled.div`
@@ -42,13 +66,13 @@ export const EmailListItems = styled.div`
   overflow-y: auto;
 `;
 
-export const EmailItem = styled.div<{ $selected?: boolean }>`
+export const EmailItem = styled.div<{ $selected?: boolean; $unread?: boolean }>`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
   cursor: pointer;
   transition: background-color 0.15s ease;
-  background-color: ${({ $selected, theme }) =>
-    $selected ? theme.colors.primary[50] : 'transparent'};
+  background-color: ${({ $selected, $unread, theme }) =>
+    $selected ? theme.colors.primary[50] : $unread ? theme.colors.blue[50] : 'transparent'};
 
   &:hover {
     background-color: ${({ $selected, theme }) =>
@@ -63,9 +87,9 @@ export const EmailHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[1]};
 `;
 
-export const EmailFrom = styled.div`
+export const EmailFrom = styled.div<{ $unread?: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  font-weight: ${({ $unread, theme }) => ($unread ? theme.fontWeights.bold : theme.fontWeights.medium)};
   color: ${({ theme }) => theme.colors.gray[900]};
   overflow: hidden;
   text-overflow: ellipsis;
@@ -91,8 +115,9 @@ export const EmailDate = styled.div`
   white-space: nowrap;
 `;
 
-export const EmailSubject = styled.div`
+export const EmailSubject = styled.div<{ $unread?: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: ${({ $unread, theme }) => ($unread ? theme.fontWeights.semibold : theme.fontWeights.normal)};
   color: ${({ theme }) => theme.colors.gray[900]};
   overflow: hidden;
   text-overflow: ellipsis;
@@ -142,14 +167,53 @@ export const PageLink = styled.a`
 export const EmailDetail = styled.div`
   flex: 1;
   overflow-y: auto;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
 
 export const EmailDetailContent = styled.div`
   padding: ${({ theme }) => theme.spacing[6]};
+
+  @media (max-width: 768px) {
+    padding: ${({ theme }) => theme.spacing[4]};
+  }
 `;
 
 export const EmailDetailHeader = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[6]};
+`;
+
+export const EmailDetailTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const EmailActions = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[2]};
+  flex-shrink: 0;
+`;
+
+export const ActionButton = styled.button<{ $danger?: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[2]};
+  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border-radius: ${({ theme }) => theme.radii.md};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
+  color: ${({ $danger, theme }) => ($danger ? theme.colors.red[600] : theme.colors.gray[600])};
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: ${({ $danger, theme }) => ($danger ? theme.colors.red[50] : theme.colors.gray[100])};
+    border-color: ${({ $danger, theme }) => ($danger ? theme.colors.red[500] : theme.colors.gray[400])};
+  }
 `;
 
 export const EmailDetailSubject = styled.h2`
@@ -164,6 +228,11 @@ export const EmailMeta = styled.div`
   grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => theme.spacing[4]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: ${({ theme }) => theme.spacing[2]};
+  }
 `;
 
 export const MetaLabel = styled.span`
@@ -247,4 +316,33 @@ export const NoEmailSelected = styled.div`
   justify-content: center;
   height: 100%;
   color: ${({ theme }) => theme.colors.gray[500]};
+`;
+
+export const MobileEmailDetail = styled.div`
+  display: none;
+  background-color: ${({ theme }) => theme.colors.gray[50]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.primary[200]};
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+export const MobileEmailDetailContent = styled.div`
+  padding: ${({ theme }) => theme.spacing[4]};
+`;
+
+export const MobileEmailMeta = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[1]};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+  padding-bottom: ${({ theme }) => theme.spacing[3]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+`;
+
+export const MobileEmailBody = styled.div`
+  max-height: 300px;
+  overflow-y: auto;
 `;

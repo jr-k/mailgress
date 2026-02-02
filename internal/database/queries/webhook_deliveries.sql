@@ -45,3 +45,11 @@ SELECT
     SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_count,
     SUM(CASE WHEN status = 'pending' OR status = 'retrying' THEN 1 ELSE 0 END) as pending_count
 FROM webhook_deliveries WHERE webhook_id = ?;
+
+-- name: CancelRetryingByWebhook :exec
+UPDATE webhook_deliveries
+SET status = 'failed', error_message = 'Cancelled by user'
+WHERE webhook_id = ? AND status = 'retrying';
+
+-- name: DeleteAllByWebhook :exec
+DELETE FROM webhook_deliveries WHERE webhook_id = ?;

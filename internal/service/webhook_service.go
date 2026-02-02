@@ -84,7 +84,10 @@ type CreateWebhookParams struct {
 	MailboxID          int64
 	Name               string
 	URL                string
+	Method             string
 	Headers            map[string]string
+	PayloadType        string
+	CustomPayload      string
 	HMACSecret         string
 	TimeoutSec         int
 	MaxRetries         int
@@ -107,11 +110,24 @@ func (s *WebhookService) Create(ctx context.Context, params CreateWebhookParams)
 		includeAttachments = 1
 	}
 
+	method := params.Method
+	if method == "" {
+		method = "POST"
+	}
+
+	payloadType := params.PayloadType
+	if payloadType == "" {
+		payloadType = "default"
+	}
+
 	dbWebhook, err := s.queries.CreateWebhook(ctx, db.CreateWebhookParams{
 		MailboxID:          params.MailboxID,
 		Name:               params.Name,
 		Url:                params.URL,
+		Method:             method,
 		Headers:            sql.NullString{String: headersJSON, Valid: true},
+		PayloadType:        payloadType,
+		CustomPayload:      sql.NullString{String: params.CustomPayload, Valid: params.CustomPayload != ""},
 		HmacSecret:         sql.NullString{String: params.HMACSecret, Valid: params.HMACSecret != ""},
 		TimeoutSec:         int64(params.TimeoutSec),
 		MaxRetries:         int64(params.MaxRetries),
@@ -130,7 +146,10 @@ type UpdateWebhookParams struct {
 	ID                 int64
 	Name               string
 	URL                string
+	Method             string
 	Headers            map[string]string
+	PayloadType        string
+	CustomPayload      string
 	HMACSecret         string
 	TimeoutSec         int
 	MaxRetries         int
@@ -157,11 +176,24 @@ func (s *WebhookService) Update(ctx context.Context, params UpdateWebhookParams)
 		isActive = 1
 	}
 
+	method := params.Method
+	if method == "" {
+		method = "POST"
+	}
+
+	payloadType := params.PayloadType
+	if payloadType == "" {
+		payloadType = "default"
+	}
+
 	dbWebhook, err := s.queries.UpdateWebhook(ctx, db.UpdateWebhookParams{
 		ID:                 params.ID,
 		Name:               params.Name,
 		Url:                params.URL,
+		Method:             method,
 		Headers:            sql.NullString{String: headersJSON, Valid: true},
+		PayloadType:        payloadType,
+		CustomPayload:      sql.NullString{String: params.CustomPayload, Valid: params.CustomPayload != ""},
 		HmacSecret:         sql.NullString{String: params.HMACSecret, Valid: params.HMACSecret != ""},
 		TimeoutSec:         int64(params.TimeoutSec),
 		MaxRetries:         int64(params.MaxRetries),
@@ -231,11 +263,21 @@ func (s *WebhookService) GetDeliveryStats(ctx context.Context, webhookID int64) 
 }
 
 func (s *WebhookService) toDomain(dbWebhook db.Webhook) *domain.Webhook {
+	method := dbWebhook.Method
+	if method == "" {
+		method = "POST"
+	}
+	payloadType := dbWebhook.PayloadType
+	if payloadType == "" {
+		payloadType = "default"
+	}
 	webhook := &domain.Webhook{
 		ID:                 dbWebhook.ID,
 		MailboxID:          dbWebhook.MailboxID,
 		Name:               dbWebhook.Name,
 		URL:                dbWebhook.Url,
+		Method:             method,
+		PayloadType:        payloadType,
 		TimeoutSec:         int(dbWebhook.TimeoutSec),
 		MaxRetries:         int(dbWebhook.MaxRetries),
 		IncludeBody:        dbWebhook.IncludeBody != 0,
@@ -246,6 +288,9 @@ func (s *WebhookService) toDomain(dbWebhook db.Webhook) *domain.Webhook {
 	}
 	if dbWebhook.Headers.Valid {
 		json.Unmarshal([]byte(dbWebhook.Headers.String), &webhook.Headers)
+	}
+	if dbWebhook.CustomPayload.Valid {
+		webhook.CustomPayload = dbWebhook.CustomPayload.String
 	}
 	if dbWebhook.HmacSecret.Valid {
 		webhook.HMACSecret = dbWebhook.HmacSecret.String

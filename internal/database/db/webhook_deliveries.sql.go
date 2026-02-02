@@ -302,3 +302,23 @@ func (q *Queries) UpdateDelivery(ctx context.Context, arg UpdateDeliveryParams) 
 	)
 	return i, err
 }
+
+const cancelRetryingByWebhook = `-- name: CancelRetryingByWebhook :exec
+UPDATE webhook_deliveries
+SET status = 'failed', error_message = 'Cancelled by user'
+WHERE webhook_id = ? AND status = 'retrying'
+`
+
+func (q *Queries) CancelRetryingByWebhook(ctx context.Context, webhookID int64) error {
+	_, err := q.db.ExecContext(ctx, cancelRetryingByWebhook, webhookID)
+	return err
+}
+
+const deleteAllByWebhook = `-- name: DeleteAllByWebhook :exec
+DELETE FROM webhook_deliveries WHERE webhook_id = ?
+`
+
+func (q *Queries) DeleteAllByWebhook(ctx context.Context, webhookID int64) error {
+	_, err := q.db.ExecContext(ctx, deleteAllByWebhook, webhookID)
+	return err
+}

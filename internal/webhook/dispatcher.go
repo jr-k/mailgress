@@ -22,6 +22,7 @@ type Dispatcher struct {
 	workers         int
 	webhookService  *service.WebhookService
 	deliveryService *service.DeliveryService
+	emailService    *service.EmailService
 	config          *config.Config
 	wg              sync.WaitGroup
 	ctx             context.Context
@@ -33,6 +34,7 @@ func NewDispatcher(
 	cfg *config.Config,
 	webhookService *service.WebhookService,
 	deliveryService *service.DeliveryService,
+	emailService *service.EmailService,
 ) *Dispatcher {
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -41,6 +43,7 @@ func NewDispatcher(
 		workers:         cfg.WebhookWorkers,
 		webhookService:  webhookService,
 		deliveryService: deliveryService,
+		emailService:    emailService,
 		config:          cfg,
 		ctx:             ctx,
 		cancel:          cancel,
@@ -200,8 +203,14 @@ func (d *Dispatcher) processPendingRetries() {
 			continue
 		}
 
+		email, err := d.emailService.GetByID(d.ctx, delivery.EmailID)
+		if err != nil {
+			log.Printf("Failed to get email %d for retry: %v", delivery.EmailID, err)
+			continue
+		}
+
 		select {
-		case d.jobs <- &Job{Webhook: webhook, Email: delivery.Email, Attempt: delivery.Attempt + 1}:
+		case d.jobs <- &Job{Webhook: webhook, Email: email, Attempt: delivery.Attempt + 1}:
 		default:
 		}
 	}

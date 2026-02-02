@@ -24,16 +24,28 @@ func SendWebhook(ctx context.Context, webhook *domain.Webhook, payload []byte, t
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	req, err := http.NewRequestWithContext(ctx, "POST", webhook.URL, bytes.NewReader(payload))
+	method := webhook.Method
+	if method == "" {
+		method = "POST"
+	}
+
+	var req *http.Request
+	if method == "GET" {
+		req, err = http.NewRequestWithContext(ctx, method, webhook.URL, nil)
+	} else {
+		req, err = http.NewRequestWithContext(ctx, method, webhook.URL, bytes.NewReader(payload))
+	}
 	if err != nil {
 		return 0, "", fmt.Errorf("failed to create request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	if method != "GET" {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	req.Header.Set("User-Agent", "Mailgress/1.0")
 	req.Header.Set("X-Mailgress-Event", "email.received")
 
-	if webhook.HMACSecret != "" {
+	if webhook.HMACSecret != "" && method != "GET" {
 		signature := SignPayload(payload, webhook.HMACSecret)
 		req.Header.Set("X-Mailgress-Signature", signature)
 	}

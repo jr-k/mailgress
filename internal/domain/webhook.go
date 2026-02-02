@@ -10,7 +10,10 @@ type Webhook struct {
 	MailboxID          int64             `json:"mailbox_id"`
 	Name               string            `json:"name"`
 	URL                string            `json:"url"`
+	Method             string            `json:"method"`
 	Headers            map[string]string `json:"headers"`
+	PayloadType        string            `json:"payload_type"`
+	CustomPayload      string            `json:"custom_payload,omitempty"`
 	HMACSecret         string            `json:"hmac_secret,omitempty"`
 	TimeoutSec         int               `json:"timeout_sec"`
 	MaxRetries         int               `json:"max_retries"`
@@ -20,7 +23,7 @@ type Webhook struct {
 	CreatedAt          time.Time         `json:"created_at"`
 	UpdatedAt          time.Time         `json:"updated_at"`
 
-	Rules         []WebhookRule     `json:"rules,omitempty"`
+	Rules         []WebhookRule         `json:"rules,omitempty"`
 	DeliveryStats *WebhookDeliveryStats `json:"delivery_stats,omitempty"`
 }
 
