@@ -24,8 +24,9 @@ type Mailbox struct {
 }
 
 type MailboxStats struct {
-	EmailCount  int64      `json:"email_count"`
-	LastEmailAt *time.Time `json:"last_email_at"`
+	EmailCount   int64      `json:"email_count"`
+	LastEmailAt  *time.Time `json:"last_email_at"`
+	WebhookCount int64      `json:"webhook_count"`
 }
 
 func (m *Mailbox) EmailAddress() string {

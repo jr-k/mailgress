@@ -60,6 +60,7 @@ export interface Mailbox {
 export interface MailboxStats {
   email_count: number;
   last_email_at: string | null;
+  webhook_count: number;
 }
 
 export interface Email {

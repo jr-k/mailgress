@@ -71,7 +71,7 @@ func NewServer(
 	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService)
 	emailHandler := handler.NewEmailHandler(inertia, emailService, mailboxService, storage)
 	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher)
-	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService)
+	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService, mailboxService)
 	tagHandler := handler.NewTagHandler(inertia, tagService, flashMiddleware)
 
 	r := chi.NewRouter()
@@ -164,6 +164,7 @@ func NewServer(
 			r.Get("/domains/create", domainHandler.Create)
 			r.Post("/domains", domainHandler.Store)
 			r.Get("/domains/{id}", domainHandler.Show)
+			r.Get("/domains/{id}/mailboxes", domainHandler.Mailboxes)
 			r.Get("/domains/{id}/edit", domainHandler.Edit)
 			r.Put("/domains/{id}", domainHandler.Update)
 			r.Delete("/domains/{id}", domainHandler.Delete)

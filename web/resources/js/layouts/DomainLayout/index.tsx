@@ -18,6 +18,12 @@ export default function DomainLayout({ children, domain, allDomains = [] }: Doma
       isActive: (currentUrl: string) => currentUrl === `/domains/${domain.id}`,
     },
     {
+      label: 'Mailboxes',
+      href: `/domains/${domain.id}/mailboxes`,
+      isActive: (currentUrl: string) => currentUrl.includes('/mailboxes'),
+      count: domain.mailbox_count,
+    },
+    {
       label: 'Settings',
       href: `/domains/${domain.id}/edit`,
       isActive: (currentUrl: string) => currentUrl.endsWith('/edit'),

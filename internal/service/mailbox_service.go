@@ -179,7 +179,8 @@ func (s *MailboxService) GetStats(ctx context.Context, mailboxID int64) (*domain
 		return nil, err
 	}
 	result := &domain.MailboxStats{
-		EmailCount: stats.EmailCount,
+		EmailCount:   stats.EmailCount,
+		WebhookCount: stats.WebhookCount,
 	}
 	if stats.LastEmailAt != nil {
 		if t, ok := stats.LastEmailAt.(time.Time); ok {

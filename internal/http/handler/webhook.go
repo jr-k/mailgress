@@ -95,6 +95,8 @@ func (h *WebhookHandler) Index(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+	stats, _ := h.mailboxService.GetStats(r.Context(), mailboxID)
+	mailbox.Stats = stats
 
 	allMailboxes := h.getAllMailboxesWithDomain(r)
 
@@ -123,6 +125,8 @@ func (h *WebhookHandler) Create(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+	stats, _ := h.mailboxService.GetStats(r.Context(), mailboxID)
+	mailbox.Stats = stats
 
 	allMailboxes := h.getAllMailboxesWithDomain(r)
 
@@ -217,6 +221,9 @@ func (h *WebhookHandler) Show(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+	mailboxStats, _ := h.mailboxService.GetStats(r.Context(), mailboxID)
+	mailbox.Stats = mailboxStats
+
 	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
 	if err != nil || wh.MailboxID != mailboxID {
 		h.inertia.Render(w, r, "Errors/NotFound", nil)
@@ -252,6 +259,9 @@ func (h *WebhookHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+	mailboxStats, _ := h.mailboxService.GetStats(r.Context(), mailboxID)
+	mailbox.Stats = mailboxStats
+
 	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
 	if err != nil || wh.MailboxID != mailboxID {
 		h.inertia.Render(w, r, "Errors/NotFound", nil)
@@ -428,6 +438,8 @@ func (h *WebhookHandler) Deliveries(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+	mailboxStats, _ := h.mailboxService.GetStats(r.Context(), mailboxID)
+	mailbox.Stats = mailboxStats
 
 	allMailboxes := h.getAllMailboxesWithDomain(r)
 

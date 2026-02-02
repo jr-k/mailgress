@@ -45,8 +45,9 @@ SELECT COUNT(*) FROM emails;
 -- name: GetMailboxStats :one
 SELECT
     COUNT(*) as email_count,
-    MAX(received_at) as last_email_at
-FROM emails WHERE mailbox_id = ?;
+    MAX(received_at) as last_email_at,
+    (SELECT COUNT(*) FROM webhooks WHERE mailbox_id = sqlc.arg(mailbox_id)) as webhook_count
+FROM emails WHERE mailbox_id = sqlc.arg(mailbox_id);
 
 -- name: MarkEmailAsRead :exec
 UPDATE emails SET is_read = 1 WHERE id = ?;

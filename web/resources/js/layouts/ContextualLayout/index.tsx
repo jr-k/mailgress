@@ -7,6 +7,7 @@ interface NavItem {
   label: string;
   href: string;
   isActive?: (url: string) => boolean;
+  count?: number;
 }
 
 interface SwitcherItem {
@@ -144,6 +145,7 @@ export default function ContextualLayout({
                   onClick={closeSidebar}
                 >
                   {item.label}
+                  {item.count !== undefined && <S.NavCount>({item.count})</S.NavCount>}
                 </S.SidebarLink>
               );
             })}

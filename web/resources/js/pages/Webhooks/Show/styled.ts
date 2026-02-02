@@ -35,7 +35,7 @@ export const TestResult = styled.div<{ $success?: boolean }>`
 
 export const TestResultTitle = styled.div`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
 `;
 
 export const TestResultBody = styled.pre`

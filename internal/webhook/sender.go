@@ -69,7 +69,7 @@ func SendWebhook(ctx context.Context, webhook *domain.Webhook, payload []byte, t
 }
 
 func TestWebhook(ctx context.Context, webhook *domain.Webhook) (statusCode int, responseBody string, err error) {
-	payload := BuildTestPayload()
+	payload := BuildTestPayload(webhook)
 	payloadBytes, err := payload.JSON()
 	if err != nil {
 		return 0, "", err

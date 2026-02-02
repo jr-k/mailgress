@@ -177,19 +177,21 @@ func (q *Queries) GetEmailByID(ctx context.Context, id int64) (Email, error) {
 const getMailboxStats = `-- name: GetMailboxStats :one
 SELECT
     COUNT(*) as email_count,
-    MAX(received_at) as last_email_at
-FROM emails WHERE mailbox_id = ?
+    MAX(received_at) as last_email_at,
+    (SELECT COUNT(*) FROM webhooks WHERE mailbox_id = ?1) as webhook_count
+FROM emails WHERE mailbox_id = ?1
 `
 
 type GetMailboxStatsRow struct {
-	EmailCount  int64       `json:"email_count"`
-	LastEmailAt interface{} `json:"last_email_at"`
+	EmailCount   int64       `json:"email_count"`
+	LastEmailAt  interface{} `json:"last_email_at"`
+	WebhookCount int64       `json:"webhook_count"`
 }
 
 func (q *Queries) GetMailboxStats(ctx context.Context, mailboxID int64) (GetMailboxStatsRow, error) {
-	row := q.db.QueryRowContext(ctx, getMailboxStats, mailboxID)
+	row := q.db.QueryRowContext(ctx, getMailboxStats, mailboxID, mailboxID)
 	var i GetMailboxStatsRow
-	err := row.Scan(&i.EmailCount, &i.LastEmailAt)
+	err := row.Scan(&i.EmailCount, &i.LastEmailAt, &i.WebhookCount)
 	return i, err
 }
 

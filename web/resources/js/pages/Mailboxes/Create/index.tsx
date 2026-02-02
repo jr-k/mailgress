@@ -30,14 +30,22 @@ interface Props extends PageProps {
   error?: string;
   slug?: string;
   description?: string;
+  presetDomainId?: string;
 }
 
-export default function MailboxCreate({ users, domains, error, slug, description }: Props) {
+export default function MailboxCreate({ users, domains, error, slug, description, presetDomainId }: Props) {
+  const getInitialDomainId = () => {
+    if (presetDomainId && domains.some((d) => String(d.id) === presetDomainId)) {
+      return presetDomainId;
+    }
+    return domains.length > 0 ? String(domains[0].id) : '';
+  };
+
   const { data, setData, post, processing } = useForm({
     slug: slug || '',
     description: description || '',
     owner_id: '',
-    domain_id: domains.length > 0 ? String(domains[0].id) : '',
+    domain_id: getInitialDomainId(),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

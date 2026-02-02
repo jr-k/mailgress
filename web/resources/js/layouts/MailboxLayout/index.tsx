@@ -30,8 +30,15 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
   }, [allMailboxes, searchQuery]);
 
   const getMailboxHref = (m: Mailbox) => {
-    // Extract the path after /mailboxes/{id} to preserve the current sub-view
+    // Extract the path after /mailboxes/{id}
     const currentPath = url.replace(/^\/mailboxes\/\d+/, '');
+
+    // If we're on a specific webhook page (with webhook ID), redirect to webhooks list
+    // to avoid 404 since webhook IDs are specific to each mailbox
+    if (/^\/webhooks\/\d+/.test(currentPath)) {
+      return `/mailboxes/${m.id}/webhooks`;
+    }
+
     return `/mailboxes/${m.id}${currentPath}`;
   };
 
@@ -123,7 +130,7 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
               $active={url === `/mailboxes/${mailbox.id}` || url.includes('/emails/')}
               onClick={closeSidebar}
             >
-              Emails
+              Emails {mailbox.stats && <S.NavCount>({mailbox.stats.email_count})</S.NavCount>}
             </S.SidebarLink>
             <S.SidebarLink
               as={Link}
@@ -131,7 +138,7 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
               $active={url.includes('/webhooks')}
               onClick={closeSidebar}
             >
-              Webhooks
+              Webhooks {mailbox.stats && <S.NavCount>({mailbox.stats.webhook_count})</S.NavCount>}
             </S.SidebarLink>
             {auth?.user.is_admin && (
               <S.SidebarLink

@@ -235,3 +235,9 @@ export const ContentSheet = styled.div`
   width: 100%;
   max-width: 1000px;
 `;
+
+export const NavCount = styled.span`
+  font-weight: ${({ theme }) => theme.fontWeights.normal};
+  color: ${({ theme }) => theme.colors.text.tertiary};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+`;

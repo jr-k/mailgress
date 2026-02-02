@@ -12,10 +12,11 @@ import (
 )
 
 type DomainHandler struct {
-	inertia       *gonertia.Inertia
-	domainService *service.DomainService
-	dnsService    *service.DNSService
-	tagService    *service.TagService
+	inertia        *gonertia.Inertia
+	domainService  *service.DomainService
+	dnsService     *service.DNSService
+	tagService     *service.TagService
+	mailboxService *service.MailboxService
 }
 
 func NewDomainHandler(
@@ -23,12 +24,14 @@ func NewDomainHandler(
 	domainService *service.DomainService,
 	dnsService *service.DNSService,
 	tagService *service.TagService,
+	mailboxService *service.MailboxService,
 ) *DomainHandler {
 	return &DomainHandler{
-		inertia:       inertia,
-		domainService: domainService,
-		dnsService:    dnsService,
-		tagService:    tagService,
+		inertia:        inertia,
+		domainService:  domainService,
+		dnsService:     dnsService,
+		tagService:     tagService,
+		mailboxService: mailboxService,
 	}
 }
 
@@ -114,6 +117,10 @@ func (h *DomainHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Load mailbox count for sidebar
+	mailboxes, _ := h.mailboxService.ListByDomain(r.Context(), id)
+	domain.MailboxCount = int64(len(mailboxes))
+
 	allDomains, _ := h.domainService.List(r.Context())
 	dnsRecords := h.domainService.GetDNSRecords(domain)
 
@@ -143,6 +150,10 @@ func (h *DomainHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Load mailbox count for sidebar
+	mailboxesForCount, _ := h.mailboxService.ListByDomain(r.Context(), id)
+	domain.MailboxCount = int64(len(mailboxesForCount))
+
 	allDomains, _ := h.domainService.List(r.Context())
 	allTags, _ := h.tagService.List(r.Context())
 	domainTags, _ := h.tagService.GetTagsForDomain(r.Context(), id)
@@ -152,6 +163,83 @@ func (h *DomainHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		"allDomains": allDomains,
 		"allTags":    allTags,
 		"domainTags": domainTags,
+	})
+}
+
+func (h *DomainHandler) Mailboxes(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if !user.IsAdmin {
+		h.inertia.Render(w, r, "Errors/Forbidden", nil)
+		return
+	}
+
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	domain, err := h.domainService.GetByID(r.Context(), id)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	allDomains, _ := h.domainService.List(r.Context())
+	mailboxes, _ := h.mailboxService.ListByDomain(r.Context(), id)
+
+	// Load mailbox count for sidebar
+	domain.MailboxCount = int64(len(mailboxes))
+
+	// Enrich mailboxes with stats and owner info
+	type enrichedMailbox struct {
+		ID                  int64                  `json:"id"`
+		Slug                string                 `json:"slug"`
+		OwnerID             *int64                 `json:"owner_id"`
+		DomainID            *int64                 `json:"domain_id"`
+		Description         string                 `json:"description"`
+		IsActive            bool                   `json:"is_active"`
+		CreatedAt           string                 `json:"created_at"`
+		UpdatedAt           string                 `json:"updated_at"`
+		MaxEmailSizeMB      int                    `json:"max_email_size_mb"`
+		MaxAttachmentSizeMB int                    `json:"max_attachment_size_mb"`
+		RetentionDays       int                    `json:"retention_days"`
+		Owner               map[string]interface{} `json:"owner,omitempty"`
+		Stats               map[string]interface{} `json:"stats,omitempty"`
+	}
+
+	enrichedMailboxes := make([]enrichedMailbox, len(mailboxes))
+	for i, mb := range mailboxes {
+		enrichedMailboxes[i] = enrichedMailbox{
+			ID:                  mb.ID,
+			Slug:                mb.Slug,
+			OwnerID:             mb.OwnerID,
+			DomainID:            mb.DomainID,
+			Description:         mb.Description,
+			IsActive:            mb.IsActive,
+			CreatedAt:           mb.CreatedAt.Format("2006-01-02T15:04:05Z07:00"),
+			UpdatedAt:           mb.UpdatedAt.Format("2006-01-02T15:04:05Z07:00"),
+			MaxEmailSizeMB:      mb.MaxEmailSizeMB,
+			MaxAttachmentSizeMB: mb.MaxAttachmentSizeMB,
+			RetentionDays:       mb.RetentionDays,
+		}
+
+		// Get stats
+		if stats, err := h.mailboxService.GetStats(r.Context(), mb.ID); err == nil {
+			enrichedMailboxes[i].Stats = map[string]interface{}{
+				"email_count":   stats.EmailCount,
+				"webhook_count": stats.WebhookCount,
+			}
+			if stats.LastEmailAt != nil {
+				enrichedMailboxes[i].Stats["last_email_at"] = stats.LastEmailAt.Format("2006-01-02T15:04:05Z07:00")
+			}
+		}
+	}
+
+	h.inertia.Render(w, r, "Domains/Mailboxes", gonertia.Props{
+		"domain":     domain,
+		"allDomains": allDomains,
+		"mailboxes":  enrichedMailboxes,
 	})
 }
 

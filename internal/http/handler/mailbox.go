@@ -103,9 +103,13 @@ func (h *MailboxHandler) Create(w http.ResponseWriter, r *http.Request) {
 	users, _ := h.userService.List(r.Context())
 	domains, _ := h.domainService.ListActive(r.Context())
 
+	// Get domain_id from query params if provided
+	domainID := r.URL.Query().Get("domain_id")
+
 	h.inertia.Render(w, r, "Mailboxes/Create", gonertia.Props{
-		"users":   users,
-		"domains": domains,
+		"users":           users,
+		"domains":         domains,
+		"presetDomainId":  domainID,
 	})
 }
 
@@ -189,6 +193,10 @@ func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+
+	// Load stats for sidebar counts
+	stats, _ := h.mailboxService.GetStats(r.Context(), mailbox.ID)
+	mailbox.Stats = stats
 
 	// Get all mailboxes for the switcher
 	var allMailboxes interface{}
@@ -283,6 +291,10 @@ func (h *MailboxHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+
+	// Load stats for sidebar counts
+	stats, _ := h.mailboxService.GetStats(r.Context(), id)
+	mailbox.Stats = stats
 
 	users, _ := h.userService.List(r.Context())
 	domains, _ := h.domainService.ListActive(r.Context())

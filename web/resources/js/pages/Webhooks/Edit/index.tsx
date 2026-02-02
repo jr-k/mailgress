@@ -217,7 +217,7 @@ export default function WebhookEdit({ mailbox, allMailboxes, webhook, error }: P
 
                   {data.method === 'POST' && (
                     <S.TabsContainer>
-                      <FormGroup label="Request Body" htmlFor="body_type">
+                      <FormGroup label="Metadata" htmlFor="body_type">
                         <S.TabList>
                           <S.TabButton
                             type="button"

@@ -173,7 +173,7 @@ export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
 
                   {data.method === 'POST' && (
                     <S.TabsContainer>
-                      <FormGroup label="Request Body" htmlFor="body_type">
+                      <FormGroup label="Metadata" htmlFor="body_type">
                         <S.TabList>
                           <S.TabButton
                             type="button"
