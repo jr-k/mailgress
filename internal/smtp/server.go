@@ -29,7 +29,7 @@ func NewServer(
 
 	server := smtp.NewServer(backend)
 	server.Addr = cfg.SMTPListenAddr
-	server.Domain = "localhost"
+	server.Domain = "mailgress"
 	server.ReadTimeout = 30 * time.Second
 	server.WriteTimeout = 30 * time.Second
 	server.MaxMessageBytes = 100 * 1024 * 1024 // 100MB absolute max, per-mailbox limits checked in session

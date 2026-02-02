@@ -33,6 +33,25 @@ func (q *Queries) CountEmailsByMailbox(ctx context.Context, mailboxID int64) (in
 	return count, err
 }
 
+const countSearchEmails = `-- name: CountSearchEmails :one
+SELECT COUNT(*) FROM emails
+WHERE mailbox_id = ?
+AND (subject LIKE ? OR from_address LIKE ?)
+`
+
+type CountSearchEmailsParams struct {
+	MailboxID   int64          `json:"mailbox_id"`
+	Subject     sql.NullString `json:"subject"`
+	FromAddress string         `json:"from_address"`
+}
+
+func (q *Queries) CountSearchEmails(ctx context.Context, arg CountSearchEmailsParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countSearchEmails, arg.MailboxID, arg.Subject, arg.FromAddress)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createEmail = `-- name: CreateEmail :one
 INSERT INTO emails (
     mailbox_id, message_id, from_address, to_address, subject,
@@ -48,7 +67,7 @@ type CreateEmailParams struct {
 	FromAddress string         `json:"from_address"`
 	ToAddress   string         `json:"to_address"`
 	Subject     sql.NullString `json:"subject"`
-	Date        sql.NullTime   `json:"date"`
+	Date        sql.NullString `json:"date"`
 	Headers     sql.NullString `json:"headers"`
 	TextBody    sql.NullString `json:"text_body"`
 	HtmlBody    sql.NullString `json:"html_body"`

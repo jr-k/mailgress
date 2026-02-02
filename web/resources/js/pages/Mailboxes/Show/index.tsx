@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, router } from '@inertiajs/react';
 import MailboxLayout from '@/layouts/MailboxLayout';
 import { Badge } from '@/components/Badge';
+import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { Mailbox, Email, Pagination, PageProps } from '@/types';
 import * as S from './styled';
@@ -15,12 +16,20 @@ interface Props extends PageProps {
 }
 
 export default function MailboxShow({ mailbox, allMailboxes, emails, pagination, search }: Props) {
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(emails[0] || null);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(emails?.[0] || null);
   const [searchQuery, setSearchQuery] = useState(search || '');
+
+  useEffect(() => {
+    setSelectedEmail(emails?.[0] || null);
+  }, [emails]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     router.get(`/mailboxes/${mailbox.id}`, { search: searchQuery }, { preserveState: true });
+  };
+
+  const handleRefresh = () => {
+    router.reload({ only: ['emails', 'pagination'] });
   };
 
   const formatDate = (dateStr: string) => {
@@ -40,6 +49,17 @@ export default function MailboxShow({ mailbox, allMailboxes, emails, pagination,
           <div>
             <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Emails</h2>
           </div>
+          <Button onClick={handleRefresh}>
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Refresh Inbox
+          </Button>
         </S.HeaderRow>
       </S.Header>
 
@@ -66,10 +86,10 @@ export default function MailboxShow({ mailbox, allMailboxes, emails, pagination,
                   onClick={() => setSelectedEmail(email)}
                 >
                   <S.EmailHeader>
-                    <S.EmailFrom>{email.from_address}</S.EmailFrom>
+                    <S.EmailFrom><S.EmailClaim>From</S.EmailClaim> {email.from_address}</S.EmailFrom>
                     <S.EmailDate>{formatDate(email.received_at)}</S.EmailDate>
                   </S.EmailHeader>
-                  <S.EmailSubject>{email.subject || '(No subject)'}</S.EmailSubject>
+                  <S.EmailSubject><S.EmailClaim>Subj</S.EmailClaim> {email.subject || '(No subject)'}</S.EmailSubject>
                   <S.EmailPreview>
                     {email.text_body?.substring(0, 100) ||
                       email.html_body?.substring(0, 100) ||

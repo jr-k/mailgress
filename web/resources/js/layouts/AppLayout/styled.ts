@@ -162,6 +162,9 @@ export const DropdownMenu = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.lg};
   box-shadow: ${({ theme }) => theme.shadows.lg};
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 `;
 
 export const DropdownItem = styled.a<{ $active?: boolean }>`

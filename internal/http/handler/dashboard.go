@@ -40,6 +40,8 @@ func (h *DashboardHandler) Index(w http.ResponseWriter, r *http.Request) {
 	if user.IsAdmin {
 		mbs, _ := h.mailboxService.List(r.Context())
 		for _, mb := range mbs {
+			stats, _ := h.mailboxService.GetStats(r.Context(), mb.ID)
+			mb.Stats = stats
 			if mb.DomainID != nil {
 				domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
 				mb.Domain = domain
@@ -52,6 +54,8 @@ func (h *DashboardHandler) Index(w http.ResponseWriter, r *http.Request) {
 	} else {
 		mbs, _ := h.mailboxService.ListByOwner(r.Context(), user.ID)
 		for _, mb := range mbs {
+			stats, _ := h.mailboxService.GetStats(r.Context(), mb.ID)
+			mb.Stats = stats
 			if mb.DomainID != nil {
 				domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
 				mb.Domain = domain

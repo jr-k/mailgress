@@ -98,6 +98,15 @@ func (s *EmailService) CountAll(ctx context.Context) (int64, error) {
 	return s.queries.CountAllEmails(ctx)
 }
 
+func (s *EmailService) SearchCount(ctx context.Context, mailboxID int64, query string) (int64, error) {
+	searchPattern := "%" + query + "%"
+	return s.queries.CountSearchEmails(ctx, db.CountSearchEmailsParams{
+		MailboxID:   mailboxID,
+		Subject:     sql.NullString{String: searchPattern, Valid: true},
+		FromAddress: searchPattern,
+	})
+}
+
 type CreateEmailParams struct {
 	MailboxID   int64
 	MessageID   string
@@ -118,9 +127,9 @@ func (s *EmailService) Create(ctx context.Context, params CreateEmailParams) (*d
 		headersJSON = string(data)
 	}
 
-	var dateVal sql.NullTime
+	var dateVal sql.NullString
 	if params.Date != nil {
-		dateVal = sql.NullTime{Time: *params.Date, Valid: true}
+		dateVal = sql.NullString{String: params.Date.Format(time.RFC3339), Valid: true}
 	}
 
 	dbEmail, err := s.queries.CreateEmail(ctx, db.CreateEmailParams{
@@ -180,6 +189,21 @@ func (s *EmailService) DeleteOldEmailsByMailbox(ctx context.Context, mailboxID i
 	})
 }
 
+func parseDateTime(s string) (time.Time, error) {
+	formats := []string{
+		time.RFC3339,
+		"2006-01-02 15:04:05",
+		"2006-01-02T15:04:05",
+		"2006-01-02 15:04:05-07:00",
+	}
+	for _, f := range formats {
+		if t, err := time.Parse(f, s); err == nil {
+			return t, nil
+		}
+	}
+	return time.Time{}, errors.New("unable to parse date")
+}
+
 func (s *EmailService) toDomain(dbEmail db.Email) *domain.Email {
 	email := &domain.Email{
 		ID:          dbEmail.ID,
@@ -196,7 +220,9 @@ func (s *EmailService) toDomain(dbEmail db.Email) *domain.Email {
 		email.Subject = dbEmail.Subject.String
 	}
 	if dbEmail.Date.Valid {
-		email.Date = &dbEmail.Date.Time
+		if t, err := parseDateTime(dbEmail.Date.String); err == nil {
+			email.Date = &t
+		}
 	}
 	if dbEmail.Headers.Valid {
 		json.Unmarshal([]byte(dbEmail.Headers.String), &email.Headers)

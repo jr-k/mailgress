@@ -2,10 +2,12 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jr-k/mailgress/internal/domain"
 	mw "github.com/jr-k/mailgress/internal/http/middleware"
 	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
@@ -161,13 +163,18 @@ func (h *MailboxHandler) Store(w http.ResponseWriter, r *http.Request) {
 func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 	user := mw.GetUser(r)
 
-	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
-	if err != nil {
-		h.inertia.Render(w, r, "Errors/NotFound", nil)
-		return
+	identifier := chi.URLParam(r, "id")
+	var mailbox *domain.Mailbox
+	var err error
+
+	// Try to parse as ID first
+	if id, parseErr := strconv.ParseInt(identifier, 10, 64); parseErr == nil {
+		mailbox, err = h.mailboxService.GetByID(r.Context(), id)
+	} else {
+		// Try to parse as email address (slug@domain)
+		mailbox, err = h.mailboxService.GetByEmail(r.Context(), identifier)
 	}
 
-	mailbox, err := h.mailboxService.GetByID(r.Context(), id)
 	if err != nil {
 		h.inertia.Render(w, r, "Errors/NotFound", nil)
 		return
@@ -216,15 +223,26 @@ func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 	perPage := int64(50)
 	offset := int64((page - 1)) * perPage
 
-	var emails interface{}
+	var emails interface{} = []*domain.Email{}
 	var total int64
 
 	if search != "" {
-		emails, _ = h.emailService.Search(r.Context(), id, search, perPage, offset)
-		total = perPage
+		result, err := h.emailService.Search(r.Context(), mailbox.ID, search, perPage, offset)
+		if err != nil {
+			log.Printf("Error searching emails for mailbox %d: %v", mailbox.ID, err)
+		} else if result != nil {
+			emails = result
+		}
+		total, _ = h.emailService.SearchCount(r.Context(), mailbox.ID, search)
 	} else {
-		emails, _ = h.emailService.ListByMailbox(r.Context(), id, perPage, offset)
-		total, _ = h.emailService.CountByMailbox(r.Context(), id)
+		result, err := h.emailService.ListByMailbox(r.Context(), mailbox.ID, perPage, offset)
+		if err != nil {
+			log.Printf("Error listing emails for mailbox %d: %v", mailbox.ID, err)
+		} else if result != nil {
+			emails = result
+		}
+		total, _ = h.emailService.CountByMailbox(r.Context(), mailbox.ID)
+		log.Printf("DEBUG: Mailbox ID=%d, perPage=%d, offset=%d, emails found=%d, total=%d", mailbox.ID, perPage, offset, len(result), total)
 	}
 
 	h.inertia.Render(w, r, "Mailboxes/Show", gonertia.Props{

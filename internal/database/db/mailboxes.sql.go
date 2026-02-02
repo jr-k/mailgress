@@ -149,6 +149,36 @@ func (q *Queries) GetMailboxBySlugAndDomain(ctx context.Context, arg GetMailboxB
 	return i, err
 }
 
+const getMailboxBySlugAndDomainName = `-- name: GetMailboxBySlugAndDomainName :one
+SELECT m.id, m.slug, m.owner_id, m.description, m.is_active, m.created_at, m.updated_at, m.domain_id, m.max_email_size_mb, m.max_attachment_size_mb, m.retention_days FROM mailboxes m
+JOIN domains d ON m.domain_id = d.id
+WHERE m.slug = ? AND d.name = ? LIMIT 1
+`
+
+type GetMailboxBySlugAndDomainNameParams struct {
+	Slug string `json:"slug"`
+	Name string `json:"name"`
+}
+
+func (q *Queries) GetMailboxBySlugAndDomainName(ctx context.Context, arg GetMailboxBySlugAndDomainNameParams) (Mailbox, error) {
+	row := q.db.QueryRowContext(ctx, getMailboxBySlugAndDomainName, arg.Slug, arg.Name)
+	var i Mailbox
+	err := row.Scan(
+		&i.ID,
+		&i.Slug,
+		&i.OwnerID,
+		&i.Description,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
+	)
+	return i, err
+}
+
 const listMailboxes = `-- name: ListMailboxes :many
 SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes ORDER BY created_at DESC
 `

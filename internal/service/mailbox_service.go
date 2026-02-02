@@ -227,6 +227,28 @@ func (s *MailboxService) ListByDomain(ctx context.Context, domainID int64) ([]*d
 	return mailboxes, nil
 }
 
+func (s *MailboxService) GetByEmail(ctx context.Context, email string) (*domain.Mailbox, error) {
+	parts := strings.Split(email, "@")
+	if len(parts) != 2 {
+		return nil, ErrMailboxNotFound
+	}
+
+	slug := ExtractSlug(parts[0])
+	domainName := parts[1]
+
+	dbMailbox, err := s.queries.GetMailboxBySlugAndDomainName(ctx, db.GetMailboxBySlugAndDomainNameParams{
+		Slug: slug,
+		Name: domainName,
+	})
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrMailboxNotFound
+		}
+		return nil, err
+	}
+	return s.toDomain(dbMailbox), nil
+}
+
 func (s *MailboxService) toDomain(dbMailbox db.Mailbox) *domain.Mailbox {
 	mailbox := &domain.Mailbox{
 		ID:                  dbMailbox.ID,

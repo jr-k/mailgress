@@ -44,7 +44,7 @@ export const TableRow = styled.tr`
   }
 `;
 
-export const TableHeader = styled.th<{ $align?: 'left' | 'right' }>`
+export const TableHeader = styled.th<{ $align?: 'left' | 'center' | 'right' }>`
   padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[6]}`};
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.xs};
@@ -55,7 +55,7 @@ export const TableHeader = styled.th<{ $align?: 'left' | 'right' }>`
   white-space: nowrap;
 `;
 
-export const TableCell = styled.td<{ $align?: 'left' | 'right' }>`
+export const TableCell = styled.td<{ $align?: 'left' | 'center' | 'right' }>`
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
   white-space: nowrap;
   text-align: ${({ $align = 'left' }) => $align};

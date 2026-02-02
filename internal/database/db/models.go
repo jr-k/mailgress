@@ -40,7 +40,7 @@ type Email struct {
 	FromAddress string         `json:"from_address"`
 	ToAddress   string         `json:"to_address"`
 	Subject     sql.NullString `json:"subject"`
-	Date        sql.NullTime   `json:"date"`
+	Date        sql.NullString `json:"date"`
 	Headers     sql.NullString `json:"headers"`
 	TextBody    sql.NullString `json:"text_body"`
 	HtmlBody    sql.NullString `json:"html_body"`

@@ -40,3 +40,8 @@ SELECT EXISTS(SELECT 1 FROM mailboxes WHERE slug = ? AND is_active = 1);
 
 -- name: MailboxExistsBySlugAndDomain :one
 SELECT EXISTS(SELECT 1 FROM mailboxes WHERE slug = ? AND domain_id = ? AND is_active = 1);
+
+-- name: GetMailboxBySlugAndDomainName :one
+SELECT m.* FROM mailboxes m
+JOIN domains d ON m.domain_id = d.id
+WHERE m.slug = ? AND d.name = ? LIMIT 1;

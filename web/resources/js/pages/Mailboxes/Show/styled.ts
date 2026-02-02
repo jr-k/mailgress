@@ -25,14 +25,15 @@ export const SplitView = styled.div`
 `;
 
 export const EmailList = styled.div`
-  width: 33.333%;
+  width: 380px;
+  min-width: 380px;
   border-right: 1px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   flex-direction: column;
 `;
 
 export const SearchBox = styled.div`
-  padding: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[2]};
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
 `;
 
@@ -42,7 +43,7 @@ export const EmailListItems = styled.div`
 `;
 
 export const EmailItem = styled.div<{ $selected?: boolean }>`
-  padding: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
   cursor: pointer;
   transition: background-color 0.15s ease;
@@ -63,12 +64,24 @@ export const EmailHeader = styled.div`
 `;
 
 export const EmailFrom = styled.div`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.gray[900]};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
+`;
+
+export const EmailClaim = styled.span`
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  margin-right: ${({ theme }) => theme.spacing[1]};
+  background-color: ${({ theme }) => theme.colors.gray[200]};
+  padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.gray[700]};
+  opacity: 0.7;
 `;
 
 export const EmailDate = styled.div`
@@ -79,7 +92,7 @@ export const EmailDate = styled.div`
 `;
 
 export const EmailSubject = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.gray[900]};
   overflow: hidden;
   text-overflow: ellipsis;
@@ -100,12 +113,12 @@ export const AttachmentBadge = styled.div`
 `;
 
 export const Pagination = styled.div`
-  padding: ${({ theme }) => theme.spacing[4]};
+  padding: ${({ theme }) => theme.spacing[2]};
   border-top: 1px solid ${({ theme }) => theme.colors.gray[200]};
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
 `;
 
 export const PageInfo = styled.span`

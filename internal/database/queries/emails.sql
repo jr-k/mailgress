@@ -14,6 +14,11 @@ AND (subject LIKE ? OR from_address LIKE ?)
 ORDER BY received_at DESC
 LIMIT ? OFFSET ?;
 
+-- name: CountSearchEmails :one
+SELECT COUNT(*) FROM emails
+WHERE mailbox_id = ?
+AND (subject LIKE ? OR from_address LIKE ?);
+
 -- name: CreateEmail :one
 INSERT INTO emails (
     mailbox_id, message_id, from_address, to_address, subject,
