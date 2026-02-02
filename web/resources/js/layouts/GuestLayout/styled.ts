@@ -87,14 +87,11 @@ export const Logo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 72px;
-  height: 72px;
-  background: linear-gradient(
-    135deg,
-    ${({ theme }) => theme.colors.primary[500]},
-    ${({ theme }) => theme.colors.purple[500]}
-  );
+  flex-direction: row;
+  width: 82px;
+  height: 82px;
   border-radius: ${({ theme }) => theme.radii.xl};
+  margin-top: -82px;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.1),
     0 8px 32px rgba(99, 102, 241, 0.4);
@@ -110,8 +107,9 @@ export const LogoIcon = styled.span`
 export const BrandName = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['3xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: white;
+  color: rgba(${({ theme }) => theme.colors.text.primary}, 0.9);
   letter-spacing: -0.02em;
+  text-align: center;
 `;
 
 export const Card = styled.div`
@@ -131,4 +129,13 @@ export const Card = styled.div`
       ? 'rgba(255, 255, 255, 0.05)'
       : 'rgba(255, 255, 255, 0.1)'},
     0 25px 50px -12px rgba(0, 0, 0, 0.5);
+`;
+
+export const BrandDot = styled.span`
+  display: inline-block;
+  width: ${({ theme }) => theme.spacing[2]};
+  height: ${({ theme }) => theme.spacing[2]};
+  margin-left: ${({ theme }) => theme.spacing[1]};
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.primary[500]};
 `;

@@ -73,11 +73,31 @@ export const LogoIcon = styled.div`
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary[500]} 0%, ${({ theme }) => theme.colors.primary[600]} 100%);
   border-radius: ${({ theme }) => theme.radii.md};
   color: ${({ theme }) => theme.colors.white};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
   font-size: ${({ theme }) => theme.fontSizes.sm};
+`;
+
+export const LogoName = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[0.5]};
+`;
+
+export const BrandDotWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  padding-top: 10px;
+`;
+
+export const BrandDot = styled.span`
+  width: ${({ theme }) => theme.spacing[1]};
+  height: ${({ theme }) => theme.spacing[1]};
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.primary[500]};
 `;
 
 export const NavLink = styled.a<{ $active?: boolean }>`

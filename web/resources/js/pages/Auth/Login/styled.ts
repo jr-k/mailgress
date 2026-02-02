@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 export const Header = styled.div`
   text-align: center;
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
+  margin-bottom: ${({ theme }) => theme.spacing[8]};
 `;
 
 export const Subtitle = styled.p`
@@ -22,4 +22,5 @@ export const Fields = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[4]};
+  margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
