@@ -48,16 +48,16 @@ export const UploadLabel = styled.label`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[700]};
-  background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[50]};
-    border-color: ${({ theme }) => theme.colors.gray[400]};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
+    border-color: ${({ theme }) => theme.colors.border.secondary};
   }
 `;
 
@@ -69,14 +69,14 @@ export const RemoveButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.red[600]};
+  color: ${({ theme }) => theme.colors.red[500]};
   background: none;
   border: none;
   cursor: pointer;
   transition: color ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.red[700]};
+    color: ${({ theme }) => theme.colors.red[600]};
   }
 
   &:disabled {
@@ -87,10 +87,10 @@ export const RemoveButton = styled.button`
 
 export const HelpText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const ErrorText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.red[600]};
+  color: ${({ theme }) => theme.colors.red[500]};
 `;

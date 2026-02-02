@@ -1,7 +1,6 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from 'styled-components';
-import { theme } from './styles/theme';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { GlobalStyles } from './styles/GlobalStyles';
 
 createInertiaApp({
@@ -12,7 +11,7 @@ createInertiaApp({
   },
   setup({ el, App, props }) {
     createRoot(el).render(
-      <ThemeProvider theme={theme}>
+      <ThemeProvider>
         <GlobalStyles />
         <App {...props} />
       </ThemeProvider>

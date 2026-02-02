@@ -8,13 +8,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jessym/mailgress/internal/config"
-	"github.com/jessym/mailgress/internal/database"
-	httpserver "github.com/jessym/mailgress/internal/http"
-	"github.com/jessym/mailgress/internal/service"
-	smtpserver "github.com/jessym/mailgress/internal/smtp"
-	"github.com/jessym/mailgress/internal/storage"
-	"github.com/jessym/mailgress/internal/webhook"
+	"github.com/jr-k/mailgress/internal/config"
+	"github.com/jr-k/mailgress/internal/database"
+	httpserver "github.com/jr-k/mailgress/internal/http"
+	"github.com/jr-k/mailgress/internal/service"
+	smtpserver "github.com/jr-k/mailgress/internal/smtp"
+	"github.com/jr-k/mailgress/internal/storage"
+	"github.com/jr-k/mailgress/internal/webhook"
 )
 
 func main() {
@@ -85,32 +85,41 @@ func main() {
 		}
 	}()
 
-	if cfg.RetentionDays > 0 {
-		go func() {
-			ticker := time.NewTicker(24 * time.Hour)
-			defer ticker.Stop()
+	// Email retention cleanup per mailbox
+	go func() {
+		ticker := time.NewTicker(24 * time.Hour)
+		defer ticker.Stop()
 
-			cleanup := func() {
-				before := time.Now().AddDate(0, 0, -cfg.RetentionDays)
-				if err := emailService.DeleteOldEmails(context.Background(), before); err != nil {
-					log.Printf("Failed to cleanup old emails: %v", err)
-				} else {
-					log.Printf("Cleaned up emails older than %d days", cfg.RetentionDays)
-				}
+		cleanup := func() {
+			mailboxes, err := mailboxService.List(context.Background())
+			if err != nil {
+				log.Printf("Failed to list mailboxes for cleanup: %v", err)
+				return
 			}
 
-			cleanup()
-
-			for {
-				select {
-				case <-ctx.Done():
-					return
-				case <-ticker.C:
-					cleanup()
+			for _, mb := range mailboxes {
+				if mb.RetentionDays <= 0 {
+					continue
+				}
+				before := time.Now().AddDate(0, 0, -mb.RetentionDays)
+				if err := emailService.DeleteOldEmailsByMailbox(context.Background(), mb.ID, before); err != nil {
+					log.Printf("Failed to cleanup old emails for mailbox %d: %v", mb.ID, err)
 				}
 			}
-		}()
-	}
+			log.Println("Email retention cleanup completed")
+		}
+
+		cleanup()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				cleanup()
+			}
+		}
+	}()
 
 	go func() {
 		ticker := time.NewTicker(time.Hour)

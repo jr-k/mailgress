@@ -27,28 +27,29 @@ const variants = {
 
     &:focus-visible {
       outline: none;
-      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[200]};
+      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[500]}40;
     }
   `,
   secondary: css`
-    background-color: ${({ theme }) => theme.colors.white};
-    color: ${({ theme }) => theme.colors.gray[700]};
-    border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+    background-color: ${({ theme }) => theme.colors.surface.primary};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    border: 1px solid ${({ theme }) => theme.colors.border.secondary};
     box-shadow: ${({ theme }) => theme.shadows.button};
 
     &:hover:not(:disabled) {
-      background-color: ${({ theme }) => theme.colors.gray[50]};
-      border-color: ${({ theme }) => theme.colors.gray[400]};
+      background-color: ${({ theme }) => theme.colors.interactive.hover};
+      border-color: ${({ theme }) => theme.colors.border.secondary};
+      color: ${({ theme }) => theme.colors.text.primary};
     }
 
     &:active:not(:disabled) {
-      background-color: ${({ theme }) => theme.colors.gray[100]};
+      background-color: ${({ theme }) => theme.colors.interactive.active};
       box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.05);
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[200]};
+      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[500]}40;
     }
   `,
   danger: css`
@@ -69,26 +70,26 @@ const variants = {
 
     &:focus-visible {
       outline: none;
-      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.red[200]};
+      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.red[500]}40;
     }
   `,
   ghost: css`
     background-color: transparent;
-    color: ${({ theme }) => theme.colors.gray[600]};
+    color: ${({ theme }) => theme.colors.text.secondary};
     border: 1px solid transparent;
 
     &:hover:not(:disabled) {
-      background-color: ${({ theme }) => theme.colors.gray[100]};
-      color: ${({ theme }) => theme.colors.gray[900]};
+      background-color: ${({ theme }) => theme.colors.interactive.hover};
+      color: ${({ theme }) => theme.colors.text.primary};
     }
 
     &:active:not(:disabled) {
-      background-color: ${({ theme }) => theme.colors.gray[200]};
+      background-color: ${({ theme }) => theme.colors.interactive.active};
     }
 
     &:focus-visible {
       outline: none;
-      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[200]};
+      box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[500]}40;
     }
   `,
 };
@@ -154,14 +155,15 @@ export const LinkButton = styled.a<{ $variant?: 'primary' | 'secondary' }>`
           }
         `
       : css`
-          background-color: ${theme.colors.white};
-          color: ${theme.colors.gray[700]};
-          border: 1px solid ${theme.colors.gray[300]};
+          background-color: ${theme.colors.surface.primary};
+          color: ${theme.colors.text.secondary};
+          border: 1px solid ${theme.colors.border.secondary};
           box-shadow: ${theme.shadows.button};
 
           &:hover {
-            background-color: ${theme.colors.gray[50]};
-            border-color: ${theme.colors.gray[400]};
+            background-color: ${theme.colors.interactive.hover};
+            border-color: ${theme.colors.border.secondary};
+            color: ${theme.colors.text.primary};
           }
         `}
 `;
@@ -175,15 +177,15 @@ export const TextLink = styled.a<{ $variant?: 'default' | 'danger' }>`
   ${({ $variant = 'default', theme }) =>
     $variant === 'default'
       ? css`
-          color: ${theme.colors.primary[600]};
+          color: ${theme.colors.primary[500]};
           &:hover {
-            color: ${theme.colors.primary[700]};
+            color: ${theme.colors.primary[600]};
           }
         `
       : css`
-          color: ${theme.colors.red[600]};
+          color: ${theme.colors.red[500]};
           &:hover {
-            color: ${theme.colors.red[700]};
+            color: ${theme.colors.red[600]};
           }
         `}
 `;

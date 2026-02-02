@@ -24,14 +24,16 @@ export default function DomainsCreate({ error, name }: Props) {
 
   return (
     <AppLayout>
-      <S.Header>
-        <S.Title>Add Domain</S.Title>
-      </S.Header>
+      <S.Container>
+        <S.Header>
+          <S.Title>Add Domain</S.Title>
+        </S.Header>
 
-      <Card>
-        {error && <Alert variant="error">{error}</Alert>}
+        <Card>
+          <S.CardContent>
+            {error && <Alert variant="error">{error}</Alert>}
 
-        <S.Form onSubmit={handleSubmit}>
+            <S.Form onSubmit={handleSubmit}>
           <S.FormGroup>
             <S.Label htmlFor="name">Domain Name</S.Label>
             <Input
@@ -54,9 +56,11 @@ export default function DomainsCreate({ error, name }: Props) {
             <LinkButton href="/domains" variant="secondary">
               Cancel
             </LinkButton>
-          </S.ButtonGroup>
-        </S.Form>
-      </Card>
+            </S.ButtonGroup>
+            </S.Form>
+          </S.CardContent>
+        </Card>
+      </S.Container>
     </AppLayout>
   );
 }

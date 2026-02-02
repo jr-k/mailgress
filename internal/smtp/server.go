@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/emersion/go-smtp"
-	"github.com/jessym/mailgress/internal/config"
-	"github.com/jessym/mailgress/internal/service"
-	"github.com/jessym/mailgress/internal/storage"
-	"github.com/jessym/mailgress/internal/webhook"
+	"github.com/jr-k/mailgress/internal/config"
+	"github.com/jr-k/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/storage"
+	"github.com/jr-k/mailgress/internal/webhook"
 )
 
 type Server struct {
@@ -32,7 +32,7 @@ func NewServer(
 	server.Domain = "localhost"
 	server.ReadTimeout = 30 * time.Second
 	server.WriteTimeout = 30 * time.Second
-	server.MaxMessageBytes = cfg.MaxEmailSizeBytes()
+	server.MaxMessageBytes = 100 * 1024 * 1024 // 100MB absolute max, per-mailbox limits checked in session
 	server.MaxRecipients = 50
 	server.AllowInsecureAuth = true
 

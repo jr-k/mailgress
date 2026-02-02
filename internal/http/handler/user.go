@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	mw "github.com/jessym/mailgress/internal/http/middleware"
-	"github.com/jessym/mailgress/internal/service"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
 )
 
@@ -15,13 +15,15 @@ type UserHandler struct {
 	inertia       *gonertia.Inertia
 	userService   *service.UserService
 	avatarService *service.AvatarService
+	flash         *mw.FlashMiddleware
 }
 
-func NewUserHandler(inertia *gonertia.Inertia, userService *service.UserService, avatarService *service.AvatarService) *UserHandler {
+func NewUserHandler(inertia *gonertia.Inertia, userService *service.UserService, avatarService *service.AvatarService, flash *mw.FlashMiddleware) *UserHandler {
 	return &UserHandler{
 		inertia:       inertia,
 		userService:   userService,
 		avatarService: avatarService,
+		flash:         flash,
 	}
 }
 
@@ -76,6 +78,42 @@ func (h *UserHandler) Store(w http.ResponseWriter, r *http.Request) {
 	h.inertia.Location(w, r, "/users")
 }
 
+func (h *UserHandler) Show(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	user, err := h.userService.GetByID(r.Context(), id)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	h.inertia.Render(w, r, "Users/Show", gonertia.Props{
+		"user": user,
+	})
+}
+
+func (h *UserHandler) Security(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	user, err := h.userService.GetByID(r.Context(), id)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	h.inertia.Render(w, r, "Users/Security", gonertia.Props{
+		"user": user,
+	})
+}
+
 func (h *UserHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
 	if err != nil {
@@ -128,7 +166,8 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/users")
+	h.flash.SetSuccess(r, "User updated successfully")
+	h.inertia.Back(w, r)
 }
 
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useForm, Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/AppLayout';
+import { useForm } from '@inertiajs/react';
+import DomainLayout from '@/layouts/DomainLayout';
 import { Card } from '@/components/Card';
 import { FormGroup, Input, Checkbox, Label } from '@/components/Input';
-import { Button, LinkButton } from '@/components/Button';
+import { Button } from '@/components/Button';
 import { Alert } from '@/components/Alert';
 import { TagSelector } from '@/components/TagSelector';
 import { Domain, Tag, PageProps } from '@/types';
@@ -11,12 +11,13 @@ import * as S from './styled';
 
 interface Props extends PageProps {
   domain: Domain;
+  allDomains: Domain[];
   allTags: Tag[];
   domainTags: Tag[];
   error?: string;
 }
 
-export default function DomainsEdit({ domain, allTags, domainTags, error }: Props) {
+export default function DomainsEdit({ domain, allDomains, allTags, domainTags, error }: Props) {
   const [selectedTagIds, setSelectedTagIds] = useState<number[]>(domainTags.map((t) => t.id));
   const [tagsSaving, setTagsSaving] = useState(false);
 
@@ -47,18 +48,12 @@ export default function DomainsEdit({ domain, allTags, domainTags, error }: Prop
   const selectedTags = allTags.filter((t) => selectedTagIds.includes(t.id));
 
   return (
-    <AppLayout>
-      <S.Container>
-        <S.Header>
-          <S.BackLink as={Link} href={`/domains/${domain.id}`}>
-            &larr; Back to Domain
-          </S.BackLink>
-          <S.Title>Edit Domain</S.Title>
-        </S.Header>
+    <DomainLayout domain={domain} allDomains={allDomains}>
+      <S.PageTitle>Settings</S.PageTitle>
 
-        {error && <Alert variant="error">{error}</Alert>}
+      {error && <Alert variant="error">{error}</Alert>}
 
-        <Card>
+      <Card>
           <S.FormCard>
             <S.Form onSubmit={handleSubmit}>
               <FormGroup label="Domain Name" htmlFor="name">
@@ -115,9 +110,6 @@ export default function DomainsEdit({ domain, allTags, domainTags, error }: Prop
               </div>
 
               <S.FormActions>
-                <LinkButton href={`/domains/${domain.id}`} variant="secondary">
-                  Cancel
-                </LinkButton>
                 <Button type="submit" disabled={processing || tagsSaving}>
                   {processing || tagsSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
@@ -125,7 +117,6 @@ export default function DomainsEdit({ domain, allTags, domainTags, error }: Prop
             </S.Form>
           </S.FormCard>
         </Card>
-      </S.Container>
-    </AppLayout>
+    </DomainLayout>
   );
 }

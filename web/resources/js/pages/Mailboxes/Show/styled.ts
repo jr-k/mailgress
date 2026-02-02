@@ -17,9 +17,10 @@ export const Description = styled.p`
 export const SplitView = styled.div`
   display: flex;
   height: calc(100vh - 220px);
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
   border-radius: ${({ theme }) => theme.radii.lg};
-  box-shadow: ${({ theme }) => theme.shadows.md};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
+  box-shadow: ${({ theme }) => theme.shadows.sm};
   overflow: hidden;
 `;
 

@@ -57,8 +57,31 @@ export const InputNoRightRadius = styled.div`
   flex: 1;
 
   input {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
+    border-radius: 0;
+  }
+`;
+
+export const GenerateButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
+  background-color: ${({ theme }) => theme.colors.gray[50]};
+  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border-right: none;
+  border-radius: ${({ theme }) => theme.radii.md} 0 0 ${({ theme }) => theme.radii.md};
+  color: ${({ theme }) => theme.colors.gray[500]};
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.gray[700]};
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
   }
 `;
 

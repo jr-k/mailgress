@@ -19,24 +19,24 @@ export const PageHeaderStart = styled.div`
 
 export const BackLink = styled.a`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   display: inline-block;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
   transition: color 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
 export const PageTitle = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const PageSubtitle = styled.p`
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const PageActions = styled.div`
@@ -51,20 +51,20 @@ export const Table = styled.table`
 `;
 
 export const TableHead = styled.thead`
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
 `;
 
 export const TableBody = styled.tbody`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
 `;
 
 export const TableRow = styled.tr`
   &:not(:last-child) {
-    border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+    border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[50]};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -77,7 +77,7 @@ export const TableHeader = styled.th<TableCellProps>`
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
@@ -86,14 +86,14 @@ export const TableCell = styled.td<TableCellProps>`
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
   white-space: nowrap;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   text-align: ${({ $align = 'left' }) => $align};
 `;
 
 export const TableEmptyCell = styled.td`
   padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[6]}`};
   text-align: center;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 // Forms
@@ -129,26 +129,26 @@ export const InputAddon = styled.span`
   align-items: center;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-left: none;
   border-radius: 0 ${({ theme }) => theme.radii.md} ${({ theme }) => theme.radii.md} 0;
 `;
 
 // Links
 export const TextLink = styled.a`
-  color: ${({ theme }) => theme.colors.primary[600]};
+  color: ${({ theme }) => theme.colors.primary[500]};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   transition: color 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary[800]};
+    color: ${({ theme }) => theme.colors.primary[600]};
   }
 `;
 
 export const DangerLink = styled.button`
-  color: ${({ theme }) => theme.colors.red[600]};
+  color: ${({ theme }) => theme.colors.red[500]};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   background: none;
   border: none;
@@ -158,7 +158,7 @@ export const DangerLink = styled.button`
   transition: color 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.red[800]};
+    color: ${({ theme }) => theme.colors.red[600]};
   }
 `;
 
@@ -199,24 +199,24 @@ export const Stack = styled.div<{ $gap?: string }>`
 // Text styles
 export const Text = styled.span<{ $size?: string; $color?: string; $weight?: string }>`
   font-size: ${({ $size, theme }) => $size || theme.fontSizes.base};
-  color: ${({ $color, theme }) => $color || theme.colors.gray[900]};
+  color: ${({ $color, theme }) => $color || theme.colors.text.primary};
   font-weight: ${({ $weight, theme }) => $weight || theme.fontWeights.normal};
 `;
 
 export const Label = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const Value = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const SmallText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const TruncatedText = styled.div`
@@ -228,7 +228,7 @@ export const TruncatedText = styled.div`
 export const PreText = styled.pre`
   white-space: pre-wrap;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[800]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-family: ${({ theme }) => theme.fonts.mono};
 `;
 
@@ -242,10 +242,10 @@ export const DefinitionList = styled.dl`
 export const DefinitionTerm = styled.dt`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const DefinitionValue = styled.dd`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;

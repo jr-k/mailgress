@@ -17,13 +17,15 @@ SELECT * FROM mailboxes WHERE owner_id = ? ORDER BY created_at DESC;
 SELECT * FROM mailboxes WHERE domain_id = ? ORDER BY created_at DESC;
 
 -- name: CreateMailbox :one
-INSERT INTO mailboxes (slug, owner_id, domain_id, description, is_active, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+INSERT INTO mailboxes (slug, owner_id, domain_id, description, is_active, max_email_size_mb, max_attachment_size_mb, retention_days, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 RETURNING *;
 
 -- name: UpdateMailbox :one
 UPDATE mailboxes
-SET slug = ?, owner_id = ?, domain_id = ?, description = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+SET slug = ?, owner_id = ?, domain_id = ?, description = ?, is_active = ?,
+    max_email_size_mb = ?, max_attachment_size_mb = ?, retention_days = ?,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = ?
 RETURNING *;
 

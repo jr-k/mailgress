@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/jessym/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
 )
 

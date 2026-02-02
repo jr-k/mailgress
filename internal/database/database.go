@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jessym/mailgress/internal/database/db"
+	"github.com/jr-k/mailgress/internal/database/db"
 	_ "modernc.org/sqlite"
 )
 

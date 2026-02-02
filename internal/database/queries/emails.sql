@@ -28,6 +28,9 @@ DELETE FROM emails WHERE id = ?;
 -- name: DeleteOldEmails :exec
 DELETE FROM emails WHERE received_at < ?;
 
+-- name: DeleteOldEmailsByMailbox :exec
+DELETE FROM emails WHERE mailbox_id = ? AND received_at < ?;
+
 -- name: CountEmailsByMailbox :one
 SELECT COUNT(*) FROM emails WHERE mailbox_id = ?;
 

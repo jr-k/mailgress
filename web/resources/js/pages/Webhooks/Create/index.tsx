@@ -150,29 +150,6 @@ export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
                     </S.HelperText>
                   </FormGroup>
 
-                  <S.FieldRow>
-                    <FormGroup label="Timeout (seconds)" htmlFor="timeout_sec">
-                      <Input
-                        id="timeout_sec"
-                        type="number"
-                        value={data.timeout_sec}
-                        onChange={(e) => setData('timeout_sec', parseInt(e.target.value))}
-                        min={1}
-                        max={60}
-                      />
-                    </FormGroup>
-                    <FormGroup label="Max Retries" htmlFor="max_retries">
-                      <Input
-                        id="max_retries"
-                        type="number"
-                        value={data.max_retries}
-                        onChange={(e) => setData('max_retries', parseInt(e.target.value))}
-                        min={0}
-                        max={10}
-                      />
-                    </FormGroup>
-                  </S.FieldRow>
-
                   <S.CheckboxList>
                     {payloadType === 'default' && (
                       <>
@@ -252,6 +229,38 @@ export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
                       </FormGroup>
                     </S.TabsContainer>
                   )}
+                </S.Fields>
+              </S.Section>
+            </Card>
+          </S.CardWrapper>
+
+          <S.CardWrapper>
+            <Card>
+              <S.Section>
+                <S.SectionTitle>Advanced</S.SectionTitle>
+                <S.Fields>
+                  <S.FieldRow>
+                    <FormGroup label="Timeout (seconds)" htmlFor="timeout_sec">
+                      <Input
+                        id="timeout_sec"
+                        type="number"
+                        value={data.timeout_sec}
+                        onChange={(e) => setData('timeout_sec', parseInt(e.target.value))}
+                        min={1}
+                        max={60}
+                      />
+                    </FormGroup>
+                    <FormGroup label="Max Retries" htmlFor="max_retries">
+                      <Input
+                        id="max_retries"
+                        type="number"
+                        value={data.max_retries}
+                        onChange={(e) => setData('max_retries', parseInt(e.target.value))}
+                        min={0}
+                        max={10}
+                      />
+                    </FormGroup>
+                  </S.FieldRow>
                 </S.Fields>
               </S.Section>
             </Card>

@@ -1,0 +1,37 @@
+# ============================================
+# Stage 1: Frontend development (Vite HMR)
+# ============================================
+FROM node:20-alpine AS assets
+
+WORKDIR /app/web
+
+COPY web/package*.json ./
+RUN npm ci
+
+COPY web/ ./
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
+
+# ============================================
+# Stage 2: Go development with Air
+# ============================================
+FROM golang:1.24-alpine AS app
+
+WORKDIR /app
+
+RUN apk add --no-cache gcc musl-dev git
+
+# Install Air for live reload (v1.61.7 is last version supporting Go 1.24)
+RUN go install github.com/air-verse/air@v1.61.7
+
+# Install sqlc for code generation
+RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+EXPOSE 8080 2525
+
+CMD ["air", "-c", ".air.toml"]

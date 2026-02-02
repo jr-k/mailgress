@@ -2,10 +2,10 @@ package smtp
 
 import (
 	"github.com/emersion/go-smtp"
-	"github.com/jessym/mailgress/internal/config"
-	"github.com/jessym/mailgress/internal/service"
-	"github.com/jessym/mailgress/internal/storage"
-	"github.com/jessym/mailgress/internal/webhook"
+	"github.com/jr-k/mailgress/internal/config"
+	"github.com/jr-k/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/storage"
+	"github.com/jr-k/mailgress/internal/webhook"
 )
 
 type Backend struct {

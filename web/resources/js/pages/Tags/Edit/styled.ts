@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   max-width: 32rem;
+  margin: 0 auto;
 `;
 
 export const Header = styled.div`

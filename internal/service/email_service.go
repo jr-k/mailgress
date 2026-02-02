@@ -7,8 +7,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jessym/mailgress/internal/database/db"
-	"github.com/jessym/mailgress/internal/domain"
+	"github.com/jr-k/mailgress/internal/database/db"
+	"github.com/jr-k/mailgress/internal/domain"
 )
 
 var ErrEmailNotFound = errors.New("email not found")
@@ -171,6 +171,13 @@ func (s *EmailService) Delete(ctx context.Context, id int64) error {
 
 func (s *EmailService) DeleteOldEmails(ctx context.Context, before time.Time) error {
 	return s.queries.DeleteOldEmails(ctx, before)
+}
+
+func (s *EmailService) DeleteOldEmailsByMailbox(ctx context.Context, mailboxID int64, before time.Time) error {
+	return s.queries.DeleteOldEmailsByMailbox(ctx, db.DeleteOldEmailsByMailboxParams{
+		MailboxID:  mailboxID,
+		ReceivedAt: before,
+	})
 }
 
 func (s *EmailService) toDomain(dbEmail db.Email) *domain.Email {

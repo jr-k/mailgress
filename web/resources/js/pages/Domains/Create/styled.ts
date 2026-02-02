@@ -1,7 +1,17 @@
 import styled from 'styled-components';
 
+export const Container = styled.div`
+  max-width: 600px;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing[6]};
+`;
+
 export const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[6]};
+`;
+
+export const CardContent = styled.div`
+  padding: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const Title = styled.h1`

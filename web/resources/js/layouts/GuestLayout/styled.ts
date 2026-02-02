@@ -28,7 +28,7 @@ export const Container = styled.div`
   padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[4]}`};
   position: relative;
   overflow: hidden;
-  background: ${({ theme }) => theme.colors.gray[900]};
+  background: ${({ theme }) => theme.mode === 'dark' ? theme.colors.gray[950] : theme.colors.gray[900]};
 
   /* Animated gradient orbs */
   &::before,
@@ -37,7 +37,7 @@ export const Container = styled.div`
     position: absolute;
     border-radius: 50%;
     filter: blur(100px);
-    opacity: 0.6;
+    opacity: ${({ theme }) => theme.mode === 'dark' ? 0.4 : 0.6};
     animation: ${float} 8s ease-in-out infinite;
   }
 
@@ -116,12 +116,19 @@ export const BrandName = styled.h1`
 
 export const Card = styled.div`
   width: 100%;
-  background: rgba(255, 255, 255, 0.98);
+  background: ${({ theme }) => theme.mode === 'dark'
+    ? `rgba(17, 24, 39, 0.95)`
+    : `rgba(255, 255, 255, 0.98)`};
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: ${({ theme }) => theme.radii.xl};
   padding: ${({ theme }) => theme.spacing[8]};
+  border: 1px solid ${({ theme }) => theme.mode === 'dark'
+    ? 'rgba(255, 255, 255, 0.1)'
+    : 'rgba(255, 255, 255, 0.1)'};
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 0 1px ${({ theme }) => theme.mode === 'dark'
+      ? 'rgba(255, 255, 255, 0.05)'
+      : 'rgba(255, 255, 255, 0.1)'},
     0 25px 50px -12px rgba(0, 0, 0, 0.5);
 `;

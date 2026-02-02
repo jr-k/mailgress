@@ -1,7 +1,7 @@
 import { PropsWithChildren, useState, useRef, useEffect, useMemo } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/AppLayout';
-import { Mailbox } from '@/types';
+import { Mailbox, PageProps } from '@/types';
 import * as S from './styled';
 
 interface MailboxLayoutProps extends PropsWithChildren {
@@ -10,7 +10,9 @@ interface MailboxLayoutProps extends PropsWithChildren {
 }
 
 export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: MailboxLayoutProps) {
-  const { url } = usePage();
+  const page = usePage<PageProps>();
+  const url = page.url;
+  const { auth } = page.props;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -26,6 +28,12 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
     const query = searchQuery.toLowerCase();
     return allMailboxes.filter((m) => getMailboxLabel(m).toLowerCase().includes(query));
   }, [allMailboxes, searchQuery]);
+
+  const getMailboxHref = (m: Mailbox) => {
+    // Extract the path after /mailboxes/{id} to preserve the current sub-view
+    const currentPath = url.replace(/^\/mailboxes\/\d+/, '');
+    return `/mailboxes/${m.id}${currentPath}`;
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -67,12 +75,7 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
             Back to Mailboxes
           </S.BackLink>
 
-          <S.MailboxHeader>
-            <S.MailboxEmail>{getMailboxLabel(mailbox)}</S.MailboxEmail>
-            {mailbox.description && <S.MailboxDescription>{mailbox.description}</S.MailboxDescription>}
-          </S.MailboxHeader>
-
-          {allMailboxes.length > 1 && (
+          {allMailboxes.length > 0 && (
             <S.MailboxSwitcher ref={switcherRef}>
               <S.MailboxSwitcherButton onClick={handleSwitcherToggle}>
                 <span>{getMailboxLabel(mailbox)}</span>
@@ -96,7 +99,7 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
                       <S.MailboxOption
                         key={m.id}
                         as={Link}
-                        href={`/mailboxes/${m.id}`}
+                        href={getMailboxHref(m)}
                         $active={m.id === mailbox.id}
                         onClick={() => {
                           setSwitcherOpen(false);
@@ -130,14 +133,16 @@ export default function MailboxLayout({ children, mailbox, allMailboxes = [] }: 
             >
               Webhooks
             </S.SidebarLink>
-            <S.SidebarLink
-              as={Link}
-              href={`/mailboxes/${mailbox.id}/edit`}
-              $active={url.endsWith('/edit')}
-              onClick={closeSidebar}
-            >
-              Settings
-            </S.SidebarLink>
+            {auth?.user.is_admin && (
+              <S.SidebarLink
+                as={Link}
+                href={`/mailboxes/${mailbox.id}/edit`}
+                $active={url === `/mailboxes/${mailbox.id}/edit`}
+                onClick={closeSidebar}
+              >
+                Settings
+              </S.SidebarLink>
+            )}
           </S.SidebarNav>
         </S.Sidebar>
 

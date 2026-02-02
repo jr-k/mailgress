@@ -3,8 +3,8 @@ package handler
 import (
 	"net/http"
 
-	mw "github.com/jessym/mailgress/internal/http/middleware"
-	"github.com/jessym/mailgress/internal/service"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
 )
 

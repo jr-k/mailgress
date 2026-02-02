@@ -3,7 +3,6 @@ package config
 import (
 	"os"
 	"strconv"
-	"time"
 )
 
 type Config struct {
@@ -17,13 +16,7 @@ type Config struct {
 	DBDriver string
 	DBDsn    string
 
-	MaxEmailSizeMB      int
-	MaxAttachmentSizeMB int
-	RetentionDays       int
-
-	WebhookMaxRetries int
-	WebhookTimeoutSec int
-	WebhookWorkers    int
+	WebhookWorkers int
 
 	StoragePath string
 }
@@ -40,13 +33,7 @@ func Load() *Config {
 		DBDriver: getEnv("DB_DRIVER", "sqlite"),
 		DBDsn:    getEnv("DB_DSN", "mailgress.db"),
 
-		MaxEmailSizeMB:      getEnvInt("MAX_EMAIL_SIZE_MB", 25),
-		MaxAttachmentSizeMB: getEnvInt("MAX_ATTACHMENT_SIZE_MB", 10),
-		RetentionDays:       getEnvInt("RETENTION_DAYS", 90),
-
-		WebhookMaxRetries: getEnvInt("WEBHOOK_MAX_RETRIES", 3),
-		WebhookTimeoutSec: getEnvInt("WEBHOOK_TIMEOUT_SEC", 30),
-		WebhookWorkers:    getEnvInt("WEBHOOK_WORKERS", 5),
+		WebhookWorkers: getEnvInt("WEBHOOK_WORKERS", 5),
 
 		StoragePath: getEnv("STORAGE_PATH", "./data/attachments"),
 	}
@@ -54,18 +41,6 @@ func Load() *Config {
 
 func (c *Config) IsDevelopment() bool {
 	return c.AppEnv == "development" || c.AppEnv == "dev"
-}
-
-func (c *Config) MaxEmailSizeBytes() int64 {
-	return int64(c.MaxEmailSizeMB) * 1024 * 1024
-}
-
-func (c *Config) MaxAttachmentSizeBytes() int64 {
-	return int64(c.MaxAttachmentSizeMB) * 1024 * 1024
-}
-
-func (c *Config) WebhookTimeout() time.Duration {
-	return time.Duration(c.WebhookTimeoutSec) * time.Second
 }
 
 func getEnv(key, defaultVal string) string {

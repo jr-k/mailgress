@@ -104,6 +104,20 @@ func (q *Queries) DeleteOldEmails(ctx context.Context, receivedAt time.Time) err
 	return err
 }
 
+const deleteOldEmailsByMailbox = `-- name: DeleteOldEmailsByMailbox :exec
+DELETE FROM emails WHERE mailbox_id = ? AND received_at < ?
+`
+
+type DeleteOldEmailsByMailboxParams struct {
+	MailboxID  int64     `json:"mailbox_id"`
+	ReceivedAt time.Time `json:"received_at"`
+}
+
+func (q *Queries) DeleteOldEmailsByMailbox(ctx context.Context, arg DeleteOldEmailsByMailboxParams) error {
+	_, err := q.db.ExecContext(ctx, deleteOldEmailsByMailbox, arg.MailboxID, arg.ReceivedAt)
+	return err
+}
+
 const getEmailByID = `-- name: GetEmailByID :one
 SELECT id, mailbox_id, message_id, from_address, to_address, subject, date, headers, text_body, html_body, raw_size, received_at FROM emails WHERE id = ? LIMIT 1
 `

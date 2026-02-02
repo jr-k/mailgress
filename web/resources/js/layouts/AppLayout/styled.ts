@@ -2,16 +2,18 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   min-height: 100vh;
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.background.primary};
+  transition: background-color 0.2s ease;
 `;
 
 export const Nav = styled.nav`
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: ${({ theme }) => theme.colors.white};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   box-shadow: ${({ theme }) => theme.shadows.xs};
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 `;
 
 export const NavInner = styled.div`
@@ -50,7 +52,7 @@ export const Logo = styled.a`
   gap: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   text-decoration: none;
   letter-spacing: -0.02em;
 `;
@@ -78,12 +80,12 @@ export const NavLink = styled.a<{ $active?: boolean }>`
   text-decoration: none;
   border-radius: ${({ theme }) => theme.radii.md};
   transition: all ${({ theme }) => theme.transitions.fast};
-  color: ${({ theme, $active }) => $active ? theme.colors.gray[900] : theme.colors.gray[600]};
-  background-color: ${({ theme, $active }) => $active ? theme.colors.gray[100] : 'transparent'};
+  color: ${({ theme, $active }) => $active ? theme.colors.text.primary : theme.colors.text.secondary};
+  background-color: ${({ theme, $active }) => $active ? theme.colors.interactive.hover : 'transparent'};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[900]};
-    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -103,12 +105,12 @@ export const DropdownTrigger = styled.button<{ $active?: boolean }>`
   border: none;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
-  color: ${({ theme, $active }) => $active ? theme.colors.gray[900] : theme.colors.gray[600]};
-  background-color: ${({ theme, $active }) => $active ? theme.colors.gray[100] : 'transparent'};
+  color: ${({ theme, $active }) => $active ? theme.colors.text.primary : theme.colors.text.secondary};
+  background-color: ${({ theme, $active }) => $active ? theme.colors.interactive.hover : 'transparent'};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[900]};
-    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -126,8 +128,8 @@ export const DropdownMenu = styled.div`
   min-width: 160px;
   margin-top: ${({ theme }) => theme.spacing[1]};
   padding: ${({ theme }) => theme.spacing[1]};
-  background: white;
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.elevated};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.lg};
   box-shadow: ${({ theme }) => theme.shadows.lg};
 `;
@@ -140,12 +142,12 @@ export const DropdownItem = styled.a<{ $active?: boolean }>`
   text-decoration: none;
   border-radius: ${({ theme }) => theme.radii.md};
   transition: all ${({ theme }) => theme.transitions.fast};
-  color: ${({ theme, $active }) => $active ? theme.colors.primary[700] : theme.colors.gray[700]};
-  background-color: ${({ theme, $active }) => $active ? theme.colors.primary[50] : 'transparent'};
+  color: ${({ theme, $active }) => $active ? theme.colors.primary[600] : theme.colors.text.secondary};
+  background-color: ${({ theme, $active }) => $active ? theme.colors.interactive.selected : 'transparent'};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary[700]};
-    background-color: ${({ theme }) => theme.colors.primary[50]};
+    color: ${({ theme }) => theme.colors.primary[600]};
+    background-color: ${({ theme }) => theme.colors.interactive.selected};
   }
 `;
 
@@ -165,7 +167,7 @@ export const ProfileLink = styled.a`
   transition: background-color ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[100]};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -179,7 +181,7 @@ export const UserInfo = styled.div`
 export const UserEmail = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const AdminBadge = styled.span`
@@ -201,7 +203,7 @@ export const LogoutButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   background: none;
   border: none;
   border-radius: ${({ theme }) => theme.radii.md};
@@ -209,8 +211,8 @@ export const LogoutButton = styled.button`
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[900]};
-    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -239,5 +241,36 @@ export const Main = styled.main`
 
   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
     padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[8]}`};
+  }
+`;
+
+export const ThemeToggle = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  background: transparent;
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
+  border-radius: ${({ theme }) => theme.radii.md};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  cursor: pointer;
+  transition: all ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
+    border-color: ${({ theme }) => theme.colors.border.secondary};
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[500]}40;
+  }
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
   }
 `;

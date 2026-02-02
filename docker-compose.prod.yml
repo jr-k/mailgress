@@ -1,0 +1,26 @@
+# Production docker-compose configuration
+# Usage: make prod (or docker compose -f docker-compose.prod.yml up)
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "2525:2525"
+    volumes:
+      - mailgress-data:/app/data
+    environment:
+      APP_ENV: production
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      APP_KEY: ${APP_KEY:-change-me-in-production-32chars!}
+      SMTP_LISTEN_ADDR: ":2525"
+      HTTP_LISTEN_ADDR: ":8080"
+      DB_DRIVER: sqlite
+      DB_DSN: /app/data/mailgress.db
+      STORAGE_PATH: /app/data/attachments
+    restart: unless-stopped
+
+volumes:
+  mailgress-data:

@@ -1,30 +1,10 @@
 import styled from 'styled-components';
 
-export const Container = styled.div`
-  max-width: 42rem;
-`;
-
-export const Header = styled.div`
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-`;
-
-export const BackLink = styled.a`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
-  display: inline-block;
-  margin-bottom: ${({ theme }) => theme.spacing[2]};
-  text-decoration: none;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
-  }
-`;
-
-export const Title = styled.h1`
+export const PageTitle = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const FormCard = styled.div`

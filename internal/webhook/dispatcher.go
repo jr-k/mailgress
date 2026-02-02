@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jessym/mailgress/internal/config"
-	"github.com/jessym/mailgress/internal/domain"
-	"github.com/jessym/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/config"
+	"github.com/jr-k/mailgress/internal/domain"
+	"github.com/jr-k/mailgress/internal/service"
 )
 
 type Job struct {
@@ -115,7 +115,8 @@ func (d *Dispatcher) processJob(job *Job) {
 	}
 
 	startTime := time.Now()
-	statusCode, responseBody, err := SendWebhook(d.ctx, job.Webhook, payloadBytes, d.config.WebhookTimeout())
+	timeout := time.Duration(job.Webhook.TimeoutSec) * time.Second
+	statusCode, responseBody, err := SendWebhook(d.ctx, job.Webhook, payloadBytes, timeout)
 	duration := int(time.Since(startTime).Milliseconds())
 
 	var status string

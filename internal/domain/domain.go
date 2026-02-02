@@ -1,6 +1,8 @@
 package domain
 
-import "time"
+import (
+	"time"
+)
 
 type Domain struct {
 	ID         int64     `json:"id"`
@@ -25,6 +27,12 @@ func (d *Domain) GetDNSRecords() []DNSRecord {
 	smtpHost := "mail." + d.Name
 	return []DNSRecord{
 		{
+			Type:  "A",
+			Name:  smtpHost,
+			Value: "X.X.X.X",
+			TTL:   3600,
+		},
+		{
 			Type:     "MX",
 			Name:     d.Name,
 			Value:    smtpHost,
@@ -37,5 +45,25 @@ func (d *Domain) GetDNSRecords() []DNSRecord {
 			Value: "v=spf1 mx ~all",
 			TTL:   3600,
 		},
+		// TODO: Add DMARC support later
+		// {
+		// 	Type:  "TXT",
+		// 	Name:  "_dmarc." + d.Name,
+		// 	Value: "v=DMARC1; p=none; rua=mailto:" + d.GetDMARCEmail() + "; adkim=s; aspf=s",
+		// 	TTL:   3600,
+		// },
 	}
 }
+
+// TODO: Uncomment when DMARC support is added
+// func (d *Domain) GetDMARCEmail() string {
+// 	parts := strings.Split(d.Name, ".")
+// 	if len(parts) > 2 {
+// 		// Subdomain: hr.kapside.com -> dmarc-hr@kapside.com
+// 		subdomain := parts[0]
+// 		baseDomain := strings.Join(parts[1:], ".")
+// 		return "dmarc-" + subdomain + "@" + baseDomain
+// 	}
+// 	// Main domain: kapside.com -> dmarc@kapside.com
+// 	return "dmarc@" + d.Name
+// }

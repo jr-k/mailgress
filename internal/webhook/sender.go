@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jessym/mailgress/internal/domain"
+	"github.com/jr-k/mailgress/internal/domain"
 )
 
 var httpClient = &http.Client{

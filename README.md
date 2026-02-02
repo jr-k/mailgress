@@ -16,14 +16,14 @@ A self-hostable email management application that receives emails via SMTP, stor
 
 ```bash
 # Clone the repository
-git clone https://github.com/jessym/mailgress.git
+git clone https://github.com/jr-k/mailgress.git
 cd mailgress
 
 # Copy and edit environment variables
 cp .env.example .env
 
 # Start with PostgreSQL
-docker-compose -f docker/docker-compose.dev.yml up -d
+docker-compose -f docker-compose.yml up -d
 
 # Access the web UI
 open http://localhost:8080
@@ -55,7 +55,6 @@ cd web && npm install && npm run build && cd ..
 | `APP_KEY` | - | Secret key for encryption (32 chars) |
 | `ADMIN_EMAIL` | `admin@example.com` | Admin email (created on first start) |
 | `ADMIN_PASSWORD` | `changeme` | Admin password |
-| `MAIL_DOMAIN` | `mail.example.com` | Domain for email addresses |
 | `SMTP_LISTEN_ADDR` | `:2525` | SMTP server listen address |
 | `HTTP_LISTEN_ADDR` | `:8080` | HTTP server listen address |
 | `DB_DRIVER` | `sqlite` | Database driver (sqlite/postgres) |
@@ -69,13 +68,37 @@ cd web && npm install && npm run build && cd ..
 
 ## DNS Configuration
 
-To receive emails, configure your DNS:
+To receive emails, configure your DNS records. Below are examples for a main domain and a subdomain.
 
-```
-MX  mail.example.com  10  your-server.example.com
+### Example 1: Main Domain (kapside.com)
+
+```dns
+; Zone file for kapside.com
+mail            IN  A     X.X.X.X
+kapside.com.    IN  MX 10 mail.kapside.com.
+kapside.com.    IN  TXT   "v=spf1 mx ~all"
+_dmarc.kapside.com. IN TXT "v=DMARC1; p=none; rua=mailto:dmarc@kapside.com; adkim=s; aspf=s"
 ```
 
-Ensure port 25 (or your configured SMTP port) is accessible.
+This configuration allows receiving emails at `*@kapside.com`.
+
+### Example 2: Subdomain (hr.kapside.com)
+
+```dns
+; Zone file for kapside.com (subdomain entries)
+mail.hr         IN  A     X.X.X.X
+hr              IN  MX 10 mail.hr.kapside.com.
+hr              IN  TXT   "v=spf1 mx ~all"
+_dmarc.hr       IN  TXT   "v=DMARC1; p=none; rua=mailto:dmarc-hr@kapside.com; adkim=s; aspf=s"
+```
+
+This configuration allows receiving emails at `*@hr.kapside.com`.
+
+### Notes
+
+- Replace `X.X.X.X` with your server's public IP address
+- Ensure port 25 (or your configured SMTP port) is accessible
+- SPF and DMARC records help with email deliverability and spam prevention
 
 ## Webhook Payload
 

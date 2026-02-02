@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	mw "github.com/jessym/mailgress/internal/http/middleware"
-	"github.com/jessym/mailgress/internal/service"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
 )
 
@@ -114,10 +114,12 @@ func (h *DomainHandler) Show(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	allDomains, _ := h.domainService.List(r.Context())
 	dnsRecords := h.domainService.GetDNSRecords(domain)
 
 	h.inertia.Render(w, r, "Domains/Show", gonertia.Props{
 		"domain":     domain,
+		"allDomains": allDomains,
 		"dnsRecords": dnsRecords,
 	})
 }
@@ -141,11 +143,13 @@ func (h *DomainHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	allDomains, _ := h.domainService.List(r.Context())
 	allTags, _ := h.tagService.List(r.Context())
 	domainTags, _ := h.tagService.GetTagsForDomain(r.Context(), id)
 
 	h.inertia.Render(w, r, "Domains/Edit", gonertia.Props{
 		"domain":     domain,
+		"allDomains": allDomains,
 		"allTags":    allTags,
 		"domainTags": domainTags,
 	})
@@ -184,7 +188,7 @@ func (h *DomainHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/domains/"+strconv.FormatInt(id, 10))
+	h.inertia.Location(w, r, "/domains/"+strconv.FormatInt(id, 10)+"/edit")
 }
 
 func (h *DomainHandler) Delete(w http.ResponseWriter, r *http.Request) {

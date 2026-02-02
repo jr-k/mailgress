@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/emersion/go-smtp"
-	"github.com/jessym/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/service"
 )
 
 type Session struct {
@@ -23,11 +23,13 @@ type Session struct {
 }
 
 type recipientInfo struct {
-	address   string
-	localPart string
-	slug      string
-	mailboxID int64
-	domainID  int64
+	address             string
+	localPart           string
+	slug                string
+	mailboxID           int64
+	domainID            int64
+	maxEmailSizeBytes   int64
+	maxAttachSizeBytes  int64
 }
 
 func (s *Session) AuthPlain(username, password string) error {
@@ -91,18 +93,28 @@ func (s *Session) Rcpt(to string, opts *smtp.RcptOptions) error {
 	}
 
 	s.recipients = append(s.recipients, recipientInfo{
-		address:   to,
-		localPart: localPart,
-		slug:      slug,
-		mailboxID: mailbox.ID,
-		domainID:  domain.ID,
+		address:            to,
+		localPart:          localPart,
+		slug:               slug,
+		mailboxID:          mailbox.ID,
+		domainID:           domain.ID,
+		maxEmailSizeBytes:  mailbox.MaxEmailSizeBytes(),
+		maxAttachSizeBytes: mailbox.MaxAttachmentSizeBytes(),
 	})
 
 	return nil
 }
 
 func (s *Session) Data(r io.Reader) error {
-	raw, err := io.ReadAll(io.LimitReader(r, s.backend.config.MaxEmailSizeBytes()))
+	// Use the minimum email size limit from all recipients
+	maxEmailSize := int64(100 * 1024 * 1024) // 100MB default
+	for _, rcpt := range s.recipients {
+		if rcpt.maxEmailSizeBytes > 0 && rcpt.maxEmailSizeBytes < maxEmailSize {
+			maxEmailSize = rcpt.maxEmailSizeBytes
+		}
+	}
+
+	raw, err := io.ReadAll(io.LimitReader(r, maxEmailSize))
 	if err != nil {
 		return err
 	}
@@ -151,7 +163,7 @@ func (s *Session) Data(r io.Reader) error {
 			continue
 		}
 
-		if err := s.processAttachments(ctx, email.ID, msg); err != nil {
+		if err := s.processAttachments(ctx, email.ID, msg, rcpt.maxAttachSizeBytes); err != nil {
 			log.Printf("Failed to process attachments for email %d: %v", email.ID, err)
 		}
 
@@ -271,7 +283,7 @@ func extractFromMultipart(body []byte, contentType string) (textBody, htmlBody s
 	return textBody, htmlBody
 }
 
-func (s *Session) processAttachments(ctx context.Context, emailID int64, msg *mail.Message) error {
+func (s *Session) processAttachments(ctx context.Context, emailID int64, msg *mail.Message, maxAttachSize int64) error {
 	contentType := msg.Header.Get("Content-Type")
 	mediaType, params, err := mime.ParseMediaType(contentType)
 	if err != nil || !strings.HasPrefix(mediaType, "multipart/") {
@@ -279,10 +291,10 @@ func (s *Session) processAttachments(ctx context.Context, emailID int64, msg *ma
 	}
 
 	mr := multipart.NewReader(msg.Body, params["boundary"])
-	return s.processMultipartAttachments(ctx, emailID, mr)
+	return s.processMultipartAttachments(ctx, emailID, mr, maxAttachSize)
 }
 
-func (s *Session) processMultipartAttachments(ctx context.Context, emailID int64, mr *multipart.Reader) error {
+func (s *Session) processMultipartAttachments(ctx context.Context, emailID int64, mr *multipart.Reader, maxAttachSize int64) error {
 	for {
 		part, err := mr.NextPart()
 		if err != nil {
@@ -295,7 +307,7 @@ func (s *Session) processMultipartAttachments(ctx context.Context, emailID int64
 			mediaType, params, _ := mime.ParseMediaType(contentType)
 			if strings.HasPrefix(mediaType, "multipart/") {
 				innerMr := multipart.NewReader(part, params["boundary"])
-				s.processMultipartAttachments(ctx, emailID, innerMr)
+				s.processMultipartAttachments(ctx, emailID, innerMr, maxAttachSize)
 			}
 			continue
 		}
@@ -306,7 +318,7 @@ func (s *Session) processMultipartAttachments(ctx context.Context, emailID int64
 		}
 		mediaType, _, _ := mime.ParseMediaType(contentType)
 
-		limitedReader := io.LimitReader(part, s.backend.config.MaxAttachmentSizeBytes())
+		limitedReader := io.LimitReader(part, maxAttachSize)
 		storagePath, size, err := s.backend.storage.Store(emailID, filename, limitedReader)
 		if err != nil {
 			log.Printf("Failed to store attachment %s: %v", filename, err)

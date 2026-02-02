@@ -31,6 +31,9 @@ export default function MailboxEdit({ mailbox, allMailboxes, users, domains, all
     owner_id: mailbox.owner_id?.toString() || '',
     domain_id: mailbox.domain_id?.toString() || '',
     is_active: mailbox.is_active,
+    max_email_size_mb: mailbox.max_email_size_mb,
+    max_attachment_size_mb: mailbox.max_attachment_size_mb,
+    retention_days: mailbox.retention_days,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,64 +72,68 @@ export default function MailboxEdit({ mailbox, allMailboxes, users, domains, all
 
         {error && <Alert variant="error">{error}</Alert>}
 
-        <Card>
-          <S.FormCard>
-            <S.Form onSubmit={handleSubmit}>
-              <FormGroup label="Domain" htmlFor="domain_id">
-                <Select
-                  id="domain_id"
-                  value={data.domain_id}
-                  onChange={(e) => setData('domain_id', e.target.value)}
-                  required
-                >
-                  {domains.map((domain) => (
-                    <option key={domain.id} value={domain.id}>
-                      {domain.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormGroup>
+        <S.Form onSubmit={handleSubmit}>
+          <Card>
+            <S.FormCard>
+              <S.FieldRow>
+                <FormGroup label="Domain" htmlFor="domain_id">
+                  <Select
+                    id="domain_id"
+                    value={data.domain_id}
+                    onChange={(e) => setData('domain_id', e.target.value)}
+                    required
+                  >
+                    {domains.map((domain) => (
+                      <option key={domain.id} value={domain.id}>
+                        {domain.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormGroup>
 
-              <FormGroup label="Slug" htmlFor="slug">
-                <S.InputGroup>
-                  <S.InputNoRightRadius>
-                    <Input
-                      id="slug"
-                      type="text"
-                      value={data.slug}
-                      onChange={(e) =>
-                        setData('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
-                      }
-                      required
-                    />
-                  </S.InputNoRightRadius>
-                  <S.InputAddon>@{selectedDomain?.name || 'domain.com'}</S.InputAddon>
-                </S.InputGroup>
-              </FormGroup>
+                <FormGroup label="Slug" htmlFor="slug">
+                  <S.InputGroup>
+                    <S.InputNoRightRadius>
+                      <Input
+                        id="slug"
+                        type="text"
+                        value={data.slug}
+                        onChange={(e) =>
+                          setData('slug', e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
+                        }
+                        required
+                      />
+                    </S.InputNoRightRadius>
+                    <S.InputAddon>@{selectedDomain?.name || 'domain.com'}</S.InputAddon>
+                  </S.InputGroup>
+                </FormGroup>
+              </S.FieldRow>
 
-              <FormGroup label="Description (optional)" htmlFor="description">
-                <Input
-                  id="description"
-                  type="text"
-                  value={data.description}
-                  onChange={(e) => setData('description', e.target.value)}
-                />
-              </FormGroup>
+              <S.FieldRow>
+                <FormGroup label="Description (optional)" htmlFor="description">
+                  <Input
+                    id="description"
+                    type="text"
+                    value={data.description}
+                    onChange={(e) => setData('description', e.target.value)}
+                  />
+                </FormGroup>
 
-              <FormGroup label="Owner" htmlFor="owner_id">
-                <Select
-                  id="owner_id"
-                  value={data.owner_id}
-                  onChange={(e) => setData('owner_id', e.target.value)}
-                >
-                  <option value="">No owner</option>
-                  {users.map((user) => (
-                    <option key={user.id} value={user.id}>
-                      {user.email} {user.is_admin && '(Admin)'}
-                    </option>
-                  ))}
-                </Select>
-              </FormGroup>
+                <FormGroup label="Owner" htmlFor="owner_id">
+                  <Select
+                    id="owner_id"
+                    value={data.owner_id}
+                    onChange={(e) => setData('owner_id', e.target.value)}
+                  >
+                    <option value="">No owner</option>
+                    {users.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.email} {user.is_admin && '(Admin)'}
+                      </option>
+                    ))}
+                  </Select>
+                </FormGroup>
+              </S.FieldRow>
 
               <div>
                 <Label>Tags</Label>
@@ -150,23 +157,63 @@ export default function MailboxEdit({ mailbox, allMailboxes, users, domains, all
                 </S.CheckboxWrapper>
                 <S.HelperText>Inactive mailboxes will reject incoming emails.</S.HelperText>
               </div>
+            </S.FormCard>
+          </Card>
 
-              <S.FormActions>
-                <Button type="button" variant="danger" onClick={() => setDeleteModalOpen(true)}>
-                  Delete Mailbox
-                </Button>
-                <S.FormActionsRight>
-                  <LinkButton href={`/mailboxes/${mailbox.id}`} variant="secondary">
-                    Cancel
-                  </LinkButton>
-                  <Button type="submit" disabled={processing || tagsSaving}>
-                    {processing || tagsSaving ? 'Saving...' : 'Save Changes'}
-                  </Button>
-                </S.FormActionsRight>
-              </S.FormActions>
-            </S.Form>
-          </S.FormCard>
-        </Card>
+          <Card>
+            <S.FormCard>
+              <S.SectionTitle>Advanced</S.SectionTitle>
+              <S.FieldRow>
+                <FormGroup label="Max Email Size (MB)" htmlFor="max_email_size_mb">
+                  <Input
+                    id="max_email_size_mb"
+                    type="number"
+                    value={data.max_email_size_mb}
+                    onChange={(e) => setData('max_email_size_mb', parseInt(e.target.value) || 25)}
+                    min={1}
+                    max={100}
+                  />
+                </FormGroup>
+                <FormGroup label="Max Attachment Size (MB)" htmlFor="max_attachment_size_mb">
+                  <Input
+                    id="max_attachment_size_mb"
+                    type="number"
+                    value={data.max_attachment_size_mb}
+                    onChange={(e) => setData('max_attachment_size_mb', parseInt(e.target.value) || 10)}
+                    min={1}
+                    max={50}
+                  />
+                </FormGroup>
+              </S.FieldRow>
+
+              <FormGroup label="Retention Days" htmlFor="retention_days">
+                <Input
+                  id="retention_days"
+                  type="number"
+                  value={data.retention_days}
+                  onChange={(e) => setData('retention_days', parseInt(e.target.value) || 90)}
+                  min={1}
+                  max={365}
+                />
+                <S.HelperText>Emails older than this will be automatically deleted.</S.HelperText>
+              </FormGroup>
+            </S.FormCard>
+          </Card>
+
+          <S.FormActions>
+            <Button type="button" variant="danger" onClick={() => setDeleteModalOpen(true)}>
+              Delete Mailbox
+            </Button>
+            <S.FormActionsRight>
+              <LinkButton href={`/mailboxes/${mailbox.id}`} variant="secondary">
+                Cancel
+              </LinkButton>
+              <Button type="submit" disabled={processing || tagsSaving}>
+                {processing || tagsSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </S.FormActionsRight>
+          </S.FormActions>
+        </S.Form>
       </S.Container>
 
       <ConfirmModal

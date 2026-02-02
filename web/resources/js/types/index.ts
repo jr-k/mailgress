@@ -48,6 +48,9 @@ export interface Mailbox {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  max_email_size_mb: number;
+  max_attachment_size_mb: number;
+  retention_days: number;
   owner?: User;
   domain?: Domain;
   stats?: MailboxStats;

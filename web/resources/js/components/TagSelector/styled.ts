@@ -24,8 +24,8 @@ export const RemoveButton = styled.button`
   width: 16px;
   height: 16px;
   border: none;
-  background: ${({ theme }) => theme.colors.gray[200]};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  background: ${({ theme }) => theme.colors.interactive.active};
+  color: ${({ theme }) => theme.colors.text.secondary};
   border-radius: 50%;
   cursor: pointer;
   font-size: 12px;
@@ -33,8 +33,8 @@ export const RemoveButton = styled.button`
   transition: background ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[300]};
-    color: ${({ theme }) => theme.colors.gray[700]};
+    background: ${({ theme }) => theme.colors.border.secondary};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
@@ -43,16 +43,16 @@ export const AddButton = styled.button`
   align-items: center;
   padding: ${({ theme }) => theme.spacing[1]} ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   background: transparent;
-  border: 1px dashed ${({ theme }) => theme.colors.gray[300]};
+  border: 1px dashed ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.gray[400]};
-    color: ${({ theme }) => theme.colors.gray[600]};
+    border-color: ${({ theme }) => theme.colors.border.secondary};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
@@ -66,8 +66,8 @@ export const Dropdown = styled.div`
   overflow-y: auto;
   margin-top: ${({ theme }) => theme.spacing[2]};
   padding: ${({ theme }) => theme.spacing[2]};
-  background: white;
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.elevated};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.lg};
   box-shadow: ${({ theme }) => theme.shadows.lg};
 `;
@@ -79,8 +79,8 @@ export const PortalDropdown = styled.div`
   max-height: 200px;
   overflow-y: auto;
   padding: ${({ theme }) => theme.spacing[1]};
-  background: white;
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.elevated};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   box-shadow: ${({ theme }) => theme.shadows.lg};
 `;
@@ -91,7 +91,7 @@ export const DropdownItem = styled.button<{ $selected: boolean }>`
   gap: ${({ theme }) => theme.spacing[2]};
   width: 100%;
   padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme, $selected }) => ($selected ? theme.colors.gray[50] : 'transparent')};
+  background: ${({ theme, $selected }) => ($selected ? theme.colors.interactive.hover : 'transparent')};
   border: none;
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
@@ -99,7 +99,7 @@ export const DropdownItem = styled.button<{ $selected: boolean }>`
   text-align: left;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[100]};
+    background: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -109,7 +109,7 @@ export const CheckboxIndicator = styled.div<{ $checked: boolean }>`
   justify-content: center;
   width: 16px;
   height: 16px;
-  border: 2px solid ${({ theme, $checked }) => $checked ? theme.colors.primary[500] : theme.colors.gray[300]};
+  border: 2px solid ${({ theme, $checked }) => $checked ? theme.colors.primary[500] : theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.sm};
   background: ${({ theme, $checked }) => $checked ? theme.colors.primary[500] : 'transparent'};
   color: white;
@@ -126,7 +126,7 @@ export const Checkbox = styled.input.attrs({ type: 'checkbox' })`
 export const EmptyMessage = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-align: center;
 `;
 
@@ -143,17 +143,18 @@ export const InlineAddButton = styled.button`
   justify-content: center;
   width: 20px;
   height: 20px;
+  line-height: 1;
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[400]};
+  color: ${({ theme }) => theme.colors.text.muted};
   background: transparent;
-  border: 1px dashed ${({ theme }) => theme.colors.gray[300]};
+  border: 1px dashed ${({ theme }) => theme.colors.border.secondary};
   border-radius: 50%;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover:not(:disabled) {
-    border-color: ${({ theme }) => theme.colors.gray[400]};
-    color: ${({ theme }) => theme.colors.gray[600]};
+    border-color: ${({ theme }) => theme.colors.border.secondary};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 
   &:disabled {
@@ -172,8 +173,8 @@ export const InlineDropdown = styled.div`
   overflow-y: auto;
   margin-top: ${({ theme }) => theme.spacing[1]};
   padding: ${({ theme }) => theme.spacing[1]};
-  background: white;
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.elevated};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   box-shadow: ${({ theme }) => theme.shadows.lg};
 `;

@@ -22,17 +22,20 @@ func (q *Queries) CountMailboxes(ctx context.Context) (int64, error) {
 }
 
 const createMailbox = `-- name: CreateMailbox :one
-INSERT INTO mailboxes (slug, owner_id, domain_id, description, is_active, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-RETURNING id, slug, owner_id, description, is_active, created_at, updated_at, domain_id
+INSERT INTO mailboxes (slug, owner_id, domain_id, description, is_active, max_email_size_mb, max_attachment_size_mb, retention_days, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+RETURNING id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days
 `
 
 type CreateMailboxParams struct {
-	Slug        string         `json:"slug"`
-	OwnerID     sql.NullInt64  `json:"owner_id"`
-	DomainID    sql.NullInt64  `json:"domain_id"`
-	Description sql.NullString `json:"description"`
-	IsActive    int64          `json:"is_active"`
+	Slug                string         `json:"slug"`
+	OwnerID             sql.NullInt64  `json:"owner_id"`
+	DomainID            sql.NullInt64  `json:"domain_id"`
+	Description         sql.NullString `json:"description"`
+	IsActive            int64          `json:"is_active"`
+	MaxEmailSizeMb      int64          `json:"max_email_size_mb"`
+	MaxAttachmentSizeMb int64          `json:"max_attachment_size_mb"`
+	RetentionDays       int64          `json:"retention_days"`
 }
 
 func (q *Queries) CreateMailbox(ctx context.Context, arg CreateMailboxParams) (Mailbox, error) {
@@ -42,6 +45,9 @@ func (q *Queries) CreateMailbox(ctx context.Context, arg CreateMailboxParams) (M
 		arg.DomainID,
 		arg.Description,
 		arg.IsActive,
+		arg.MaxEmailSizeMb,
+		arg.MaxAttachmentSizeMb,
+		arg.RetentionDays,
 	)
 	var i Mailbox
 	err := row.Scan(
@@ -53,6 +59,9 @@ func (q *Queries) CreateMailbox(ctx context.Context, arg CreateMailboxParams) (M
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
 	)
 	return i, err
 }
@@ -67,7 +76,7 @@ func (q *Queries) DeleteMailbox(ctx context.Context, id int64) error {
 }
 
 const getMailboxByID = `-- name: GetMailboxByID :one
-SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id FROM mailboxes WHERE id = ? LIMIT 1
+SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetMailboxByID(ctx context.Context, id int64) (Mailbox, error) {
@@ -82,12 +91,15 @@ func (q *Queries) GetMailboxByID(ctx context.Context, id int64) (Mailbox, error)
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
 	)
 	return i, err
 }
 
 const getMailboxBySlug = `-- name: GetMailboxBySlug :one
-SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id FROM mailboxes WHERE slug = ? LIMIT 1
+SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes WHERE slug = ? LIMIT 1
 `
 
 func (q *Queries) GetMailboxBySlug(ctx context.Context, slug string) (Mailbox, error) {
@@ -102,12 +114,15 @@ func (q *Queries) GetMailboxBySlug(ctx context.Context, slug string) (Mailbox, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
 	)
 	return i, err
 }
 
 const getMailboxBySlugAndDomain = `-- name: GetMailboxBySlugAndDomain :one
-SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id FROM mailboxes WHERE slug = ? AND domain_id = ? LIMIT 1
+SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes WHERE slug = ? AND domain_id = ? LIMIT 1
 `
 
 type GetMailboxBySlugAndDomainParams struct {
@@ -127,12 +142,15 @@ func (q *Queries) GetMailboxBySlugAndDomain(ctx context.Context, arg GetMailboxB
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
 	)
 	return i, err
 }
 
 const listMailboxes = `-- name: ListMailboxes :many
-SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id FROM mailboxes ORDER BY created_at DESC
+SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes ORDER BY created_at DESC
 `
 
 func (q *Queries) ListMailboxes(ctx context.Context) ([]Mailbox, error) {
@@ -153,6 +171,9 @@ func (q *Queries) ListMailboxes(ctx context.Context) ([]Mailbox, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DomainID,
+			&i.MaxEmailSizeMb,
+			&i.MaxAttachmentSizeMb,
+			&i.RetentionDays,
 		); err != nil {
 			return nil, err
 		}
@@ -168,7 +189,7 @@ func (q *Queries) ListMailboxes(ctx context.Context) ([]Mailbox, error) {
 }
 
 const listMailboxesByDomain = `-- name: ListMailboxesByDomain :many
-SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id FROM mailboxes WHERE domain_id = ? ORDER BY created_at DESC
+SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes WHERE domain_id = ? ORDER BY created_at DESC
 `
 
 func (q *Queries) ListMailboxesByDomain(ctx context.Context, domainID sql.NullInt64) ([]Mailbox, error) {
@@ -189,6 +210,9 @@ func (q *Queries) ListMailboxesByDomain(ctx context.Context, domainID sql.NullIn
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DomainID,
+			&i.MaxEmailSizeMb,
+			&i.MaxAttachmentSizeMb,
+			&i.RetentionDays,
 		); err != nil {
 			return nil, err
 		}
@@ -204,7 +228,7 @@ func (q *Queries) ListMailboxesByDomain(ctx context.Context, domainID sql.NullIn
 }
 
 const listMailboxesByOwner = `-- name: ListMailboxesByOwner :many
-SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id FROM mailboxes WHERE owner_id = ? ORDER BY created_at DESC
+SELECT id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days FROM mailboxes WHERE owner_id = ? ORDER BY created_at DESC
 `
 
 func (q *Queries) ListMailboxesByOwner(ctx context.Context, ownerID sql.NullInt64) ([]Mailbox, error) {
@@ -225,6 +249,9 @@ func (q *Queries) ListMailboxesByOwner(ctx context.Context, ownerID sql.NullInt6
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DomainID,
+			&i.MaxEmailSizeMb,
+			&i.MaxAttachmentSizeMb,
+			&i.RetentionDays,
 		); err != nil {
 			return nil, err
 		}
@@ -268,18 +295,23 @@ func (q *Queries) MailboxExistsBySlugAndDomain(ctx context.Context, arg MailboxE
 
 const updateMailbox = `-- name: UpdateMailbox :one
 UPDATE mailboxes
-SET slug = ?, owner_id = ?, domain_id = ?, description = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP
+SET slug = ?, owner_id = ?, domain_id = ?, description = ?, is_active = ?,
+    max_email_size_mb = ?, max_attachment_size_mb = ?, retention_days = ?,
+    updated_at = CURRENT_TIMESTAMP
 WHERE id = ?
-RETURNING id, slug, owner_id, description, is_active, created_at, updated_at, domain_id
+RETURNING id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days
 `
 
 type UpdateMailboxParams struct {
-	Slug        string         `json:"slug"`
-	OwnerID     sql.NullInt64  `json:"owner_id"`
-	DomainID    sql.NullInt64  `json:"domain_id"`
-	Description sql.NullString `json:"description"`
-	IsActive    int64          `json:"is_active"`
-	ID          int64          `json:"id"`
+	Slug                string         `json:"slug"`
+	OwnerID             sql.NullInt64  `json:"owner_id"`
+	DomainID            sql.NullInt64  `json:"domain_id"`
+	Description         sql.NullString `json:"description"`
+	IsActive            int64          `json:"is_active"`
+	MaxEmailSizeMb      int64          `json:"max_email_size_mb"`
+	MaxAttachmentSizeMb int64          `json:"max_attachment_size_mb"`
+	RetentionDays       int64          `json:"retention_days"`
+	ID                  int64          `json:"id"`
 }
 
 func (q *Queries) UpdateMailbox(ctx context.Context, arg UpdateMailboxParams) (Mailbox, error) {
@@ -289,6 +321,9 @@ func (q *Queries) UpdateMailbox(ctx context.Context, arg UpdateMailboxParams) (M
 		arg.DomainID,
 		arg.Description,
 		arg.IsActive,
+		arg.MaxEmailSizeMb,
+		arg.MaxAttachmentSizeMb,
+		arg.RetentionDays,
 		arg.ID,
 	)
 	var i Mailbox
@@ -301,6 +336,9 @@ func (q *Queries) UpdateMailbox(ctx context.Context, arg UpdateMailboxParams) (M
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
 	)
 	return i, err
 }

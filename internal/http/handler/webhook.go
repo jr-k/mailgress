@@ -6,9 +6,9 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	mw "github.com/jessym/mailgress/internal/http/middleware"
-	"github.com/jessym/mailgress/internal/service"
-	"github.com/jessym/mailgress/internal/webhook"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/webhook"
 	"github.com/romsar/gonertia"
 )
 
@@ -37,6 +37,28 @@ func NewWebhookHandler(
 		domainService:   domainService,
 		dispatcher:      dispatcher,
 	}
+}
+
+func (h *WebhookHandler) getAllMailboxesWithDomain(r *http.Request) interface{} {
+	user := mw.GetUser(r)
+	if user.IsAdmin {
+		mbs, _ := h.mailboxService.List(r.Context())
+		for _, mb := range mbs {
+			if mb.DomainID != nil {
+				domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
+				mb.Domain = domain
+			}
+		}
+		return mbs
+	}
+	mbs, _ := h.mailboxService.ListByOwner(r.Context(), user.ID)
+	for _, mb := range mbs {
+		if mb.DomainID != nil {
+			domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
+			mb.Domain = domain
+		}
+	}
+	return mbs
 }
 
 func (h *WebhookHandler) checkMailboxAccess(w http.ResponseWriter, r *http.Request) (int64, bool) {
@@ -73,6 +95,9 @@ func (h *WebhookHandler) Index(w http.ResponseWriter, r *http.Request) {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
 		mailbox.Domain = domain
 	}
+
+	allMailboxes := h.getAllMailboxesWithDomain(r)
+
 	webhooks, _ := h.webhookService.ListByMailbox(r.Context(), mailboxID)
 
 	for _, wh := range webhooks {
@@ -81,8 +106,9 @@ func (h *WebhookHandler) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.inertia.Render(w, r, "Webhooks/Index", gonertia.Props{
-		"mailbox":  mailbox,
-		"webhooks": webhooks,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
+		"webhooks":     webhooks,
 	})
 }
 
@@ -98,8 +124,11 @@ func (h *WebhookHandler) Create(w http.ResponseWriter, r *http.Request) {
 		mailbox.Domain = domain
 	}
 
+	allMailboxes := h.getAllMailboxesWithDomain(r)
+
 	h.inertia.Render(w, r, "Webhooks/Create", gonertia.Props{
-		"mailbox": mailbox,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
 	})
 }
 
@@ -195,9 +224,12 @@ func (h *WebhookHandler) Show(w http.ResponseWriter, r *http.Request) {
 	stats, _ := h.webhookService.GetDeliveryStats(r.Context(), webhookID)
 	wh.DeliveryStats = stats
 
+	allMailboxes := h.getAllMailboxesWithDomain(r)
+
 	h.inertia.Render(w, r, "Webhooks/Show", gonertia.Props{
-		"mailbox": mailbox,
-		"webhook": wh,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
+		"webhook":      wh,
 	})
 }
 
@@ -224,9 +256,12 @@ func (h *WebhookHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	allMailboxes := h.getAllMailboxesWithDomain(r)
+
 	h.inertia.Render(w, r, "Webhooks/Edit", gonertia.Props{
-		"mailbox": mailbox,
-		"webhook": wh,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
+		"webhook":      wh,
 	})
 }
 
@@ -386,10 +421,13 @@ func (h *WebhookHandler) Deliveries(w http.ResponseWriter, r *http.Request) {
 		mailbox.Domain = domain
 	}
 
+	allMailboxes := h.getAllMailboxesWithDomain(r)
+
 	h.inertia.Render(w, r, "Webhooks/Deliveries", gonertia.Props{
-		"mailbox":    mailbox,
-		"webhook":    wh,
-		"deliveries": deliveries,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
+		"webhook":      wh,
+		"deliveries":   deliveries,
 		"pagination": map[string]interface{}{
 			"current_page": page,
 			"total":        total,

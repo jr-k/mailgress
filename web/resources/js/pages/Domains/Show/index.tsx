@@ -1,34 +1,66 @@
-import { useState } from 'react';
-import AppLayout from '@/layouts/AppLayout';
+import { useState, useEffect } from 'react';
+import DomainLayout from '@/layouts/DomainLayout';
 import { Card, CardBody } from '@/components/Card';
 import { Badge } from '@/components/Badge';
-import { LinkButton } from '@/components/Button';
 import { Domain, DNSRecord, DNSCheckResult, PageProps } from '@/types';
+import { getWanAddress } from '@/utils/network';
 import * as S from './styled';
 
 interface Props extends PageProps {
   domain: Domain;
+  allDomains: Domain[];
   dnsRecords: DNSRecord[];
 }
 
-export default function DomainsShow({ domain, dnsRecords }: Props) {
+export default function DomainsShow({ domain, allDomains, dnsRecords }: Props) {
   const smtpHost = `mail.${domain.name}`;
   const [activeTab, setActiveTab] = useState<'table' | 'text'>('table');
   const [copied, setCopied] = useState(false);
   const [checking, setChecking] = useState(false);
   const [dnsResult, setDnsResult] = useState<DNSCheckResult | null>(null);
+  const [publicIp, setPublicIp] = useState('<PUBLIC_IP>');
+
+  useEffect(() => {
+    getWanAddress().then((ip) => {
+      if (ip) {
+        setPublicIp(ip);
+      }
+    });
+  }, []);
 
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString();
   };
 
   const generateDNSText = () => {
+    const domainParts = domain.name.split('.');
+    const isSubdomain = domainParts.length > 2;
+    const baseDomain = isSubdomain ? domainParts.slice(1).join('.') : domain.name;
+    const subdomainPrefix = isSubdomain ? domainParts[0] : null;
+
     return dnsRecords
       .map((record) => {
-        if (record.type === 'MX') {
-          return `${record.name}. ${record.ttl} IN MX ${record.priority} ${record.value}.`;
+        if (record.type === 'A') {
+          // A record: "mail" or "mail.{subdomain}"
+          const aName = isSubdomain ? `mail.${subdomainPrefix}` : 'mail';
+          const aValue = record.value === 'X.X.X.X' ? publicIp : record.value;
+          return `${aName.padEnd(16)}IN  A     ${aValue}`;
         }
-        return `${record.name}. ${record.ttl} IN ${record.type} "${record.value}"`;
+        if (record.type === 'MX') {
+          // MX: "{subdomain}" or "{domain}."
+          const mxName = isSubdomain ? subdomainPrefix : `${domain.name}.`;
+          const mxValue = isSubdomain ? `mail.${subdomainPrefix}.${baseDomain}.` : `mail.${domain.name}.`;
+          return `${mxName!.padEnd(16)}IN  MX ${record.priority} ${mxValue}`;
+        }
+        // TXT records (SPF)
+        // TODO: Add DMARC support later
+        // if (record.name.startsWith('_dmarc.')) {
+        //   const dmarcName = isSubdomain ? `_dmarc.${subdomainPrefix}` : `_dmarc.${domain.name}.`;
+        //   return `${dmarcName.padEnd(16)}IN  TXT   "${record.value}"`;
+        // }
+        // SPF record
+        const txtName = isSubdomain ? subdomainPrefix : `${domain.name}.`;
+        return `${txtName!.padEnd(16)}IN  TXT   "${record.value}"`;
       })
       .join('\n');
   };
@@ -63,18 +95,8 @@ export default function DomainsShow({ domain, dnsRecords }: Props) {
   };
 
   return (
-    <AppLayout>
-      <S.Header>
-        <S.Title>{domain.name}</S.Title>
-        <S.Actions>
-          <LinkButton href={`/domains/${domain.id}/edit`} variant="secondary">
-            Edit
-          </LinkButton>
-          <LinkButton href="/domains" variant="secondary">
-            Back
-          </LinkButton>
-        </S.Actions>
-      </S.Header>
+    <DomainLayout domain={domain} allDomains={allDomains}>
+      <S.PageTitle>DNS Setup</S.PageTitle>
 
       <Card>
         <CardBody>
@@ -141,7 +163,9 @@ export default function DomainsShow({ domain, dnsRecords }: Props) {
                         <Badge variant="info">{record.type}</Badge>
                       </S.TableCell>
                       <S.TableCell>{record.name}</S.TableCell>
-                      <S.TableCell>{record.value}</S.TableCell>
+                      <S.TableCell>
+                        {record.value === 'X.X.X.X' ? publicIp : record.value}
+                      </S.TableCell>
                       <S.TableCell>{record.priority ?? '-'}</S.TableCell>
                       <S.TableCell>{record.ttl}</S.TableCell>
                     </S.TableRow>
@@ -230,6 +254,6 @@ export default function DomainsShow({ domain, dnsRecords }: Props) {
         </S.VerificationSection>
         </CardBody>
       </Card>
-    </AppLayout>
+    </DomainLayout>
   );
 }

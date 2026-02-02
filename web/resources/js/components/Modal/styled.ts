@@ -28,7 +28,7 @@ export const Overlay = styled.div`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => theme.spacing[4]};
-  background-color: rgb(0 0 0 / 0.5);
+  background-color: ${({ theme }) => theme.mode === 'dark' ? 'rgb(0 0 0 / 0.7)' : 'rgb(0 0 0 / 0.5)'};
   backdrop-filter: blur(2px);
   animation: ${fadeIn} 0.15s ease-out;
 `;
@@ -37,7 +37,8 @@ export const Content = styled.div<{ $size?: 'sm' | 'md' | 'lg' }>`
   position: relative;
   width: 100%;
   max-height: calc(100vh - ${({ theme }) => theme.spacing[8]});
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.xl};
   box-shadow: ${({ theme }) => theme.shadows.xl};
   overflow: hidden;
@@ -66,18 +67,18 @@ export const Header = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const Title = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Description = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   margin-top: ${({ theme }) => theme.spacing[1]};
 `;
 
@@ -88,20 +89,20 @@ export const CloseButton = styled.button`
   width: 2rem;
   height: 2rem;
   border-radius: ${({ theme }) => theme.radii.md};
-  color: ${({ theme }) => theme.colors.gray[400]};
+  color: ${({ theme }) => theme.colors.text.muted};
   background: none;
   border: none;
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[600]};
-    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 
   &:focus-visible {
     outline: none;
-    box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[200]};
+    box-shadow: ${({ theme }) => theme.shadows.focus} ${({ theme }) => theme.colors.primary[500]}40;
   }
 `;
 
@@ -116,8 +117,8 @@ export const Footer = styled.div`
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing[3]};
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
-  border-top: 1px solid ${({ theme }) => theme.colors.gray[100]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.primary};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
 `;
 
 export const IconWrapper = styled.div<{ $variant?: 'danger' | 'warning' | 'info' | 'success' }>`

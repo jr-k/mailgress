@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/jessym/mailgress/internal/domain"
+	"github.com/jr-k/mailgress/internal/domain"
 )
 
 type Payload struct {

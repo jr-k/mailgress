@@ -4,11 +4,18 @@ import (
 	"context"
 	"net/http"
 	"sync"
+
+	"github.com/romsar/gonertia"
 )
 
 type FlashData struct {
 	Success string `json:"success,omitempty"`
 	Error   string `json:"error,omitempty"`
+}
+
+func GetFlash(r *http.Request) *FlashData {
+	flash, _ := r.Context().Value(flashContextKey).(*FlashData)
+	return flash
 }
 
 type FlashMiddleware struct {
@@ -20,6 +27,28 @@ func NewFlashMiddleware() *FlashMiddleware {
 	return &FlashMiddleware{
 		flashes: make(map[string]*FlashData),
 	}
+}
+
+func (m *FlashMiddleware) SetSuccess(r *http.Request, message string) {
+	cookie, _ := r.Cookie("session_token")
+	if cookie == nil {
+		return
+	}
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.flashes[cookie.Value] = &FlashData{Success: message}
+}
+
+func (m *FlashMiddleware) SetError(r *http.Request, message string) {
+	cookie, _ := r.Cookie("session_token")
+	if cookie == nil {
+		return
+	}
+
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.flashes[cookie.Value] = &FlashData{Error: message}
 }
 
 func (m *FlashMiddleware) Handle(next http.Handler) http.Handler {
@@ -41,6 +70,9 @@ func (m *FlashMiddleware) Handle(next http.Handler) http.Handler {
 				m.mu.Unlock()
 
 				ctx := context.WithValue(r.Context(), flashContextKey, flash)
+				ctx = gonertia.SetProps(ctx, gonertia.Props{
+					"flash": flash,
+				})
 				r = r.WithContext(ctx)
 			}
 		}

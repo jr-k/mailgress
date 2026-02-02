@@ -21,15 +21,16 @@ export const Sidebar = styled.aside<{ $isOpen?: boolean }>`
   bottom: 0;
   width: 240px;
   padding: ${({ theme }) => theme.spacing[6]} 0;
-  border-right: 1px solid ${({ theme }) => theme.colors.gray[200]};
-  background: ${({ theme }) => theme.colors.white};
+  border-right: 1px solid ${({ theme }) => theme.colors.border.primary};
+  background: ${({ theme }) => theme.colors.surface.primary};
   display: flex;
   flex-direction: column;
   z-index: 40;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     transform: translateX(${({ $isOpen }) => ($isOpen ? '0' : '-100%')});
-    transition: transform ${({ theme }) => theme.transitions.smooth};
+    transition: transform ${({ theme }) => theme.transitions.smooth}, background-color 0.2s ease;
     box-shadow: ${({ $isOpen, theme }) => ($isOpen ? theme.shadows.lg : 'none')};
     width: 280px;
   }
@@ -45,7 +46,7 @@ export const SidebarOverlay = styled.div<{ $isOpen?: boolean }>`
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.3)'};
     z-index: 30;
   }
 `;
@@ -55,17 +56,17 @@ export const MobileMenuButton = styled.button`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[50]};
+    background: ${({ theme }) => theme.colors.interactive.hover};
   }
 
   svg {
@@ -85,36 +86,18 @@ export const BackLink = styled.a`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-decoration: none;
   transition: color ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 
   svg {
     width: 1rem;
     height: 1rem;
   }
-`;
-
-export const MailboxHeader = styled.div`
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
-  margin-bottom: ${({ theme }) => theme.spacing[4]};
-`;
-
-export const MailboxEmail = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.primary[600]};
-  word-break: break-all;
-`;
-
-export const MailboxDescription = styled.div`
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
-  margin-top: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const MailboxSwitcher = styled.div`
@@ -129,23 +112,23 @@ export const MailboxSwitcherButton = styled.button`
   justify-content: space-between;
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  background: ${({ theme }) => theme.colors.gray[50]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   cursor: pointer;
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[100]};
-    border-color: ${({ theme }) => theme.colors.gray[300]};
+    background: ${({ theme }) => theme.colors.interactive.hover};
+    border-color: ${({ theme }) => theme.colors.border.secondary};
   }
 
   svg {
     width: 1rem;
     height: 1rem;
-    color: ${({ theme }) => theme.colors.gray[500]};
+    color: ${({ theme }) => theme.colors.text.tertiary};
   }
 `;
 
@@ -156,8 +139,8 @@ export const MailboxSwitcherDropdown = styled.div<{ $isOpen?: boolean }>`
   left: ${({ theme }) => theme.spacing[4]};
   right: ${({ theme }) => theme.spacing[4]};
   margin-top: ${({ theme }) => theme.spacing[1]};
-  background: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.elevated};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   box-shadow: ${({ theme }) => theme.shadows.lg};
   z-index: 50;
@@ -170,12 +153,14 @@ export const MailboxSearchInput = styled.input`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   border: none;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   outline: none;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text.primary};
 
   &::placeholder {
-    color: ${({ theme }) => theme.colors.gray[400]};
+    color: ${({ theme }) => theme.colors.text.muted};
   }
 `;
 
@@ -188,21 +173,21 @@ export const MailboxOption = styled.a<{ $active?: boolean }>`
   display: block;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme, $active }) => ($active ? theme.colors.primary[600] : theme.colors.gray[700])};
-  background: ${({ theme, $active }) => ($active ? theme.colors.primary[50] : 'transparent')};
+  color: ${({ theme, $active }) => ($active ? theme.colors.primary[500] : theme.colors.text.secondary)};
+  background: ${({ theme, $active }) => ($active ? theme.colors.interactive.selected : 'transparent')};
   text-decoration: none;
   cursor: pointer;
   transition: background ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[50]};
+    background: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
 export const MailboxOptionEmpty = styled.div`
   padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-align: center;
 `;
 
@@ -215,16 +200,16 @@ export const SidebarLink = styled.a<{ $active?: boolean }>`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[6]}`};
-  color: ${({ theme, $active }) => $active ? theme.colors.primary[600] : theme.colors.gray[600]};
-  background: ${({ theme, $active }) => $active ? theme.colors.primary[50] : 'transparent'};
-  border-right: 3px solid ${({ theme, $active }) => $active ? theme.colors.primary[600] : 'transparent'};
+  color: ${({ theme, $active }) => $active ? theme.colors.primary[500] : theme.colors.text.secondary};
+  background: ${({ theme, $active }) => $active ? theme.colors.interactive.selected : 'transparent'};
+  border-right: 3px solid ${({ theme, $active }) => $active ? theme.colors.primary[500] : 'transparent'};
   font-weight: ${({ theme, $active }) => $active ? theme.fontWeights.medium : theme.fontWeights.normal};
   text-decoration: none;
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary[600]};
-    background: ${({ theme }) => theme.colors.primary[50]};
+    color: ${({ theme }) => theme.colors.primary[500]};
+    background: ${({ theme }) => theme.colors.interactive.selected};
   }
 `;
 
@@ -234,10 +219,11 @@ export const Content = styled.div`
   padding: ${({ theme }) => theme.spacing[8]};
   overflow-x: hidden;
   min-width: 0;
-  background: ${({ theme }) => theme.colors.gray[50]};
+  background: ${({ theme }) => theme.colors.background.primary};
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: background-color 0.2s ease;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     margin-left: 0;

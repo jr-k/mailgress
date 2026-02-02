@@ -11,24 +11,24 @@ export const FilterInput = styled.div`
   min-width: 200px;
   min-height: 38px;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  background: white;
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  background: ${({ theme }) => theme.colors.surface.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
   transition: border-color ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    border-color: ${({ theme }) => theme.colors.gray[400]};
+    border-color: ${({ theme }) => theme.colors.border.secondary};
   }
 
   &:focus-within {
-    border-color: ${({ theme }) => theme.colors.primary[500]};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary[100]};
+    border-color: ${({ theme }) => theme.colors.border.focus};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme.colors.primary[500]}30;
   }
 `;
 
 export const Placeholder = styled.span`
-  color: ${({ theme }) => theme.colors.gray[400]};
+  color: ${({ theme }) => theme.colors.text.muted};
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `;
 
@@ -56,8 +56,8 @@ export const ModeButton = styled.button<{ $mode: 'AND' | 'OR' }>`
   padding: 1px 4px;
   font-size: 10px;
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
-  background: ${({ theme }) => theme.colors.gray[100]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
+  background: ${({ theme }) => theme.colors.interactive.hover};
   border: none;
   border-radius: ${({ theme }) => theme.radii.sm};
   cursor: pointer;
@@ -65,8 +65,8 @@ export const ModeButton = styled.button<{ $mode: 'AND' | 'OR' }>`
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
-    background: ${({ theme }) => theme.colors.gray[200]};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    background: ${({ theme }) => theme.colors.interactive.active};
   }
 `;
 
@@ -83,8 +83,8 @@ export const RemoveTagButton = styled.button`
   width: 14px;
   height: 14px;
   padding: 0;
-  background: ${({ theme }) => theme.colors.gray[200]};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  background: ${({ theme }) => theme.colors.interactive.active};
+  color: ${({ theme }) => theme.colors.text.secondary};
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -93,8 +93,8 @@ export const RemoveTagButton = styled.button`
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[300]};
-    color: ${({ theme }) => theme.colors.gray[700]};
+    background: ${({ theme }) => theme.colors.border.secondary};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
@@ -105,8 +105,8 @@ export const ClearButton = styled.button`
   width: 18px;
   height: 18px;
   padding: 0;
-  background: ${({ theme }) => theme.colors.gray[200]};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  background: ${({ theme }) => theme.colors.interactive.active};
+  color: ${({ theme }) => theme.colors.text.secondary};
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -115,14 +115,14 @@ export const ClearButton = styled.button`
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[300]};
-    color: ${({ theme }) => theme.colors.gray[700]};
+    background: ${({ theme }) => theme.colors.border.secondary};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
 export const DropdownArrow = styled.span<{ $open: boolean }>`
   display: flex;
-  color: ${({ theme }) => theme.colors.gray[400]};
+  color: ${({ theme }) => theme.colors.text.muted};
   transition: transform ${({ theme }) => theme.transitions.fast};
   transform: ${({ $open }) => $open ? 'rotate(180deg)' : 'rotate(0)'};
 `;
@@ -132,8 +132,8 @@ export const Dropdown = styled.div`
   z-index: 9999;
   max-height: 300px;
   overflow-y: auto;
-  background: white;
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background: ${({ theme }) => theme.colors.surface.elevated};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.lg};
   box-shadow: ${({ theme }) => theme.shadows.lg};
 `;
@@ -142,14 +142,15 @@ export const DropdownHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing[5]};
   padding: ${({ theme }) => theme.spacing[3]};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const DropdownTitle = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
 `;
 
@@ -157,7 +158,7 @@ export const ModeToggle = styled.div`
   display: flex;
   gap: 2px;
   padding: 2px;
-  background: ${({ theme }) => theme.colors.gray[100]};
+  background: ${({ theme }) => theme.colors.interactive.hover};
   border-radius: ${({ theme }) => theme.radii.md};
 `;
 
@@ -165,8 +166,8 @@ export const ModeOption = styled.button<{ $active: boolean }>`
   padding: 4px 8px;
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme, $active }) => $active ? theme.colors.gray[900] : theme.colors.gray[500]};
-  background: ${({ $active }) => $active ? 'white' : 'transparent'};
+  color: ${({ theme, $active }) => $active ? theme.colors.text.primary : theme.colors.text.tertiary};
+  background: ${({ theme, $active }) => $active ? theme.colors.surface.primary : 'transparent'};
   border: none;
   border-radius: ${({ theme }) => theme.radii.sm};
   cursor: pointer;
@@ -174,7 +175,7 @@ export const ModeOption = styled.button<{ $active: boolean }>`
   box-shadow: ${({ $active, theme }) => $active ? theme.shadows.sm : 'none'};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[900]};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
@@ -188,7 +189,7 @@ export const TagOption = styled.button<{ $selected: boolean }>`
   gap: ${({ theme }) => theme.spacing[2]};
   width: 100%;
   padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme, $selected }) => $selected ? theme.colors.gray[50] : 'transparent'};
+  background: ${({ theme, $selected }) => $selected ? theme.colors.interactive.hover : 'transparent'};
   border: none;
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
@@ -196,7 +197,7 @@ export const TagOption = styled.button<{ $selected: boolean }>`
   transition: background ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[100]};
+    background: ${({ theme }) => theme.colors.interactive.hover};
   }
 `;
 
@@ -206,7 +207,7 @@ export const CheckboxIndicator = styled.div<{ $checked: boolean }>`
   justify-content: center;
   width: 16px;
   height: 16px;
-  border: 2px solid ${({ theme, $checked }) => $checked ? theme.colors.primary[500] : theme.colors.gray[300]};
+  border: 2px solid ${({ theme, $checked }) => $checked ? theme.colors.primary[500] : theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.sm};
   background: ${({ theme, $checked }) => $checked ? theme.colors.primary[500] : 'transparent'};
   color: white;
@@ -218,5 +219,5 @@ export const EmptyMessage = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
   text-align: center;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;

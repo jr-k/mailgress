@@ -1,4 +1,4 @@
-module github.com/jessym/mailgress
+module github.com/jr-k/mailgress
 
 go 1.24.0
 

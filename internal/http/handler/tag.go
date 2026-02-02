@@ -6,19 +6,22 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jessym/mailgress/internal/service"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
 )
 
 type TagHandler struct {
 	inertia    *gonertia.Inertia
 	tagService *service.TagService
+	flash      *mw.FlashMiddleware
 }
 
-func NewTagHandler(inertia *gonertia.Inertia, tagService *service.TagService) *TagHandler {
+func NewTagHandler(inertia *gonertia.Inertia, tagService *service.TagService, flash *mw.FlashMiddleware) *TagHandler {
 	return &TagHandler{
 		inertia:    inertia,
 		tagService: tagService,
+		flash:      flash,
 	}
 }
 
@@ -148,7 +151,8 @@ func (h *TagHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/tags")
+	h.flash.SetSuccess(r, "Tag updated successfully")
+	h.inertia.Back(w, r)
 }
 
 func (h *TagHandler) Delete(w http.ResponseWriter, r *http.Request) {

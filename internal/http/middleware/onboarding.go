@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jessym/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/service"
 )
 
 type OnboardingMiddleware struct {

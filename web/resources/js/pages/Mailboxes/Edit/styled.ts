@@ -29,11 +29,14 @@ export const Title = styled.h1`
 export const Form = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[6]};
+  gap: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const FormCard = styled.div`
   padding: ${({ theme }) => theme.spacing[6]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const InputGroup = styled.div`
@@ -83,9 +86,27 @@ export const TagsWrapper = styled.div`
   margin-top: ${({ theme }) => theme.spacing[2]};
 `;
 
+export const SectionTitle = styled.h2`
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.gray[900]};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
+`;
+
+export const FieldRow = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: ${({ theme }) => theme.spacing[4]};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
 export const FormActions = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const FormActionsRight = styled.div`

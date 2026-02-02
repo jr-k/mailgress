@@ -1,21 +1,10 @@
 import styled from 'styled-components';
 
-export const Header = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing[6]};
-`;
-
-export const Title = styled.h1`
+export const PageTitle = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
-`;
-
-export const Actions = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[3]};
+  color: ${({ theme }) => theme.colors.text.primary};
+  margin-bottom: ${({ theme }) => theme.spacing[6]};
 `;
 
 export const Section = styled.div`
@@ -57,6 +46,7 @@ export const InfoValue = styled.dd`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.gray[900]};
+  margin: 0;
 `;
 
 export const TableWrapper = styled.div`

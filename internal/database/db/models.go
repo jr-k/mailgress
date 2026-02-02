@@ -49,14 +49,17 @@ type Email struct {
 }
 
 type Mailbox struct {
-	ID          int64          `json:"id"`
-	Slug        string         `json:"slug"`
-	OwnerID     sql.NullInt64  `json:"owner_id"`
-	Description sql.NullString `json:"description"`
-	IsActive    int64          `json:"is_active"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DomainID    sql.NullInt64  `json:"domain_id"`
+	ID                  int64          `json:"id"`
+	Slug                string         `json:"slug"`
+	OwnerID             sql.NullInt64  `json:"owner_id"`
+	Description         sql.NullString `json:"description"`
+	IsActive            int64          `json:"is_active"`
+	CreatedAt           time.Time      `json:"created_at"`
+	UpdatedAt           time.Time      `json:"updated_at"`
+	DomainID            sql.NullInt64  `json:"domain_id"`
+	MaxEmailSizeMb      int64          `json:"max_email_size_mb"`
+	MaxAttachmentSizeMb int64          `json:"max_attachment_size_mb"`
+	RetentionDays       int64          `json:"retention_days"`
 }
 
 type MailboxTag struct {

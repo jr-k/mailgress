@@ -7,9 +7,9 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	mw "github.com/jessym/mailgress/internal/http/middleware"
-	"github.com/jessym/mailgress/internal/service"
-	"github.com/jessym/mailgress/internal/storage"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/storage"
 	"github.com/romsar/gonertia"
 )
 

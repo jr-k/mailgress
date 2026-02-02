@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi/v5"
-	mw "github.com/jessym/mailgress/internal/http/middleware"
-	"github.com/jessym/mailgress/internal/service"
+	mw "github.com/jr-k/mailgress/internal/http/middleware"
+	"github.com/jr-k/mailgress/internal/service"
 	"github.com/romsar/gonertia"
 )
 
@@ -183,6 +183,28 @@ func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 		mailbox.Domain = domain
 	}
 
+	// Get all mailboxes for the switcher
+	var allMailboxes interface{}
+	if user.IsAdmin {
+		mbs, _ := h.mailboxService.List(r.Context())
+		for _, mb := range mbs {
+			if mb.DomainID != nil {
+				domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
+				mb.Domain = domain
+			}
+		}
+		allMailboxes = mbs
+	} else {
+		mbs, _ := h.mailboxService.ListByOwner(r.Context(), user.ID)
+		for _, mb := range mbs {
+			if mb.DomainID != nil {
+				domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
+				mb.Domain = domain
+			}
+		}
+		allMailboxes = mbs
+	}
+
 	page := 1
 	if p := r.URL.Query().Get("page"); p != "" {
 		if parsed, err := strconv.Atoi(p); err == nil && parsed > 0 {
@@ -206,8 +228,9 @@ func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.inertia.Render(w, r, "Mailboxes/Show", gonertia.Props{
-		"mailbox": mailbox,
-		"emails":  emails,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
+		"emails":       emails,
 		"pagination": map[string]interface{}{
 			"current_page": page,
 			"total":        total,
@@ -245,13 +268,23 @@ func (h *MailboxHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	domains, _ := h.domainService.ListActive(r.Context())
 	allTags, _ := h.tagService.List(r.Context())
 	mailboxTags, _ := h.tagService.GetTagsForMailbox(r.Context(), id)
+	allMailboxes, _ := h.mailboxService.List(r.Context())
+
+	// Load domain for each mailbox in allMailboxes
+	for _, mb := range allMailboxes {
+		if mb.DomainID != nil {
+			domain, _ := h.domainService.GetByID(r.Context(), *mb.DomainID)
+			mb.Domain = domain
+		}
+	}
 
 	h.inertia.Render(w, r, "Mailboxes/Edit", gonertia.Props{
-		"mailbox":     mailbox,
-		"users":       users,
-		"domains":     domains,
-		"allTags":     allTags,
-		"mailboxTags": mailboxTags,
+		"mailbox":      mailbox,
+		"allMailboxes": allMailboxes,
+		"users":        users,
+		"domains":      domains,
+		"allTags":      allTags,
+		"mailboxTags":  mailboxTags,
 	})
 }
 
@@ -269,11 +302,14 @@ func (h *MailboxHandler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Slug        string `json:"slug"`
-		Description string `json:"description"`
-		OwnerID     string `json:"owner_id"`
-		DomainID    string `json:"domain_id"`
-		IsActive    bool   `json:"is_active"`
+		Slug                string `json:"slug"`
+		Description         string `json:"description"`
+		OwnerID             string `json:"owner_id"`
+		DomainID            string `json:"domain_id"`
+		IsActive            bool   `json:"is_active"`
+		MaxEmailSizeMB      int    `json:"max_email_size_mb"`
+		MaxAttachmentSizeMB int    `json:"max_attachment_size_mb"`
+		RetentionDays       int    `json:"retention_days"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.inertia.Render(w, r, "Errors/ServerError", nil)
@@ -294,7 +330,16 @@ func (h *MailboxHandler) Update(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	_, err = h.mailboxService.Update(r.Context(), id, req.Slug, ownerID, domainID, req.Description, req.IsActive)
+	_, err = h.mailboxService.Update(r.Context(), id, service.UpdateMailboxParams{
+		Slug:                req.Slug,
+		OwnerID:             ownerID,
+		DomainID:            domainID,
+		Description:         req.Description,
+		IsActive:            req.IsActive,
+		MaxEmailSizeMB:      req.MaxEmailSizeMB,
+		MaxAttachmentSizeMB: req.MaxAttachmentSizeMB,
+		RetentionDays:       req.RetentionDays,
+	})
 	if err != nil {
 		mailbox, _ := h.mailboxService.GetByID(r.Context(), id)
 		users, _ := h.userService.List(r.Context())
@@ -308,7 +353,7 @@ func (h *MailboxHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/mailboxes/"+strconv.FormatInt(id, 10))
+	h.inertia.Location(w, r, "/mailboxes/"+strconv.FormatInt(id, 10)+"/edit")
 }
 
 func (h *MailboxHandler) Delete(w http.ResponseWriter, r *http.Request) {

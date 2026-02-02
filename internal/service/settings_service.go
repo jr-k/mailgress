@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
-	"github.com/jessym/mailgress/internal/database/db"
+	"github.com/jr-k/mailgress/internal/database/db"
 )
 
 const (

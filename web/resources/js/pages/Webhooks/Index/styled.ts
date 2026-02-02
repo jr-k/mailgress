@@ -147,3 +147,50 @@ export const DeleteButton = styled.button`
     color: ${({ theme }) => theme.colors.red[800]};
   }
 `;
+
+export const IconLink = styled.a`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: ${({ theme }) => theme.radii.md};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.interactive.hover};
+    color: ${({ theme }) => theme.colors.primary[600]};
+  }
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+`;
+
+export const IconButton = styled.button<{ $variant?: 'default' | 'danger' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: ${({ theme }) => theme.radii.md};
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.text.secondary};
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: ${({ theme, $variant }) =>
+      $variant === 'danger' ? theme.colors.red[50] : theme.colors.interactive.hover};
+    color: ${({ theme, $variant }) =>
+      $variant === 'danger' ? theme.colors.red[600] : theme.colors.primary[600]};
+  }
+
+  svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+`;

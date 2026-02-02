@@ -7,6 +7,23 @@ import { FormGroup, Input, Select } from '@/components/Input';
 import { User, Domain, PageProps } from '@/types';
 import * as S from './styled';
 
+const WORDS = [
+  'apple', 'banana', 'cherry', 'dragon', 'eagle', 'forest', 'garden', 'harbor',
+  'island', 'jungle', 'kitten', 'lemon', 'mango', 'nebula', 'ocean', 'panda',
+  'quartz', 'river', 'sunset', 'tiger', 'umbrella', 'violet', 'willow', 'xenon',
+  'yellow', 'zebra', 'amber', 'bronze', 'coral', 'dusk', 'ember', 'frost',
+  'golden', 'haze', 'ivory', 'jade', 'karma', 'lunar', 'maple', 'nova',
+  'olive', 'pearl', 'quiet', 'ruby', 'silver', 'thunder', 'urban', 'velvet',
+  'winter', 'crystal', 'breeze', 'spark', 'flame', 'storm', 'cloud', 'shadow',
+  'light', 'meadow', 'stone', 'wave', 'wind', 'rain', 'snow', 'star',
+];
+
+const generateRandomSlug = () => {
+  const word1 = WORDS[Math.floor(Math.random() * WORDS.length)];
+  const word2 = WORDS[Math.floor(Math.random() * WORDS.length)];
+  return `${word1}-${word2}`;
+};
+
 interface Props extends PageProps {
   users: User[];
   domains: Domain[];
@@ -68,6 +85,11 @@ export default function MailboxCreate({ users, domains, error, slug, description
 
               <FormGroup label="Slug" htmlFor="slug">
                 <S.InputGroup>
+                  <S.GenerateButton type="button" onClick={() => setData('slug', generateRandomSlug())} title="Generate random slug">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  </S.GenerateButton>
                   <S.InputNoRightRadius>
                     <Input
                       id="slug"

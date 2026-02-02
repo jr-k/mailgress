@@ -1,14 +1,19 @@
+# Development docker-compose configuration
+# Usage: make dev (or docker compose up)
+
 services:
+  # Go backend with Air live reload
   app:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      target: go-builder
-    command: sh -c "mkdir -p /app/data && go run ./cmd/mailgress"
-    working_dir: /app
+      context: .
+      dockerfile: Dockerfile.dev
+      target: app
     volumes:
-      - ..:/app
+      - .:/app
       - go-modules:/go/pkg/mod
+      - go-build-cache:/root/.cache/go-build
+      - /app/web/node_modules
+      - /app/tmp
     ports:
       - "8080:8080"
       - "2525:2525"
@@ -21,15 +26,17 @@ services:
       DB_DSN: /app/data/mailgress.db
       STORAGE_PATH: /app/data/attachments
     depends_on:
-      - assets
+      assets:
+        condition: service_started
 
+  # Vite dev server with HMR
   assets:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
-      target: assets-dev
+      context: .
+      dockerfile: Dockerfile.dev
+      target: assets
     volumes:
-      - ../web:/app/web
+      - ./web:/app/web
       - /app/web/node_modules
     ports:
       - "5173:5173"
@@ -38,3 +45,4 @@ services:
 
 volumes:
   go-modules:
+  go-build-cache:

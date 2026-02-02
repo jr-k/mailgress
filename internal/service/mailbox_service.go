@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jessym/mailgress/internal/database/db"
-	"github.com/jessym/mailgress/internal/domain"
+	"github.com/jr-k/mailgress/internal/database/db"
+	"github.com/jr-k/mailgress/internal/domain"
 )
 
 var (
@@ -99,11 +99,14 @@ func (s *MailboxService) Create(ctx context.Context, slug string, ownerID *int64
 	}
 
 	dbMailbox, err := s.queries.CreateMailbox(ctx, db.CreateMailboxParams{
-		Slug:        slug,
-		OwnerID:     ownerIDVal,
-		DomainID:    domainIDVal,
-		Description: sql.NullString{String: description, Valid: description != ""},
-		IsActive:    1,
+		Slug:                slug,
+		OwnerID:             ownerIDVal,
+		DomainID:            domainIDVal,
+		Description:         sql.NullString{String: description, Valid: description != ""},
+		IsActive:            1,
+		MaxEmailSizeMb:      int64(domain.DefaultMaxEmailSizeMB),
+		MaxAttachmentSizeMb: int64(domain.DefaultMaxAttachmentSizeMB),
+		RetentionDays:       int64(domain.DefaultRetentionDays),
 	})
 	if err != nil {
 		return nil, err
@@ -112,34 +115,48 @@ func (s *MailboxService) Create(ctx context.Context, slug string, ownerID *int64
 	return s.toDomain(dbMailbox), nil
 }
 
-func (s *MailboxService) Update(ctx context.Context, id int64, slug string, ownerID *int64, domainID *int64, description string, isActive bool) (*domain.Mailbox, error) {
-	slug = strings.ToLower(strings.TrimSpace(slug))
+type UpdateMailboxParams struct {
+	Slug                string
+	OwnerID             *int64
+	DomainID            *int64
+	Description         string
+	IsActive            bool
+	MaxEmailSizeMB      int
+	MaxAttachmentSizeMB int
+	RetentionDays       int
+}
+
+func (s *MailboxService) Update(ctx context.Context, id int64, params UpdateMailboxParams) (*domain.Mailbox, error) {
+	slug := strings.ToLower(strings.TrimSpace(params.Slug))
 	if !slugPattern.MatchString(slug) {
 		return nil, ErrInvalidSlug
 	}
 
 	var activeFlag int64
-	if isActive {
+	if params.IsActive {
 		activeFlag = 1
 	}
 
 	var ownerIDVal sql.NullInt64
-	if ownerID != nil {
-		ownerIDVal = sql.NullInt64{Int64: *ownerID, Valid: true}
+	if params.OwnerID != nil {
+		ownerIDVal = sql.NullInt64{Int64: *params.OwnerID, Valid: true}
 	}
 
 	var domainIDVal sql.NullInt64
-	if domainID != nil {
-		domainIDVal = sql.NullInt64{Int64: *domainID, Valid: true}
+	if params.DomainID != nil {
+		domainIDVal = sql.NullInt64{Int64: *params.DomainID, Valid: true}
 	}
 
 	dbMailbox, err := s.queries.UpdateMailbox(ctx, db.UpdateMailboxParams{
-		ID:          id,
-		Slug:        slug,
-		OwnerID:     ownerIDVal,
-		DomainID:    domainIDVal,
-		Description: sql.NullString{String: description, Valid: description != ""},
-		IsActive:    activeFlag,
+		ID:                  id,
+		Slug:                slug,
+		OwnerID:             ownerIDVal,
+		DomainID:            domainIDVal,
+		Description:         sql.NullString{String: params.Description, Valid: params.Description != ""},
+		IsActive:            activeFlag,
+		MaxEmailSizeMb:      int64(params.MaxEmailSizeMB),
+		MaxAttachmentSizeMb: int64(params.MaxAttachmentSizeMB),
+		RetentionDays:       int64(params.RetentionDays),
 	})
 	if err != nil {
 		return nil, err
@@ -212,11 +229,14 @@ func (s *MailboxService) ListByDomain(ctx context.Context, domainID int64) ([]*d
 
 func (s *MailboxService) toDomain(dbMailbox db.Mailbox) *domain.Mailbox {
 	mailbox := &domain.Mailbox{
-		ID:        dbMailbox.ID,
-		Slug:      dbMailbox.Slug,
-		IsActive:  dbMailbox.IsActive != 0,
-		CreatedAt: dbMailbox.CreatedAt,
-		UpdatedAt: dbMailbox.UpdatedAt,
+		ID:                  dbMailbox.ID,
+		Slug:                dbMailbox.Slug,
+		IsActive:            dbMailbox.IsActive != 0,
+		CreatedAt:           dbMailbox.CreatedAt,
+		UpdatedAt:           dbMailbox.UpdatedAt,
+		MaxEmailSizeMB:      int(dbMailbox.MaxEmailSizeMb),
+		MaxAttachmentSizeMB: int(dbMailbox.MaxAttachmentSizeMb),
+		RetentionDays:       int(dbMailbox.RetentionDays),
 	}
 	if dbMailbox.OwnerID.Valid {
 		mailbox.OwnerID = &dbMailbox.OwnerID.Int64

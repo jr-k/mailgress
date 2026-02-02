@@ -8,6 +8,7 @@ export const GlobalStyles = createGlobalStyle`
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: ${({ theme }) => theme.mode};
   }
 
   body {
@@ -16,8 +17,9 @@ export const GlobalStyles = createGlobalStyle`
     font-family: ${({ theme }) => theme.fonts.body};
     font-size: ${({ theme }) => theme.fontSizes.base};
     line-height: 1.5;
-    color: ${({ theme }) => theme.colors.gray[900]};
-    background-color: ${({ theme }) => theme.colors.gray[50]};
+    color: ${({ theme }) => theme.colors.text.primary};
+    background-color: ${({ theme }) => theme.colors.background.primary};
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   a {
@@ -37,6 +39,7 @@ export const GlobalStyles = createGlobalStyle`
   h1, h2, h3, h4, h5, h6 {
     margin: 0;
     font-weight: ${({ theme }) => theme.fontWeights.semibold};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 
   p {
@@ -47,5 +50,29 @@ export const GlobalStyles = createGlobalStyle`
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  ::selection {
+    background-color: ${({ theme }) => theme.colors.primary[500]};
+    color: ${({ theme }) => theme.colors.white};
+  }
+
+  /* Scrollbar styling for dark mode */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.colors.background.secondary};
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.border.secondary};
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.colors.text.muted};
   }
 `;
