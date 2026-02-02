@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 
 	"github.com/jr-k/mailgress/internal/database/db"
@@ -170,13 +171,63 @@ func (s *UserService) EnsureAdmin(ctx context.Context, email, password string) e
 	return err
 }
 
+func (s *UserService) EnableTOTP(ctx context.Context, userID int64, secret string, backupCodes string) (*domain.User, error) {
+	dbUser, err := s.queries.UpdateUserTOTP(ctx, db.UpdateUserTOTPParams{
+		ID:              userID,
+		TotpSecret:      sql.NullString{String: secret, Valid: true},
+		TotpEnabled:     1,
+		TotpBackupCodes: sql.NullString{String: backupCodes, Valid: true},
+	})
+	if err != nil {
+		return nil, err
+	}
+	return s.toDomain(dbUser), nil
+}
+
+func (s *UserService) DisableTOTP(ctx context.Context, userID int64) (*domain.User, error) {
+	dbUser, err := s.queries.DisableUserTOTP(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	return s.toDomain(dbUser), nil
+}
+
+func (s *UserService) UpdateBackupCodes(ctx context.Context, userID int64, backupCodes string) error {
+	user, err := s.queries.GetUserByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	_, err = s.queries.UpdateUserTOTP(ctx, db.UpdateUserTOTPParams{
+		ID:              userID,
+		TotpSecret:      user.TotpSecret,
+		TotpEnabled:     user.TotpEnabled,
+		TotpBackupCodes: sql.NullString{String: backupCodes, Valid: true},
+	})
+	return err
+}
+
+func (s *UserService) GetTOTPInfo(ctx context.Context, userID int64) (secret string, backupCodes string, err error) {
+	user, err := s.queries.GetUserByID(ctx, userID)
+	if err != nil {
+		return "", "", err
+	}
+	if user.TotpSecret.Valid {
+		secret = user.TotpSecret.String
+	}
+	if user.TotpBackupCodes.Valid {
+		backupCodes = user.TotpBackupCodes.String
+	}
+	return secret, backupCodes, nil
+}
+
 func (s *UserService) toDomain(dbUser db.User) *domain.User {
 	user := &domain.User{
-		ID:        dbUser.ID,
-		Email:     dbUser.Email,
-		IsAdmin:   dbUser.IsAdmin != 0,
-		CreatedAt: dbUser.CreatedAt,
-		UpdatedAt: dbUser.UpdatedAt,
+		ID:          dbUser.ID,
+		Email:       dbUser.Email,
+		IsAdmin:     dbUser.IsAdmin != 0,
+		TOTPEnabled: dbUser.TotpEnabled != 0,
+		CreatedAt:   dbUser.CreatedAt,
+		UpdatedAt:   dbUser.UpdatedAt,
 	}
 	if dbUser.FirstName.Valid {
 		user.FirstName = dbUser.FirstName.String
@@ -187,6 +238,15 @@ func (s *UserService) toDomain(dbUser db.User) *domain.User {
 	if dbUser.AvatarPath.Valid && dbUser.AvatarPath.String != "" {
 		user.AvatarPath = dbUser.AvatarPath.String
 		user.AvatarURL = "/avatars/" + dbUser.AvatarPath.String
+	}
+	if dbUser.TotpSecret.Valid {
+		user.TOTPSecret = dbUser.TotpSecret.String
+	}
+	if dbUser.TotpBackupCodes.Valid && dbUser.TotpBackupCodes.String != "" {
+		var codes []string
+		if err := json.Unmarshal([]byte(dbUser.TotpBackupCodes.String), &codes); err == nil {
+			user.TOTPBackupCodes = codes
+		}
 	}
 	return user
 }

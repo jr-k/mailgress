@@ -6,6 +6,16 @@ export const Container = styled.div`
   transition: background-color 0.2s ease;
 `;
 
+export const SafeModeWarning = styled.div`
+  background-color: #fef2f2;
+  border-bottom: 2px solid #dc2626;
+  color: #b91c1c;
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+  text-align: center;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+`;
+
 export const Nav = styled.nav`
   position: sticky;
   top: 0;

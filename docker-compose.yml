@@ -25,6 +25,7 @@ services:
       DB_DRIVER: sqlite
       DB_DSN: /app/data/mailgress.db
       STORAGE_PATH: /app/data/attachments
+      SAFE_MODE: "false"
     depends_on:
       assets:
         condition: service_started

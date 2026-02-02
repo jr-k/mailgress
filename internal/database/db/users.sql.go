@@ -24,7 +24,7 @@ func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (email, password_hash, is_admin, first_name, last_name, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name
+RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes
 `
 
 type CreateUserParams struct {
@@ -54,6 +54,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.AvatarPath,
 		&i.FirstName,
 		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
 	)
 	return i, err
 }
@@ -67,8 +70,35 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	return err
 }
 
+const disableUserTOTP = `-- name: DisableUserTOTP :one
+UPDATE users
+SET totp_secret = '', totp_enabled = 0, totp_backup_codes = '', updated_at = CURRENT_TIMESTAMP
+WHERE id = ?
+RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes
+`
+
+func (q *Queries) DisableUserTOTP(ctx context.Context, id int64) (User, error) {
+	row := q.db.QueryRowContext(ctx, disableUserTOTP, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.PasswordHash,
+		&i.IsAdmin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AvatarPath,
+		&i.FirstName,
+		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
+	)
+	return i, err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name FROM users WHERE email = ? LIMIT 1
+SELECT id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes FROM users WHERE email = ? LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -84,12 +114,15 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.AvatarPath,
 		&i.FirstName,
 		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name FROM users WHERE id = ? LIMIT 1
+SELECT id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes FROM users WHERE id = ? LIMIT 1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
@@ -105,12 +138,15 @@ func (q *Queries) GetUserByID(ctx context.Context, id int64) (User, error) {
 		&i.AvatarPath,
 		&i.FirstName,
 		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
 	)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name FROM users ORDER BY created_at DESC
+SELECT id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes FROM users ORDER BY created_at DESC
 `
 
 func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
@@ -132,6 +168,9 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 			&i.AvatarPath,
 			&i.FirstName,
 			&i.LastName,
+			&i.TotpSecret,
+			&i.TotpEnabled,
+			&i.TotpBackupCodes,
 		); err != nil {
 			return nil, err
 		}
@@ -150,7 +189,7 @@ const updateUser = `-- name: UpdateUser :one
 UPDATE users
 SET email = ?, password_hash = ?, is_admin = ?, first_name = ?, last_name = ?, updated_at = CURRENT_TIMESTAMP
 WHERE id = ?
-RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name
+RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes
 `
 
 type UpdateUserParams struct {
@@ -182,6 +221,9 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.AvatarPath,
 		&i.FirstName,
 		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
 	)
 	return i, err
 }
@@ -190,7 +232,7 @@ const updateUserAvatar = `-- name: UpdateUserAvatar :one
 UPDATE users
 SET avatar_path = ?, updated_at = CURRENT_TIMESTAMP
 WHERE id = ?
-RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name
+RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes
 `
 
 type UpdateUserAvatarParams struct {
@@ -211,6 +253,48 @@ func (q *Queries) UpdateUserAvatar(ctx context.Context, arg UpdateUserAvatarPara
 		&i.AvatarPath,
 		&i.FirstName,
 		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
+	)
+	return i, err
+}
+
+const updateUserTOTP = `-- name: UpdateUserTOTP :one
+UPDATE users
+SET totp_secret = ?, totp_enabled = ?, totp_backup_codes = ?, updated_at = CURRENT_TIMESTAMP
+WHERE id = ?
+RETURNING id, email, password_hash, is_admin, created_at, updated_at, avatar_path, first_name, last_name, totp_secret, totp_enabled, totp_backup_codes
+`
+
+type UpdateUserTOTPParams struct {
+	TotpSecret      sql.NullString `json:"totp_secret"`
+	TotpEnabled     int64          `json:"totp_enabled"`
+	TotpBackupCodes sql.NullString `json:"totp_backup_codes"`
+	ID              int64          `json:"id"`
+}
+
+func (q *Queries) UpdateUserTOTP(ctx context.Context, arg UpdateUserTOTPParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserTOTP,
+		arg.TotpSecret,
+		arg.TotpEnabled,
+		arg.TotpBackupCodes,
+		arg.ID,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Email,
+		&i.PasswordHash,
+		&i.IsAdmin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AvatarPath,
+		&i.FirstName,
+		&i.LastName,
+		&i.TotpSecret,
+		&i.TotpEnabled,
+		&i.TotpBackupCodes,
 	)
 	return i, err
 }

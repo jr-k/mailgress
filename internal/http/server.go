@@ -56,17 +56,18 @@ func NewServer(
 	inertia.ShareProp("appName", "Mailgress")
 
 	onboardingMiddleware := mw.NewOnboardingMiddleware(settingsService)
-	authMiddleware := mw.NewAuthMiddleware(authService, inertia)
+	authMiddleware := mw.NewAuthMiddleware(authService, userService, inertia, cfg.SafeMode)
 	flashMiddleware := mw.NewFlashMiddleware()
 
 
 	dnsService := service.NewDNSService()
 	avatarService := service.NewAvatarService(cfg.StoragePath + "/avatars")
+	totpService := service.NewTOTPService("Mailgress")
 
 	onboardingHandler := handler.NewOnboardingHandler(inertia, settingsService, userService, domainService)
-	authHandler := handler.NewAuthHandler(inertia, authService)
+	authHandler := handler.NewAuthHandler(inertia, authService, userService, totpService)
 	dashboardHandler := handler.NewDashboardHandler(inertia, mailboxService, emailService, domainService)
-	userHandler := handler.NewUserHandler(inertia, userService, avatarService, flashMiddleware)
+	userHandler := handler.NewUserHandler(inertia, userService, avatarService, totpService, authService, flashMiddleware)
 	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService)
 	emailHandler := handler.NewEmailHandler(inertia, emailService, mailboxService, storage)
 	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher)
@@ -93,6 +94,8 @@ func NewServer(
 
 	r.Get("/login", authHandler.ShowLogin)
 	r.Post("/login", authHandler.Login)
+	r.Get("/login/2fa", authHandler.Show2FA)
+	r.Post("/login/2fa", authHandler.Verify2FA)
 
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.RequireAuth)
@@ -106,6 +109,13 @@ func NewServer(
 		r.Put("/profile", userHandler.UpdateProfile)
 		r.Post("/profile/avatar", userHandler.UploadProfileAvatar)
 		r.Delete("/profile/avatar", userHandler.DeleteProfileAvatar)
+
+		// 2FA routes
+		r.Get("/profile/2fa/setup", userHandler.Show2FASetup)
+		r.Post("/profile/2fa/enable", userHandler.Enable2FA)
+		r.Post("/profile/2fa/disable", userHandler.Disable2FA)
+		r.Get("/profile/2fa/backup-codes", userHandler.ShowBackupCodes)
+		r.Post("/profile/2fa/backup-codes/regenerate", userHandler.RegenerateBackupCodes)
 
 		r.Get("/mailboxes", mailboxHandler.Index)
 		r.Get("/mailboxes/create", mailboxHandler.Create)

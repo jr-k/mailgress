@@ -31,10 +31,10 @@ export default function Dashboard({ mailboxes, mailboxCount, emailCount, domainC
 
       <S.StatsGrid>
         <Card>
-          <S.StatCard>
+          <S.StatCardLink as={Link} href="/mailboxes">
             <S.StatLabel>Mailboxes</S.StatLabel>
             <S.StatValue>{mailboxCount}</S.StatValue>
-          </S.StatCard>
+          </S.StatCardLink>
         </Card>
         <Card>
           <S.StatCard>
@@ -43,10 +43,10 @@ export default function Dashboard({ mailboxes, mailboxCount, emailCount, domainC
           </S.StatCard>
         </Card>
         <Card>
-          <S.StatCard>
+          <S.StatCardLink as={Link} href="/domains">
             <S.StatLabel>Domains</S.StatLabel>
             <S.StatValue>{domainCount}</S.StatValue>
-          </S.StatCard>
+          </S.StatCardLink>
         </Card>
       </S.StatsGrid>
 

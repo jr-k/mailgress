@@ -5,6 +5,7 @@ export interface User {
   last_name: string;
   is_admin: boolean;
   avatar_url?: string;
+  totp_enabled?: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -163,5 +164,6 @@ export interface PageProps {
     error?: string;
   };
   appName: string;
+  safeMode?: boolean;
   [key: string]: unknown;
 }

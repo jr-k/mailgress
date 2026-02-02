@@ -15,14 +15,18 @@ type UserHandler struct {
 	inertia       *gonertia.Inertia
 	userService   *service.UserService
 	avatarService *service.AvatarService
+	totpService   *service.TOTPService
+	authService   *service.AuthService
 	flash         *mw.FlashMiddleware
 }
 
-func NewUserHandler(inertia *gonertia.Inertia, userService *service.UserService, avatarService *service.AvatarService, flash *mw.FlashMiddleware) *UserHandler {
+func NewUserHandler(inertia *gonertia.Inertia, userService *service.UserService, avatarService *service.AvatarService, totpService *service.TOTPService, authService *service.AuthService, flash *mw.FlashMiddleware) *UserHandler {
 	return &UserHandler{
 		inertia:       inertia,
 		userService:   userService,
 		avatarService: avatarService,
+		totpService:   totpService,
+		authService:   authService,
 		flash:         flash,
 	}
 }
@@ -406,4 +410,198 @@ func (h *UserHandler) DeleteProfileAvatar(w http.ResponseWriter, r *http.Request
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+// 2FA Setup Handlers
+
+func (h *UserHandler) Show2FASetup(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if user == nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	// Generate new TOTP secret
+	key, err := h.totpService.GenerateSecret(user.Email)
+	if err != nil {
+		h.inertia.Render(w, r, "Profile/TwoFactor/Setup", gonertia.Props{
+			"error": "Failed to generate 2FA secret",
+			"user":  user,
+		})
+		return
+	}
+
+	h.inertia.Render(w, r, "Profile/TwoFactor/Setup", gonertia.Props{
+		"secret": key.Secret(),
+		"qrUrl":  key.URL(),
+		"user":   user,
+	})
+}
+
+func (h *UserHandler) Enable2FA(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if user == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	var req struct {
+		Secret string `json:"secret"`
+		Code   string `json:"code"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.inertia.Render(w, r, "Profile/TwoFactor/Setup", gonertia.Props{
+			"error":  "Invalid request",
+			"secret": req.Secret,
+			"user":   user,
+		})
+		return
+	}
+
+	// Validate the code against the secret
+	if !h.totpService.ValidateCode(req.Secret, req.Code) {
+		// Regenerate QR code for the same secret
+		key, _ := h.totpService.GenerateSecret(user.Email)
+		h.inertia.Render(w, r, "Profile/TwoFactor/Setup", gonertia.Props{
+			"error":  "Invalid verification code. Please try again.",
+			"secret": key.Secret(),
+			"qrUrl":  key.URL(),
+			"user":   user,
+		})
+		return
+	}
+
+	// Generate backup codes
+	backupCodes, err := h.totpService.GenerateBackupCodes()
+	if err != nil {
+		h.inertia.Render(w, r, "Profile/TwoFactor/Setup", gonertia.Props{
+			"error":  "Failed to generate backup codes",
+			"secret": req.Secret,
+			"user":   user,
+		})
+		return
+	}
+
+	// Enable 2FA
+	encodedCodes := h.totpService.EncodeBackupCodes(backupCodes)
+	_, err = h.userService.EnableTOTP(r.Context(), user.ID, req.Secret, encodedCodes)
+	if err != nil {
+		h.inertia.Render(w, r, "Profile/TwoFactor/Setup", gonertia.Props{
+			"error":  "Failed to enable 2FA",
+			"secret": req.Secret,
+			"user":   user,
+		})
+		return
+	}
+
+	h.inertia.Render(w, r, "Profile/TwoFactor/BackupCodes", gonertia.Props{
+		"backupCodes": backupCodes,
+		"user":        user,
+	})
+}
+
+func (h *UserHandler) Disable2FA(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if user == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	var req struct {
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request"})
+		return
+	}
+
+	// Verify password by attempting login
+	_, err := h.authService.Login(r.Context(), user.Email, req.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid password"})
+		return
+	}
+
+	_, err = h.userService.DisableTOTP(r.Context(), user.ID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to disable 2FA"})
+		return
+	}
+
+	h.flash.SetSuccess(r, "Two-factor authentication has been disabled")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+func (h *UserHandler) ShowBackupCodes(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if user == nil {
+		h.inertia.Render(w, r, "Errors/NotFound", nil)
+		return
+	}
+
+	_, backupCodesStr, err := h.userService.GetTOTPInfo(r.Context(), user.ID)
+	if err != nil {
+		h.inertia.Render(w, r, "Errors/ServerError", nil)
+		return
+	}
+
+	backupCodes := h.totpService.DecodeBackupCodes(backupCodesStr)
+
+	h.inertia.Render(w, r, "Profile/TwoFactor/BackupCodes", gonertia.Props{
+		"backupCodes": backupCodes,
+		"user":        user,
+		"viewOnly":    true,
+	})
+}
+
+func (h *UserHandler) RegenerateBackupCodes(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if user == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	var req struct {
+		Password string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid request"})
+		return
+	}
+
+	// Verify password
+	_, err := h.authService.Login(r.Context(), user.Email, req.Password)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Invalid password"})
+		return
+	}
+
+	// Generate new backup codes
+	backupCodes, err := h.totpService.GenerateBackupCodes()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to generate backup codes"})
+		return
+	}
+
+	// Update backup codes
+	encodedCodes := h.totpService.EncodeBackupCodes(backupCodes)
+	err = h.userService.UpdateBackupCodes(r.Context(), user.ID, encodedCodes)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to save backup codes"})
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":      "ok",
+		"backupCodes": backupCodes,
+	})
 }

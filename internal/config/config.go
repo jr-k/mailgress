@@ -19,6 +19,8 @@ type Config struct {
 	WebhookWorkers int
 
 	StoragePath string
+
+	SafeMode bool
 }
 
 func Load() *Config {
@@ -36,6 +38,8 @@ func Load() *Config {
 		WebhookWorkers: getEnvInt("WEBHOOK_WORKERS", 5),
 
 		StoragePath: getEnv("STORAGE_PATH", "./data/attachments"),
+
+		SafeMode: getEnvBool("SAFE_MODE", false),
 	}
 }
 
@@ -55,6 +59,13 @@ func getEnvInt(key string, defaultVal int) int {
 		if i, err := strconv.Atoi(val); err == nil {
 			return i
 		}
+	}
+	return defaultVal
+}
+
+func getEnvBool(key string, defaultVal bool) bool {
+	if val := os.Getenv(key); val != "" {
+		return val == "true" || val == "1" || val == "yes"
 	}
 	return defaultVal
 }

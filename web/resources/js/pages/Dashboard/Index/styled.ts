@@ -29,6 +29,16 @@ export const StatCard = styled.div`
   padding: ${({ theme }) => theme.spacing[6]};
 `;
 
+export const StatCardLink = styled.a`
+  display: block;
+  padding: ${({ theme }) => theme.spacing[6]};
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.gray[50]};
+  }
+`;
+
 export const StatLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};

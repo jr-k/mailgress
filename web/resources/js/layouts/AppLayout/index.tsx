@@ -7,7 +7,7 @@ import { Avatar } from '@/components/Avatar';
 import * as S from './styled';
 
 export default function AppLayout({ children }: PropsWithChildren) {
-  const { auth, flash, appName, url } = usePage<PageProps>().props;
+  const { auth, flash, appName, url, safeMode } = usePage<PageProps>().props;
   const currentPath = typeof url === 'string' ? url : window.location.pathname;
   const [settingsOpen, setSettingsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -42,6 +42,11 @@ export default function AppLayout({ children }: PropsWithChildren) {
 
   return (
     <S.Container>
+      {safeMode && (
+        <S.SafeModeWarning>
+          <strong>WARNING:</strong> Safe Mode is enabled. Authentication is bypassed. Do not use in production!
+        </S.SafeModeWarning>
+      )}
       <S.Nav>
         <S.NavInner>
           <S.NavLeft>

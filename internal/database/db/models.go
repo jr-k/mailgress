@@ -90,15 +90,18 @@ type Tag struct {
 }
 
 type User struct {
-	ID           int64          `json:"id"`
-	Email        string         `json:"email"`
-	PasswordHash string         `json:"password_hash"`
-	IsAdmin      int64          `json:"is_admin"`
-	CreatedAt    time.Time      `json:"created_at"`
-	UpdatedAt    time.Time      `json:"updated_at"`
-	AvatarPath   sql.NullString `json:"avatar_path"`
-	FirstName    sql.NullString `json:"first_name"`
-	LastName     sql.NullString `json:"last_name"`
+	ID              int64          `json:"id"`
+	Email           string         `json:"email"`
+	PasswordHash    string         `json:"password_hash"`
+	IsAdmin         int64          `json:"is_admin"`
+	CreatedAt       time.Time      `json:"created_at"`
+	UpdatedAt       time.Time      `json:"updated_at"`
+	AvatarPath      sql.NullString `json:"avatar_path"`
+	FirstName       sql.NullString `json:"first_name"`
+	LastName        sql.NullString `json:"last_name"`
+	TotpSecret      sql.NullString `json:"totp_secret"`
+	TotpEnabled     int64          `json:"totp_enabled"`
+	TotpBackupCodes sql.NullString `json:"totp_backup_codes"`
 }
 
 type Webhook struct {

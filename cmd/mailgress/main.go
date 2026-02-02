@@ -22,6 +22,11 @@ func main() {
 
 	log.Printf("Starting Mailgress in %s mode", cfg.AppEnv)
 
+	if cfg.SafeMode {
+		log.Println("WARNING: SAFE_MODE is enabled! Authentication is bypassed.")
+		log.Println("WARNING: DO NOT use this in production environments!")
+	}
+
 	db, queries, err := database.NewConnection(cfg.DBDriver, cfg.DBDsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)

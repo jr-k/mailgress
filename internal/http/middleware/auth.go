@@ -18,18 +18,43 @@ const (
 
 type AuthMiddleware struct {
 	authService *service.AuthService
+	userService *service.UserService
 	inertia     *gonertia.Inertia
+	safeMode    bool
 }
 
-func NewAuthMiddleware(authService *service.AuthService, inertia *gonertia.Inertia) *AuthMiddleware {
+func NewAuthMiddleware(authService *service.AuthService, userService *service.UserService, inertia *gonertia.Inertia, safeMode bool) *AuthMiddleware {
 	return &AuthMiddleware{
 		authService: authService,
+		userService: userService,
 		inertia:     inertia,
+		safeMode:    safeMode,
 	}
 }
 
 func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Safe mode: bypass authentication
+		if m.safeMode {
+			user := m.getSystemUser(r.Context())
+			ctx := context.WithValue(r.Context(), userContextKey, user)
+			ctx = gonertia.SetProps(ctx, gonertia.Props{
+				"auth": map[string]interface{}{
+					"user": map[string]interface{}{
+						"id":         user.ID,
+						"email":      user.Email,
+						"first_name": user.FirstName,
+						"last_name":  user.LastName,
+						"is_admin":   user.IsAdmin,
+						"avatar_url": user.AvatarURL,
+					},
+				},
+				"safeMode": true,
+			})
+			next.ServeHTTP(w, r.WithContext(ctx))
+			return
+		}
+
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusFound)
@@ -65,6 +90,29 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 		})
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func (m *AuthMiddleware) getSystemUser(ctx context.Context) *domain.User {
+	// Try to get first admin user
+	users, err := m.userService.List(ctx)
+	if err == nil {
+		for _, u := range users {
+			if u.IsAdmin {
+				return u
+			}
+		}
+		if len(users) > 0 {
+			return users[0]
+		}
+	}
+	// Return synthetic system user if no users exist
+	return &domain.User{
+		ID:        0,
+		Email:     "system@mailgress.local",
+		FirstName: "System",
+		LastName:  "Admin",
+		IsAdmin:   true,
+	}
 }
 
 func (m *AuthMiddleware) RequireAdmin(next http.Handler) http.Handler {

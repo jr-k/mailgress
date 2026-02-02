@@ -29,3 +29,15 @@ DELETE FROM users WHERE id = ?;
 
 -- name: CountUsers :one
 SELECT COUNT(*) FROM users;
+
+-- name: UpdateUserTOTP :one
+UPDATE users
+SET totp_secret = ?, totp_enabled = ?, totp_backup_codes = ?, updated_at = CURRENT_TIMESTAMP
+WHERE id = ?
+RETURNING *;
+
+-- name: DisableUserTOTP :one
+UPDATE users
+SET totp_secret = '', totp_enabled = 0, totp_backup_codes = '', updated_at = CURRENT_TIMESTAMP
+WHERE id = ?
+RETURNING *;
