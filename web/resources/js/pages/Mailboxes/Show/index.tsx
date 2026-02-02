@@ -1,0 +1,196 @@
+import { useState } from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import MailboxLayout from '@/layouts/MailboxLayout';
+import { Badge } from '@/components/Badge';
+import { LinkButton } from '@/components/Button';
+import { Input } from '@/components/Input';
+import { Mailbox, Email, Pagination, PageProps } from '@/types';
+import * as S from './styled';
+
+interface Props extends PageProps {
+  mailbox: Mailbox;
+  emails: Email[];
+  pagination: Pagination;
+  search: string;
+}
+
+export default function MailboxShow({ mailbox, emails, pagination, search }: Props) {
+  const { auth } = usePage<Props>().props;
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(emails[0] || null);
+  const [searchQuery, setSearchQuery] = useState(search || '');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.get(`/mailboxes/${mailbox.id}`, { search: searchQuery }, { preserveState: true });
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleString();
+  };
+
+  const formatSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  return (
+    <MailboxLayout mailbox={mailbox}>
+      <S.Header>
+        <S.HeaderRow>
+          <div>
+            {/* Title removed as it's in breadcrumb, or we can keep a sub-title */}
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 600 }}>Emails</h2>
+            {mailbox.description && <S.Description>{mailbox.description}</S.Description>}
+          </div>
+          <S.Actions>
+            <LinkButton href={`/mailboxes/${mailbox.id}/webhooks`} variant="secondary">
+              Webhooks
+            </LinkButton>
+            {auth?.user.is_admin && (
+              <LinkButton href={`/mailboxes/${mailbox.id}/edit`} variant="secondary">
+                Edit
+              </LinkButton>
+            )}
+          </S.Actions>
+        </S.HeaderRow>
+      </S.Header>
+
+      <S.SplitView>
+        <S.EmailList>
+          <S.SearchBox>
+            <form onSubmit={handleSearch}>
+              <Input
+                type="text"
+                placeholder="Search emails..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
+          </S.SearchBox>
+          <S.EmailListItems>
+            {emails.length === 0 ? (
+              <S.EmptyState>No emails found</S.EmptyState>
+            ) : (
+              emails.map((email) => (
+                <S.EmailItem
+                  key={email.id}
+                  $selected={selectedEmail?.id === email.id}
+                  onClick={() => setSelectedEmail(email)}
+                >
+                  <S.EmailHeader>
+                    <S.EmailFrom>{email.from_address}</S.EmailFrom>
+                    <S.EmailDate>{formatDate(email.received_at)}</S.EmailDate>
+                  </S.EmailHeader>
+                  <S.EmailSubject>{email.subject || '(No subject)'}</S.EmailSubject>
+                  <S.EmailPreview>
+                    {email.text_body?.substring(0, 100) ||
+                      email.html_body?.substring(0, 100) ||
+                      '(No content)'}
+                  </S.EmailPreview>
+                  {email.has_attachments && (
+                    <S.AttachmentBadge>
+                      <Badge variant="gray">Attachments</Badge>
+                    </S.AttachmentBadge>
+                  )}
+                </S.EmailItem>
+              ))
+            )}
+          </S.EmailListItems>
+          {pagination.total > pagination.per_page && (
+            <S.Pagination>
+              <S.PageInfo>
+                Page {pagination.current_page} of{' '}
+                {Math.ceil(pagination.total / pagination.per_page)}
+              </S.PageInfo>
+              <S.PageLinks>
+                {pagination.current_page > 1 && (
+                  <S.PageLink
+                    as={Link}
+                    href={`/mailboxes/${mailbox.id}?page=${pagination.current_page - 1}&search=${
+                      search || ''
+                    }`}
+                  >
+                    Previous
+                  </S.PageLink>
+                )}
+                {pagination.current_page < Math.ceil(pagination.total / pagination.per_page) && (
+                  <S.PageLink
+                    as={Link}
+                    href={`/mailboxes/${mailbox.id}?page=${pagination.current_page + 1}&search=${
+                      search || ''
+                    }`}
+                  >
+                    Next
+                  </S.PageLink>
+                )}
+              </S.PageLinks>
+            </S.Pagination>
+          )}
+        </S.EmailList>
+
+        <S.EmailDetail>
+          {selectedEmail ? (
+            <S.EmailDetailContent>
+              <S.EmailDetailHeader>
+                <S.EmailDetailSubject>
+                  {selectedEmail.subject || '(No subject)'}
+                </S.EmailDetailSubject>
+                <S.EmailMeta>
+                  <div>
+                    <S.MetaLabel>From:</S.MetaLabel> <S.MetaValue>{selectedEmail.from_address}</S.MetaValue>
+                  </div>
+                  <div>
+                    <S.MetaLabel>To:</S.MetaLabel> <S.MetaValue>{selectedEmail.to_address}</S.MetaValue>
+                  </div>
+                  <div>
+                    <S.MetaLabel>Date:</S.MetaLabel>{' '}
+                    <S.MetaValue>
+                      {selectedEmail.date
+                        ? formatDate(selectedEmail.date)
+                        : formatDate(selectedEmail.received_at)}
+                    </S.MetaValue>
+                  </div>
+                  <div>
+                    <S.MetaLabel>Size:</S.MetaLabel> <S.MetaValue>{formatSize(selectedEmail.raw_size)}</S.MetaValue>
+                  </div>
+                </S.EmailMeta>
+              </S.EmailDetailHeader>
+
+              {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
+                <S.AttachmentsSection>
+                  <S.AttachmentsTitle>Attachments</S.AttachmentsTitle>
+                  <S.AttachmentsList>
+                    {selectedEmail.attachments.map((att) => (
+                      <S.AttachmentLink key={att.id} href={att.download_url}>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                          />
+                        </svg>
+                        {att.filename} ({formatSize(att.size)})
+                      </S.AttachmentLink>
+                    ))}
+                  </S.AttachmentsList>
+                </S.AttachmentsSection>
+              )}
+
+              <S.EmailBody>
+                {selectedEmail.html_body ? (
+                  <S.HtmlBody dangerouslySetInnerHTML={{ __html: selectedEmail.html_body }} />
+                ) : (
+                  <S.TextBody>{selectedEmail.text_body || '(No content)'}</S.TextBody>
+                )}
+              </S.EmailBody>
+            </S.EmailDetailContent>
+          ) : (
+            <S.NoEmailSelected>Select an email to view</S.NoEmailSelected>
+          )}
+        </S.EmailDetail>
+      </S.SplitView>
+    </MailboxLayout>
+  );
+}

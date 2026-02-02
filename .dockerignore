@@ -1,0 +1,51 @@
+# Git
+.git/
+.gitignore
+
+# Dependencies (rebuilt in container)
+web/node_modules/
+
+# Build outputs (rebuilt in container)
+bin/
+web/dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Data & Database
+data/
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+*.md
+
+# CI/CD
+.github/
+
+# Claude
+.claude/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.cache/

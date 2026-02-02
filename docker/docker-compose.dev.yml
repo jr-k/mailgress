@@ -1,0 +1,40 @@
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: go-builder
+    command: sh -c "mkdir -p /app/data && go run ./cmd/mailgress"
+    working_dir: /app
+    volumes:
+      - ..:/app
+      - go-modules:/go/pkg/mod
+    ports:
+      - "8080:8080"
+      - "2525:2525"
+    environment:
+      APP_ENV: development
+      APP_URL: http://localhost:8080
+      SMTP_LISTEN_ADDR: ":2525"
+      HTTP_LISTEN_ADDR: ":8080"
+      DB_DRIVER: sqlite
+      DB_DSN: /app/data/mailgress.db
+      STORAGE_PATH: /app/data/attachments
+    depends_on:
+      - assets
+
+  assets:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: assets-dev
+    volumes:
+      - ../web:/app/web
+      - /app/web/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+
+volumes:
+  go-modules:
