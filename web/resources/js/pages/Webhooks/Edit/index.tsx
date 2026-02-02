@@ -93,6 +93,9 @@ export default function WebhookEdit({ mailbox, allMailboxes, webhook, error }: P
       <S.Container>
         <S.Header>
           <S.Title>Edit Webhook</S.Title>
+          <LinkButton href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`} variant="secondary">
+            Back to Information
+          </LinkButton>
         </S.Header>
 
         {error && <Alert variant="error">{error}</Alert>}

@@ -20,6 +20,7 @@ export const GlobalStyles = createGlobalStyle`
     color: ${({ theme }) => theme.colors.text.primary};
     background-color: ${({ theme }) => theme.colors.background.primary};
     transition: background-color 0.2s ease, color 0.2s ease;
+    overscroll-behavior: none;
   }
 
   a {

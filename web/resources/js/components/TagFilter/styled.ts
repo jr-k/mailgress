@@ -30,6 +30,7 @@ export const FilterInput = styled.div`
 export const Placeholder = styled.span`
   color: ${({ theme }) => theme.colors.text.muted};
   font-size: ${({ theme }) => theme.fontSizes.sm};
+  flex: 1;
 `;
 
 export const SelectedTags = styled.div`

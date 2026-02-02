@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import MailboxLayout from '@/layouts/MailboxLayout';
 import { Card } from '@/components/Card';
 import { Badge } from '@/components/Badge';
+import { LinkButton } from '@/components/Button';
 import { Mailbox, Webhook, WebhookDelivery, Pagination, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -40,8 +41,13 @@ export default function WebhookDeliveries({ mailbox, allMailboxes, webhook, deli
   return (
     <MailboxLayout mailbox={mailbox} allMailboxes={allMailboxes}>
       <S.Header>
-        <S.Title>Delivery History</S.Title>
-        <S.Subtitle>{webhook.name}</S.Subtitle>
+        <div>
+          <S.Title>Delivery History</S.Title>
+          <S.Subtitle>{webhook.name}</S.Subtitle>
+        </div>
+        <LinkButton href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`} variant="secondary">
+          Back to Information
+        </LinkButton>
       </S.Header>
 
       <Card>

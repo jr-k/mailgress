@@ -22,10 +22,10 @@ export const Sidebar = styled.aside<{ $isOpen?: boolean }>`
   width: 240px;
   padding: ${({ theme }) => theme.spacing[6]} 0;
   border-right: 1px solid ${({ theme }) => theme.colors.border.primary};
-  background: ${({ theme }) => theme.colors.surface.primary};
+  //background: ${({ theme }) => theme.colors.surface.primary};
   display: flex;
   flex-direction: column;
-  z-index: 40;
+  z-index: 39;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {

@@ -241,6 +241,11 @@ func (h *DomainHandler) Verify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If all DNS checks pass, automatically mark domain as verified
+	if result.MX.Valid && result.TXT.Valid && !domain.IsVerified {
+		h.domainService.Update(r.Context(), id, domain.Name, true, domain.IsActive)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(result)
 }

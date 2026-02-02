@@ -19,6 +19,7 @@ export default function DomainsShow({ domain, allDomains, dnsRecords }: Props) {
   const [checking, setChecking] = useState(false);
   const [dnsResult, setDnsResult] = useState<DNSCheckResult | null>(null);
   const [publicIp, setPublicIp] = useState('<PUBLIC_IP>');
+  const [isVerified, setIsVerified] = useState(domain.is_verified);
 
   useEffect(() => {
     getWanAddress().then((ip) => {
@@ -87,6 +88,11 @@ export default function DomainsShow({ domain, allDomains, dnsRecords }: Props) {
       });
       const result = await response.json();
       setDnsResult(result);
+
+      // Update verification badge if all checks passed
+      if (result.mx?.valid && result.txt?.valid) {
+        setIsVerified(true);
+      }
     } catch (err) {
       console.error('Failed to verify DNS:', err);
     } finally {
@@ -112,8 +118,8 @@ export default function DomainsShow({ domain, allDomains, dnsRecords }: Props) {
           <S.InfoItem>
             <S.InfoLabel>Verification</S.InfoLabel>
             <S.InfoValue>
-              <Badge variant={domain.is_verified ? 'success' : 'warning'}>
-                {domain.is_verified ? 'Verified' : 'Pending'}
+              <Badge variant={isVerified ? 'success' : 'warning'}>
+                {isVerified ? 'Verified' : 'Pending'}
               </Badge>
             </S.InfoValue>
           </S.InfoItem>
