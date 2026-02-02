@@ -14,18 +14,30 @@ interface Props extends PageProps {
   emails: Email[];
   pagination: Pagination;
   search: string;
+  emailId?: string;
 }
 
-export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmails, pagination, search }: Props) {
+export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmails, pagination, search, emailId }: Props) {
   const [emails, setEmails] = useState<Email[]>(initialEmails);
-  const [selectedEmail, setSelectedEmail] = useState<Email | null>(initialEmails?.[0] || null);
+  const [selectedEmail, setSelectedEmail] = useState<Email | null>(() => {
+    if (emailId) {
+      const targetEmail = initialEmails?.find(e => e.id === parseInt(emailId, 10));
+      if (targetEmail) return targetEmail;
+    }
+    return initialEmails?.[0] || null;
+  });
   const [searchQuery, setSearchQuery] = useState(search || '');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     setEmails(initialEmails);
-    setSelectedEmail(initialEmails?.[0] || null);
-  }, [initialEmails]);
+    if (emailId) {
+      const targetEmail = initialEmails?.find(e => e.id === parseInt(emailId, 10));
+      setSelectedEmail(targetEmail || initialEmails?.[0] || null);
+    } else {
+      setSelectedEmail(initialEmails?.[0] || null);
+    }
+  }, [initialEmails, emailId]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

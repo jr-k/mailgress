@@ -220,6 +220,7 @@ func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 	}
 
 	search := r.URL.Query().Get("search")
+	emailIDParam := r.URL.Query().Get("email_id")
 	perPage := int64(50)
 	offset := int64((page - 1)) * perPage
 
@@ -254,7 +255,8 @@ func (h *MailboxHandler) Show(w http.ResponseWriter, r *http.Request) {
 			"total":        total,
 			"per_page":     perPage,
 		},
-		"search": search,
+		"search":   search,
+		"emailId":  emailIDParam,
 	})
 }
 

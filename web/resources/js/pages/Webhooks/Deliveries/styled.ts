@@ -171,3 +171,21 @@ export const WarningButton = styled.button`
     cursor: not-allowed;
   }
 `;
+
+export const ActionLinks = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[3]};
+  justify-content: flex-end;
+`;
+
+export const ViewEmailLink = styled.a`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.gray[600]};
+  text-decoration: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.gray[900]};
+  }
+`;

@@ -39,4 +39,5 @@ Default port: 8080 (web) / 2525 (SMTP)
 
 ## License
 
-MIT
+See [LICENSE.md](LICENSE.md) file
+[License](LICENSE.md)

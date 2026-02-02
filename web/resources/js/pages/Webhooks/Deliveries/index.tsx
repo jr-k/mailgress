@@ -118,11 +118,16 @@ export default function WebhookDeliveries({ mailbox, allMailboxes, webhook, deli
                       <S.GrayText>{delivery.attempt}</S.GrayText>
                     </S.TableCell>
                     <S.TableCell $align="right">
-                      {delivery.status === 'failed' && (
-                        <S.RetryButton onClick={() => handleRetry(delivery.id)}>
-                          Retry
-                        </S.RetryButton>
-                      )}
+                      <S.ActionLinks>
+                        <S.ViewEmailLink href={`/mailboxes/${mailbox.id}?email_id=${delivery.email_id}`}>
+                          View Email
+                        </S.ViewEmailLink>
+                        {delivery.status === 'failed' && (
+                          <S.RetryButton onClick={() => handleRetry(delivery.id)}>
+                            Retry
+                          </S.RetryButton>
+                        )}
+                      </S.ActionLinks>
                     </S.TableCell>
                   </S.TableRow>
                 ))
