@@ -86,8 +86,8 @@ jobs:
 
       - name: Create and push manifest
         run: |
-          for tag in ${{ steps.meta.outputs.tags }}; do
-            docker buildx imagetools create -t "$tag" \
+          echo "${{ steps.meta.outputs.tags }}" | while IFS= read -r tag; do
+            [ -n "$tag" ] && docker buildx imagetools create -t "$tag" \
               "${{ env.IMAGE_NAME }}:${{ github.ref_name }}-amd64" \
               "${{ env.IMAGE_NAME }}:${{ github.ref_name }}-arm64"
           done
