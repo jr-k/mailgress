@@ -3,7 +3,7 @@ import type { ToastVariant } from '../../contexts/ToastContext';
 
 const slideIn = keyframes`
   from {
-    transform: translateX(100%);
+    transform: translateX(calc(100% + 1rem));
     opacity: 0;
   }
   to {
@@ -14,12 +14,12 @@ const slideIn = keyframes`
 
 export const ToastContainer = styled.div`
   position: fixed;
-  top: ${({ theme }) => theme.spacing[4]};
-  right: ${({ theme }) => theme.spacing[4]};
+  top: ${({ theme }) => theme.spacing[6]};
+  right: ${({ theme }) => theme.spacing[6]};
   z-index: 99999;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
+  gap: ${({ theme }) => theme.spacing[3]};
 `;
 
 interface ToastItemProps {
@@ -27,22 +27,39 @@ interface ToastItemProps {
   $exiting?: boolean;
 }
 
+export const ToastIcon = styled.div`
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
 const variants = {
   success: css`
-    background-color: ${({ theme }) => theme.colors.green[600]};
-    color: white;
+    border-color: ${({ theme }) => theme.colors.green[500]};
+    ${ToastIcon} {
+      color: ${({ theme }) => theme.colors.green[500]};
+    }
   `,
   error: css`
-    background-color: ${({ theme }) => theme.colors.red[600]};
-    color: white;
+    border-color: ${({ theme }) => theme.colors.red[500]};
+    ${ToastIcon} {
+      color: ${({ theme }) => theme.colors.red[500]};
+    }
   `,
   warning: css`
-    background-color: ${({ theme }) => theme.colors.yellow[500]};
-    color: ${({ theme }) => theme.colors.yellow[800]};
+    border-color: ${({ theme }) => theme.colors.yellow[500]};
+    ${ToastIcon} {
+      color: ${({ theme }) => theme.colors.yellow[600]};
+    }
   `,
   info: css`
-    background-color: ${({ theme }) => theme.colors.blue[500]};
-    color: white;
+    border-color: ${({ theme }) => theme.colors.blue[500]};
+    ${ToastIcon} {
+      color: ${({ theme }) => theme.colors.blue[500]};
+    }
   `,
 };
 
@@ -54,42 +71,43 @@ export const ToastItem = styled.div<ToastItemProps>`
   border-radius: ${({ theme }) => theme.radii.lg};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 250px;
-  max-width: 400px;
-  animation: ${slideIn} 0.3s ease-out;
+  min-width: 280px;
+  max-width: 420px;
+  animation: ${slideIn} 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(4, 192, 45, 0.01);
+  backdrop-filter: blur(12px);
+  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border: 1px solid;
+  color: ${({ theme }) => theme.colors.gray[800]};
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -2px rgba(0, 0, 0, 0.1),
+    0 0 0 1px rgba(0, 0, 0, 0.02);
 
   ${({ $variant }) => variants[$variant]}
 `;
 
-export const ToastIcon = styled.div`
-  flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
 export const ToastMessage = styled.div`
   flex: 1;
-  line-height: 1.4;
+  line-height: 1.5;
 `;
 
 export const ToastClose = styled.button`
   flex-shrink: 0;
   background: none;
   border: none;
-  color: inherit;
-  opacity: 0.7;
+  color: ${({ theme }) => theme.colors.gray[400]};
   cursor: pointer;
   padding: ${({ theme }) => theme.spacing[1]};
   margin: -${({ theme }) => theme.spacing[1]};
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: ${({ theme }) => theme.radii.md};
+  transition: all 0.15s ease;
 
   &:hover {
-    opacity: 1;
+    background: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.gray[600]};
   }
 `;
