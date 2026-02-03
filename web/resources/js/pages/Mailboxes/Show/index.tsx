@@ -140,11 +140,6 @@ export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmai
                       <S.EmailDate>{formatDate(email.received_at)}</S.EmailDate>
                     </S.EmailHeader>
                     <S.EmailSubject $unread={!email.is_read}><S.EmailClaim>Sub</S.EmailClaim> {email.subject || '(No subject)'}</S.EmailSubject>
-                    <S.EmailPreview>
-                      {email.text_body?.substring(0, 100) ||
-                        email.html_body?.substring(0, 100) ||
-                        '(No content)'}
-                    </S.EmailPreview>
                     {email.has_attachments && (
                       <S.AttachmentBadge>
                         <Badge variant="gray">Attachments</Badge>
@@ -241,23 +236,23 @@ export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmai
                   </S.EmailActions>
                 </S.EmailDetailTitleRow>
                 <S.EmailMeta>
-                  <div>
+                  <S.MetaItem>
                     <S.MetaLabel>From:</S.MetaLabel> <S.MetaValue>{selectedEmail.from_address}</S.MetaValue>
-                  </div>
-                  <div>
+                  </S.MetaItem>
+                  <S.MetaItem>
                     <S.MetaLabel>To:</S.MetaLabel> <S.MetaValue>{selectedEmail.to_address}</S.MetaValue>
-                  </div>
-                  <div>
+                  </S.MetaItem>
+                  <S.MetaItem>
                     <S.MetaLabel>Date:</S.MetaLabel>{' '}
                     <S.MetaValue>
                       {selectedEmail.date
                         ? formatDate(selectedEmail.date)
                         : formatDate(selectedEmail.received_at)}
                     </S.MetaValue>
-                  </div>
-                  <div>
+                  </S.MetaItem>
+                  <S.MetaItem>
                     <S.MetaLabel>Size:</S.MetaLabel> <S.MetaValue>{formatSize(selectedEmail.raw_size)}</S.MetaValue>
-                  </div>
+                  </S.MetaItem>
                 </S.EmailMeta>
               </S.EmailDetailHeader>
 

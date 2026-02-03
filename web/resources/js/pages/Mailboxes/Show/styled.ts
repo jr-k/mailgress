@@ -235,15 +235,19 @@ export const EmailDetailSubject = styled.h2`
 `;
 
 export const EmailMeta = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => theme.spacing[4]};
+  display: flex;
+  flex-direction: column;
   font-size: ${({ theme }) => theme.fontSizes.sm};
 
   @media (max-width: 768px) {
-    grid-template-columns: 1fr;
     gap: ${({ theme }) => theme.spacing[2]};
   }
+`;
+
+export const MetaItem = styled.div`
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 10fr);
+  gap: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const MetaLabel = styled.span`
