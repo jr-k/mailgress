@@ -1,15 +1,15 @@
 # ============================================
 # Stage 1: Build frontend assets
 # ============================================
-FROM node:20-alpine AS assets-builder
+FROM oven/bun:1-alpine AS assets-builder
 
 WORKDIR /app/web
 
-COPY web/package*.json ./
-RUN npm ci
+COPY web/package.json web/bun.lock* ./
+RUN bun install --frozen-lockfile
 
 COPY web/ ./
-RUN npm run build
+RUN bun run build
 
 # ============================================
 # Stage 2: Build Go binary
