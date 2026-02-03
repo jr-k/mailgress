@@ -69,7 +69,7 @@ export default function Dashboard({ mailboxes, mailboxCount, emailCount, domainC
                   <S.MailboxInfo>
                     <S.MailboxName>{getEmailAddress(mailbox)}</S.MailboxName>
                     {mailbox.description && (
-                      <S.MailboxDescription>{mailbox.description}</S.MailboxDescription>
+                      <S.MailboxDescription>- {mailbox.description}</S.MailboxDescription>
                     )}
                   </S.MailboxInfo>
                   <S.MailboxStats>

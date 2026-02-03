@@ -119,6 +119,7 @@ export const MailboxDescription = styled.div`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  align-self: end;
 `;
 
 export const MailboxStats = styled.div`
