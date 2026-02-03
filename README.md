@@ -45,7 +45,7 @@ docker run -d \
   -v mailgress_data:/app/data \
   -e APP_URL=https://mailgress.example.com \
   -e WEBHOOK_SECRET=your-secret-key \
-  jierka/mailgress:latest
+  ghcr.io/jr-k/mailgress:latest
 ```
 
 ### Docker Compose
@@ -53,7 +53,7 @@ docker run -d \
 ```yaml
 services:
   mailgress:
-    image: jierka/mailgress:latest
+    image: ghcr.io/jr-k/mailgress:latest
     container_name: mailgress
     restart: unless-stopped
     ports:
