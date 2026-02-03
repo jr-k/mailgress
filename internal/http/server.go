@@ -176,6 +176,7 @@ func NewServer(
 			r.Delete("/domains/{id}", domainHandler.Delete)
 			r.Post("/domains/{id}/verify", domainHandler.Verify)
 			r.Put("/domains/{id}/tags", domainHandler.SetTags)
+			r.Get("/api/public-ip", domainHandler.GetPublicIP)
 
 			r.Get("/tags", tagHandler.Index)
 			r.Get("/tags/create", tagHandler.Create)

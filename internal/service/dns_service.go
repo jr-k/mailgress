@@ -2,16 +2,47 @@ package service
 
 import (
 	"context"
+	"io"
 	"net"
+	"net/http"
+	"regexp"
 	"strings"
+	"time"
 
 	"github.com/jr-k/mailgress/internal/domain"
 )
+
+var ipv4Regex = regexp.MustCompile(`^\d{1,3}(\.\d{1,3}){3}$`)
 
 type DNSService struct{}
 
 func NewDNSService() *DNSService {
 	return &DNSService{}
+}
+
+func (s *DNSService) GetWanAddress() string {
+	urls := []string{"https://4.ident.me", "https://4.tnedi.me"}
+	client := &http.Client{Timeout: 5 * time.Second}
+
+	for _, url := range urls {
+		resp, err := client.Get(url)
+		if err != nil {
+			continue
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			continue
+		}
+
+		ip := strings.TrimSpace(string(body))
+		if ipv4Regex.MatchString(ip) {
+			return ip
+		}
+	}
+
+	return ""
 }
 
 type DNSCheckResult struct {

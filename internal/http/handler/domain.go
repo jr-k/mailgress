@@ -349,6 +349,12 @@ func (h *DomainHandler) Verify(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
+func (h *DomainHandler) GetPublicIP(w http.ResponseWriter, r *http.Request) {
+	ip := h.dnsService.GetWanAddress()
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"ip": ip})
+}
+
 func (h *DomainHandler) SetTags(w http.ResponseWriter, r *http.Request) {
 	user := mw.GetUser(r)
 	if !user.IsAdmin {

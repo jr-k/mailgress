@@ -3,7 +3,6 @@ import DomainLayout from '@/layouts/DomainLayout';
 import { Card, CardBody } from '@/components/Card';
 import { Badge } from '@/components/Badge';
 import { Domain, DNSRecord, DNSCheckResult, PageProps } from '@/types';
-import { getWanAddress } from '@/utils/network';
 import * as S from './styled';
 
 interface Props extends PageProps {
@@ -18,15 +17,18 @@ export default function DomainsShow({ domain, allDomains, dnsRecords }: Props) {
   const [copied, setCopied] = useState(false);
   const [checking, setChecking] = useState(false);
   const [dnsResult, setDnsResult] = useState<DNSCheckResult | null>(null);
-  const [publicIp, setPublicIp] = useState('<PUBLIC_IP>');
   const [isVerified, setIsVerified] = useState(domain.is_verified);
+  const [publicIp, setPublicIp] = useState('<SERVER_PUBLIC_IP>');
 
   useEffect(() => {
-    getWanAddress().then((ip) => {
-      if (ip) {
-        setPublicIp(ip);
-      }
-    });
+    fetch('/api/public-ip')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.ip) {
+          setPublicIp(data.ip);
+        }
+      })
+      .catch(console.error);
   }, []);
 
   const formatDate = (dateStr: string) => {
