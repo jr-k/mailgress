@@ -59,7 +59,7 @@ export const SecretCodeWrapper = styled.div`
 export const SecretCode = styled.code`
   display: inline-block;
   padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[3]};
-  background: ${({ theme }) => theme.colors.gray[100]};
+  background: ${({ theme }) => theme.colors.interactive.hover};
   border-radius: ${({ theme }) => theme.radii.md};
   font-family: monospace;
   font-size: ${({ theme }) => theme.fontSizes.sm};
@@ -72,7 +72,7 @@ export const CopyButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => theme.spacing[2]};
-  background: ${({ theme }) => theme.colors.gray[100]};
+  background: ${({ theme }) => theme.colors.interactive.hover};
   border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
@@ -81,7 +81,7 @@ export const CopyButton = styled.button`
   transition: all 0.15s ease;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[200]};
+    background: ${({ theme }) => theme.colors.border.primary};
     color: ${({ theme }) => theme.colors.text.primary};
   }
 `;

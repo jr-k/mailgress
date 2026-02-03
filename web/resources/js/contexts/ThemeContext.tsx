@@ -1,6 +1,6 @@
-import { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from 'react';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components';
-import { lightTheme, Theme } from '@/styles/theme';
+import { lightTheme, darkTheme, Theme } from '@/styles/theme';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -13,28 +13,61 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-// Dark mode storage key - preserved for later
-// const STORAGE_KEY = 'mailgress-theme';
+const STORAGE_KEY = 'mailgress-theme';
+
+function getSystemPreference(): 'light' | 'dark' {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return 'dark';
+}
+
+function getStoredMode(): ThemeMode {
+  if (typeof window !== 'undefined') {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark' || stored === 'system') {
+      return stored;
+    }
+  }
+  return 'system';
+}
 
 interface ThemeProviderProps {
   children: ReactNode;
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  // Dark mode disabled for now - always use light mode
-  // TODO: Re-enable dark mode later
-  const mode: ThemeMode = 'light';
-  const resolvedMode: 'light' | 'dark' = 'light';
+  const [mode, setModeState] = useState<ThemeMode>(() => getStoredMode());
+  const [systemPreference, setSystemPreference] = useState<'light' | 'dark'>(() => getSystemPreference());
 
-  const setMode = (_newMode: ThemeMode) => {
-    // Disabled for now
-  };
+  // Listen for system preference changes
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
 
-  const toggleTheme = () => {
-    // Disabled for now
-  };
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => {
+      setSystemPreference(e.matches ? 'dark' : 'light');
+    };
 
-  const theme: Theme = lightTheme;
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  const resolvedMode: 'light' | 'dark' = mode === 'system' ? systemPreference : mode;
+
+  const setMode = useCallback((newMode: ThemeMode) => {
+    setModeState(newMode);
+    localStorage.setItem(STORAGE_KEY, newMode);
+  }, []);
+
+  const toggleTheme = useCallback(() => {
+    const modes: ThemeMode[] = ['light', 'dark', 'system'];
+    const currentIndex = modes.indexOf(mode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    setMode(modes[nextIndex]);
+  }, [mode, setMode]);
+
+  const theme: Theme = resolvedMode === 'dark' ? darkTheme : lightTheme;
 
   return (
     <ThemeContext.Provider value={{ mode, resolvedMode, setMode, toggleTheme }}>

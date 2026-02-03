@@ -11,20 +11,20 @@ export const Header = styled.div`
 
 export const BackLink = styled.a`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   display: inline-block;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
   transition: color 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Form = styled.form`
@@ -46,9 +46,9 @@ export const InputAddon = styled.span`
   align-items: center;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-left: none;
   border-radius: 0 ${({ theme }) => theme.radii.md} ${({ theme }) => theme.radii.md} 0;
 `;
@@ -66,17 +66,17 @@ export const GenerateButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-right: none;
   border-radius: ${({ theme }) => theme.radii.md} 0 0 ${({ theme }) => theme.radii.md};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[100]};
-    color: ${({ theme }) => theme.colors.gray[700]};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 
   svg {
@@ -88,7 +88,7 @@ export const GenerateButton = styled.button`
 export const HelperText = styled.p`
   margin-top: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const FormActions = styled.div`

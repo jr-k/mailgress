@@ -8,24 +8,24 @@ interface AlertProps {
 
 const variants = {
   success: css`
-    background-color: ${({ theme }) => theme.colors.green[50]};
-    border-color: ${({ theme }) => theme.colors.green[200]};
-    color: ${({ theme }) => theme.colors.green[800]};
+    background-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.green[500]}15` : theme.colors.green[50]};
+    border-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.green[500]}30` : theme.colors.green[200]};
+    color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.green[500] : theme.colors.green[800]};
   `,
   error: css`
-    background-color: ${({ theme }) => theme.colors.red[50]};
-    border-color: ${({ theme }) => theme.colors.red[200]};
-    color: ${({ theme }) => theme.colors.red[800]};
+    background-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.red[500]}15` : theme.colors.red[50]};
+    border-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.red[500]}30` : theme.colors.red[200]};
+    color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.red[500] : theme.colors.red[800]};
   `,
   warning: css`
-    background-color: ${({ theme }) => theme.colors.yellow[50]};
-    border-color: ${({ theme }) => theme.colors.yellow[100]};
-    color: ${({ theme }) => theme.colors.yellow[800]};
+    background-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.yellow[500]}15` : theme.colors.yellow[50]};
+    border-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.yellow[500]}30` : theme.colors.yellow[100]};
+    color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.yellow[500] : theme.colors.yellow[800]};
   `,
   info: css`
-    background-color: ${({ theme }) => theme.colors.blue[50]};
-    border-color: ${({ theme }) => theme.colors.blue[100]};
-    color: ${({ theme }) => theme.colors.blue[800]};
+    background-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.blue[500]}15` : theme.colors.blue[50]};
+    border-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.blue[500]}30` : theme.colors.blue[100]};
+    color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.blue[500] : theme.colors.blue[800]};
   `,
 };
 

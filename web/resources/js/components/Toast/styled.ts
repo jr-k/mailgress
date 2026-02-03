@@ -74,11 +74,10 @@ export const ToastItem = styled.div<ToastItemProps>`
   min-width: 280px;
   max-width: 420px;
   animation: ${slideIn} 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(4, 192, 45, 0.01);
+  background: ${({ theme }) => theme.mode === 'dark' ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.95)'};
   backdrop-filter: blur(12px);
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
   border: 1px solid;
-  color: ${({ theme }) => theme.colors.gray[800]};
+  color: ${({ theme }) => theme.colors.text.primary};
   box-shadow:
     0 4px 6px -1px rgba(0, 0, 0, 0.1),
     0 2px 4px -2px rgba(0, 0, 0, 0.1),
@@ -96,7 +95,7 @@ export const ToastClose = styled.button`
   flex-shrink: 0;
   background: none;
   border: none;
-  color: ${({ theme }) => theme.colors.gray[400]};
+  color: ${({ theme }) => theme.colors.text.muted};
   cursor: pointer;
   padding: ${({ theme }) => theme.spacing[1]};
   margin: -${({ theme }) => theme.spacing[1]};
@@ -107,7 +106,7 @@ export const ToastClose = styled.button`
   transition: all 0.15s ease;
 
   &:hover {
-    background: ${({ theme }) => theme.colors.gray[100]};
-    color: ${({ theme }) => theme.colors.gray[600]};
+    background: ${({ theme }) => theme.colors.interactive.hover};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;

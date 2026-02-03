@@ -5,7 +5,7 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
 `;
 
 export const Content = styled.div`
@@ -15,12 +15,12 @@ export const Content = styled.div`
 export const Code = styled.h1`
   font-size: 6rem;
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[300]};
+  color: ${({ theme }) => theme.colors.text.muted};
 `;
 
 export const Message = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xl};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-top: ${({ theme }) => theme.spacing[4]};
 `;
 

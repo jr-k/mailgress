@@ -21,7 +21,7 @@ export const HeaderRow = styled.div`
 `;
 
 export const Description = styled.p`
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const SplitView = styled.div`
@@ -43,7 +43,7 @@ export const SplitView = styled.div`
 export const EmailList = styled.div`
   width: 380px;
   min-width: 380px;
-  border-right: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-right: 1px solid ${({ theme }) => theme.colors.border.primary};
   display: flex;
   flex-direction: column;
 
@@ -58,7 +58,7 @@ export const EmailList = styled.div`
 
 export const SearchBox = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const EmailListItems = styled.div`
@@ -68,15 +68,24 @@ export const EmailListItems = styled.div`
 
 export const EmailItem = styled.div<{ $selected?: boolean; $unread?: boolean }>`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.interactive.hover};
   cursor: pointer;
   transition: background-color 0.15s ease;
-  background-color: ${({ $selected, $unread, theme }) =>
-    $selected ? theme.colors.primary[50] : $unread ? theme.colors.blue[50] : 'transparent'};
+  background-color: ${({ $selected, $unread, theme }) => {
+    if ($selected) {
+      return theme.mode === 'dark' ? `${theme.colors.primary[500]}20` : theme.colors.primary[50];
+    }
+    if ($unread) {
+      return theme.mode === 'dark' ? `${theme.colors.blue[500]}15` : theme.colors.blue[50];
+    }
+    return 'transparent';
+  }};
 
   &:hover {
     background-color: ${({ $selected, theme }) =>
-      $selected ? theme.colors.primary[50] : theme.colors.gray[50]};
+      $selected
+        ? theme.mode === 'dark' ? `${theme.colors.primary[500]}25` : theme.colors.primary[100]
+        : theme.colors.surface.secondary};
   }
 `;
 
@@ -90,7 +99,7 @@ export const EmailHeader = styled.div`
 export const EmailFrom = styled.div<{ $unread?: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ $unread, theme }) => ($unread ? theme.fontWeights.bold : theme.fontWeights.medium)};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -100,17 +109,17 @@ export const EmailFrom = styled.div<{ $unread?: boolean }>`
 export const EmailClaim = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
   margin-right: ${({ theme }) => theme.spacing[1]};
-  background-color: ${({ theme }) => theme.colors.gray[200]};
+  background-color: ${({ theme }) => theme.colors.border.primary};
   padding: ${({ theme }) => `0 ${theme.spacing[1]}`};
   border-radius: ${({ theme }) => theme.radii.sm};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   opacity: 0.7;
 `;
 
 export const EmailDate = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   margin-left: ${({ theme }) => theme.spacing[2]};
   white-space: nowrap;
 `;
@@ -118,7 +127,7 @@ export const EmailDate = styled.div`
 export const EmailSubject = styled.div<{ $unread?: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ $unread, theme }) => ($unread ? theme.fontWeights.semibold : theme.fontWeights.normal)};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -126,7 +135,7 @@ export const EmailSubject = styled.div<{ $unread?: boolean }>`
 
 export const EmailPreview = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -139,7 +148,7 @@ export const AttachmentBadge = styled.div`
 
 export const Pagination = styled.div`
   padding: ${({ theme }) => theme.spacing[2]};
-  border-top: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.primary};
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -147,7 +156,7 @@ export const Pagination = styled.div`
 `;
 
 export const PageInfo = styled.span`
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const PageLinks = styled.div`
@@ -203,23 +212,25 @@ export const ActionButton = styled.button<{ $danger?: boolean }>`
   align-items: center;
   justify-content: center;
   padding: ${({ theme }) => theme.spacing[2]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   background-color: ${({ theme }) => theme.colors.surface.primary};
-  color: ${({ $danger, theme }) => ($danger ? theme.colors.red[600] : theme.colors.gray[600])};
+  color: ${({ $danger, theme }) => ($danger ? theme.colors.red[600] : theme.colors.text.secondary)};
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
-    background-color: ${({ $danger, theme }) => ($danger ? theme.colors.red[50] : theme.colors.gray[100])};
-    border-color: ${({ $danger, theme }) => ($danger ? theme.colors.red[500] : theme.colors.gray[400])};
+    background-color: ${({ $danger, theme }) => ($danger
+      ? theme.mode === 'dark' ? `${theme.colors.red[500]}15` : theme.colors.red[50]
+      : theme.colors.interactive.hover)};
+    border-color: ${({ $danger, theme }) => ($danger ? theme.colors.red[500] : theme.colors.text.muted)};
   }
 `;
 
 export const EmailDetailSubject = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.xl};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
@@ -237,11 +248,11 @@ export const EmailMeta = styled.div`
 
 export const MetaLabel = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const MetaValue = styled.span`
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const AttachmentsSection = styled.div`
@@ -250,7 +261,7 @@ export const AttachmentsSection = styled.div`
 
 export const AttachmentsTitle = styled.h3`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
@@ -264,13 +275,13 @@ export const AttachmentLink = styled.a`
   display: inline-flex;
   align-items: center;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
-  background-color: ${({ theme }) => theme.colors.gray[100]};
+  background-color: ${({ theme }) => theme.colors.interactive.hover};
   border-radius: ${({ theme }) => theme.radii.md};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[200]};
+    background-color: ${({ theme }) => theme.colors.border.primary};
   }
 
   svg {
@@ -281,7 +292,7 @@ export const AttachmentLink = styled.a`
 `;
 
 export const EmailBody = styled.div`
-  border-top: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.primary};
   padding-top: ${({ theme }) => theme.spacing[6]};
 `;
 
@@ -300,14 +311,14 @@ export const HtmlBody = styled.div`
 export const TextBody = styled.pre`
   white-space: pre-wrap;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[800]};
+  color: ${({ theme }) => theme.colors.text.primary};
   font-family: ${({ theme }) => theme.fonts.mono};
 `;
 
 export const EmptyState = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
   text-align: center;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const NoEmailSelected = styled.div`
@@ -315,13 +326,13 @@ export const NoEmailSelected = styled.div`
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const MobileEmailDetail = styled.div`
   display: none;
-  background-color: ${({ theme }) => theme.colors.gray[50]};
-  border-bottom: 2px solid ${({ theme }) => theme.colors.primary[200]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
+  border-bottom: 2px solid ${({ theme }) => theme.mode === 'dark' ? theme.colors.primary[700] : theme.colors.primary[200]};
 
   @media (max-width: 768px) {
     display: block;
@@ -339,7 +350,7 @@ export const MobileEmailMeta = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   margin-bottom: ${({ theme }) => theme.spacing[3]};
   padding-bottom: ${({ theme }) => theme.spacing[3]};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const MobileEmailBody = styled.div`

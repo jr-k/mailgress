@@ -14,19 +14,19 @@ export const BackLink = styled.a`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-decoration: none;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const FormCard = styled.div`
@@ -44,7 +44,7 @@ export const FormActions = styled.div`
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing[3]};
   padding-top: ${({ theme }) => theme.spacing[4]};
-  border-top: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const ColorPreview = styled.div`
@@ -58,7 +58,7 @@ export const ColorSwatch = styled.div<{ $color: string }>`
   height: 40px;
   border-radius: ${({ theme }) => theme.radii.md};
   background-color: ${({ $color }) => $color};
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const ColorPresets = styled.div`
@@ -72,7 +72,7 @@ export const ColorPreset = styled.button<{ $color: string; $selected: boolean }>
   height: 24px;
   border-radius: 50%;
   background-color: ${({ $color }) => $color};
-  border: 2px solid ${({ theme, $selected }) => $selected ? theme.colors.gray[900] : 'transparent'};
+  border: 2px solid ${({ theme, $selected }) => $selected ? theme.colors.text.primary : 'transparent'};
   cursor: pointer;
   transition: transform ${({ theme }) => theme.transitions.fast};
 

@@ -12,13 +12,13 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Subtitle = styled.p`
   margin-top: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const Form = styled.form`
@@ -45,17 +45,17 @@ export const FormActions = styled.div`
 
 export const EmailDisplay = styled.div`
   padding: ${({ theme }) => theme.spacing[3]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const HelperText = styled.p`
   margin-top: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const SectionHeader = styled.div`
@@ -66,7 +66,7 @@ export const SectionHeader = styled.div`
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const SecurityCard = styled.div`
@@ -83,7 +83,7 @@ export const SecurityHeader = styled.div`
 export const SecurityTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.base};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const StatusBadge = styled.span<{ $enabled?: boolean }>`
@@ -94,16 +94,22 @@ export const StatusBadge = styled.span<{ $enabled?: boolean }>`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   border-radius: ${({ theme }) => theme.radii.full};
   background-color: ${({ theme, $enabled }) =>
-    $enabled ? theme.colors.green[50] : theme.colors.gray[100]};
+    $enabled
+      ? theme.mode === 'dark' ? `${theme.colors.green[500]}15` : theme.colors.green[50]
+      : theme.colors.surface.tertiary};
   color: ${({ theme, $enabled }) =>
-    $enabled ? theme.colors.green[700] : theme.colors.gray[600]};
+    $enabled
+      ? theme.mode === 'dark' ? theme.colors.green[500] : theme.colors.green[700]
+      : theme.colors.text.secondary};
   border: 1px solid ${({ theme, $enabled }) =>
-    $enabled ? theme.colors.green[200] : theme.colors.gray[200]};
+    $enabled
+      ? theme.mode === 'dark' ? `${theme.colors.green[500]}30` : theme.colors.green[200]
+      : theme.colors.border.primary};
 `;
 
 export const SecurityDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
@@ -115,7 +121,7 @@ export const SecurityActions = styled.div`
 export const ModalOverlay = styled.div`
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: ${({ theme }) => theme.mode === 'dark' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.5)'};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -135,13 +141,13 @@ export const Modal = styled.div`
 export const ModalTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const ModalDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 

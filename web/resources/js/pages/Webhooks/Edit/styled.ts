@@ -15,7 +15,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Form = styled.form`
@@ -33,7 +33,7 @@ export const Section = styled.div`
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[6]};
 `;
 
@@ -46,7 +46,7 @@ export const Fields = styled.div`
 export const HelperText = styled.p`
   margin-top: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const FieldRow = styled.div`
@@ -83,7 +83,7 @@ export const CheckboxWrapper = styled.label`
 
 export const CheckboxText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const RulesHeader = styled.div`
@@ -99,13 +99,13 @@ export const TabsContainer = styled.div`
 
 export const TabList = styled.div`
   display: flex;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const TabButton = styled.button<{ $active: boolean }>`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
-  color: ${({ theme, $active }) => $active ? theme.colors.primary[600] : theme.colors.gray[600]};
+  color: ${({ theme, $active }) => $active ? theme.colors.primary[600] : theme.colors.text.secondary};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   background: none;
   border: none;
@@ -124,9 +124,9 @@ export const CodeEditor = styled.textarea`
   padding: ${({ theme }) => theme.spacing[3]};
   font-family: 'Fira Code', 'Roboto Mono', monospace;
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[800]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  color: ${({ theme }) => theme.colors.text.primary};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   resize: vertical;
   line-height: 1.5;
@@ -149,7 +149,7 @@ export const KeyInput = styled.input`
   flex: 1;
   padding: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
 `;
 
@@ -157,7 +157,7 @@ export const ValueInput = styled.input`
   flex: 2;
   padding: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
 `;
 
@@ -172,17 +172,17 @@ export const RuleItem = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
   padding: ${({ theme }) => theme.spacing[3]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
 `;
 
 export const RuleSelect = styled.select`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   outline: none;
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
   min-width: 8rem;
 
   &:focus {
@@ -194,7 +194,7 @@ export const RuleInput = styled.input`
   flex: 1;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  border: 1px solid ${({ theme }) => theme.colors.gray[300]};
+  border: 1px solid ${({ theme }) => theme.colors.border.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   outline: none;
 
@@ -220,7 +220,7 @@ export const RemoveButton = styled.button`
 
 export const EmptyRules = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const FormActions = styled.div`

@@ -131,25 +131,26 @@ export const IconWrapper = styled.div<{ $variant?: 'danger' | 'warning' | 'info'
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 
   ${({ $variant = 'info', theme }) => {
+    const isDark = theme.mode === 'dark';
     switch ($variant) {
       case 'danger':
         return css`
-          background-color: ${theme.colors.red[100]};
+          background-color: ${isDark ? `${theme.colors.red[500]}20` : theme.colors.red[100]};
           color: ${theme.colors.red[500]};
         `;
       case 'warning':
         return css`
-          background-color: ${theme.colors.yellow[100]};
-          color: ${theme.colors.yellow[800]};
+          background-color: ${isDark ? `${theme.colors.yellow[500]}20` : theme.colors.yellow[100]};
+          color: ${isDark ? theme.colors.yellow[500] : theme.colors.yellow[800]};
         `;
       case 'success':
         return css`
-          background-color: ${theme.colors.green[100]};
+          background-color: ${isDark ? `${theme.colors.green[500]}20` : theme.colors.green[100]};
           color: ${theme.colors.green[500]};
         `;
       default:
         return css`
-          background-color: ${theme.colors.blue[100]};
+          background-color: ${isDark ? `${theme.colors.blue[500]}20` : theme.colors.blue[100]};
           color: ${theme.colors.blue[500]};
         `;
     }

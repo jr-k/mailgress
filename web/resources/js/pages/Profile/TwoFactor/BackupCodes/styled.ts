@@ -38,7 +38,7 @@ export const CodesGrid = styled.div`
 
 export const Code = styled.div`
   padding: ${({ theme }) => theme.spacing[3]};
-  background: ${({ theme }) => theme.colors.gray[100]};
+  background: ${({ theme }) => theme.colors.interactive.hover};
   border-radius: ${({ theme }) => theme.radii.md};
   font-family: monospace;
   font-size: ${({ theme }) => theme.fontSizes.sm};

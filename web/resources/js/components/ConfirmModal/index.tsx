@@ -9,13 +9,13 @@ const Content = styled.div`
 const Title = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
 const Description = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   line-height: 1.5;
 `;
 

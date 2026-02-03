@@ -13,7 +13,7 @@ const variants = {
     background: linear-gradient(180deg, ${({ theme }) => theme.colors.primary[500]} 0%, ${({ theme }) => theme.colors.primary[600]} 100%);
     color: ${({ theme }) => theme.colors.white};
     border: 1px solid ${({ theme }) => theme.colors.primary[600]};
-    box-shadow: ${({ theme }) => theme.shadows.button}, inset 0 1px 0 rgb(255 255 255 / 0.1);
+    box-shadow: ${({ theme }) => theme.shadows.button}, inset 0 1px 0 ${({ theme }) => theme.mode === 'dark' ? 'rgb(255 255 255 / 0.05)' : 'rgb(255 255 255 / 0.1)'};
 
     &:hover:not(:disabled) {
       background: linear-gradient(180deg, ${({ theme }) => theme.colors.primary[600]} 0%, ${({ theme }) => theme.colors.primary[700]} 100%);
@@ -56,7 +56,7 @@ const variants = {
     background: linear-gradient(180deg, ${({ theme }) => theme.colors.red[500]} 0%, ${({ theme }) => theme.colors.red[600]} 100%);
     color: ${({ theme }) => theme.colors.white};
     border: 1px solid ${({ theme }) => theme.colors.red[600]};
-    box-shadow: ${({ theme }) => theme.shadows.button}, inset 0 1px 0 rgb(255 255 255 / 0.1);
+    box-shadow: ${({ theme }) => theme.shadows.button}, inset 0 1px 0 ${({ theme }) => theme.mode === 'dark' ? 'rgb(255 255 255 / 0.05)' : 'rgb(255 255 255 / 0.1)'};
 
     &:hover:not(:disabled) {
       background: linear-gradient(180deg, ${({ theme }) => theme.colors.red[600]} 0%, ${({ theme }) => theme.colors.red[700]} 100%);
@@ -147,7 +147,7 @@ export const LinkButton = styled.a<{ $variant?: 'primary' | 'secondary' }>`
           background: linear-gradient(180deg, ${theme.colors.primary[500]} 0%, ${theme.colors.primary[600]} 100%);
           color: ${theme.colors.white};
           border: 1px solid ${theme.colors.primary[600]};
-          box-shadow: ${theme.shadows.button}, inset 0 1px 0 rgb(255 255 255 / 0.1);
+          box-shadow: ${theme.shadows.button}, inset 0 1px 0 ${theme.mode === 'dark' ? 'rgb(255 255 255 / 0.05)' : 'rgb(255 255 255 / 0.1)'};
 
           &:hover {
             background: linear-gradient(180deg, ${theme.colors.primary[600]} 0%, ${theme.colors.primary[700]} 100%);

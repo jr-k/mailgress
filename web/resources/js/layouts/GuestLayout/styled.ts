@@ -93,7 +93,7 @@ export const Logo = styled.div`
   border-radius: ${({ theme }) => theme.radii.xl};
   margin-top: -82px;
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1),
+    0 0 0 1px ${({ theme }) => theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.1)'},
     0 8px 32px rgba(99, 102, 241, 0.4);
 `;
 
@@ -101,7 +101,7 @@ export const LogoIcon = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: ${({ theme }) => theme.colors.white};
 `;
 
 export const BrandName = styled.h1`
@@ -122,11 +122,11 @@ export const Card = styled.div`
   border-radius: ${({ theme }) => theme.radii.xl};
   padding: ${({ theme }) => theme.spacing[8]};
   border: 1px solid ${({ theme }) => theme.mode === 'dark'
-    ? 'rgba(255, 255, 255, 0.1)'
+    ? 'rgba(255, 255, 255, 0.08)'
     : 'rgba(255, 255, 255, 0.1)'};
   box-shadow:
     0 0 0 1px ${({ theme }) => theme.mode === 'dark'
-      ? 'rgba(255, 255, 255, 0.05)'
+      ? 'rgba(255, 255, 255, 0.03)'
       : 'rgba(255, 255, 255, 0.1)'},
     0 25px 50px -12px rgba(0, 0, 0, 0.5);
 `;

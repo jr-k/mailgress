@@ -7,13 +7,13 @@ export const Header = styled.div`
 export const Title = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes['3xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Subtitle = styled.p`
   margin-top: ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const Form = styled.form`
@@ -32,7 +32,7 @@ export const Section = styled.div`
 export const SectionTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;

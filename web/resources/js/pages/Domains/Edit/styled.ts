@@ -26,12 +26,12 @@ export const CheckboxWrapper = styled.label`
 
 export const CheckboxText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const HelpText = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   margin-top: ${({ theme }) => theme.spacing[1]};
 `;
 
@@ -44,5 +44,5 @@ export const FormActions = styled.div`
   justify-content: flex-end;
   gap: ${({ theme }) => theme.spacing[3]};
   padding-top: ${({ theme }) => theme.spacing[4]};
-  border-top: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;

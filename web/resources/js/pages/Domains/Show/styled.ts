@@ -14,13 +14,13 @@ export const Section = styled.div`
 export const SectionTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const SectionDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
@@ -29,7 +29,7 @@ export const InfoGrid = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: ${({ theme }) => theme.spacing[4]};
   padding: ${({ theme }) => theme.spacing[4]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   margin-bottom: ${({ theme }) => theme.spacing[8]};
 `;
@@ -38,14 +38,14 @@ export const InfoItem = styled.div``;
 
 export const InfoLabel = styled.dt`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   margin-bottom: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const InfoValue = styled.dd`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin: 0;
 `;
 
@@ -60,15 +60,15 @@ export const Table = styled.table`
 `;
 
 export const TableHead = styled.thead`
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
 `;
 
 export const TableBody = styled.tbody`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
 `;
 
 export const TableRow = styled.tr`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 
   &:last-child {
     border-bottom: none;
@@ -80,7 +80,7 @@ export const TableHeader = styled.th<{ $align?: 'left' | 'right' }>`
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
@@ -89,12 +89,12 @@ export const TableCell = styled.td<{ $align?: 'left' | 'right' }>`
   padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const CodeBlock = styled.div`
   position: relative;
-  background-color: ${({ theme }) => theme.colors.gray[900]};
+  background-color: ${({ theme }) => theme.colors.text.primary};
   border-radius: ${({ theme }) => theme.radii.md};
   padding: ${({ theme }) => theme.spacing[4]};
   overflow-x: auto;
@@ -103,7 +103,7 @@ export const CodeBlock = styled.div`
 export const Code = styled.pre`
   font-family: ${({ theme }) => theme.fonts.mono};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[100]};
+  color: ${({ theme }) => theme.colors.interactive.hover};
   margin: 0;
   white-space: pre-wrap;
   word-break: break-all;
@@ -116,21 +116,21 @@ export const CopyButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[300]};
-  background-color: ${({ theme }) => theme.colors.gray[800]};
-  border: 1px solid ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.border.secondary};
+  background-color: ${({ theme }) => theme.colors.text.primary};
+  border: 1px solid ${({ theme }) => theme.colors.text.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.white};
-    background-color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.surface.primary};
+    background-color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
 export const TabsContainer = styled.div`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
@@ -143,7 +143,7 @@ export const Tab = styled.button<{ $active?: boolean }>`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme, $active }) => $active ? theme.colors.primary[600] : theme.colors.gray[500]};
+  color: ${({ theme, $active }) => $active ? theme.colors.primary[600] : theme.colors.text.tertiary};
   background: none;
   border: none;
   border-bottom: 2px solid ${({ theme, $active }) => $active ? theme.colors.primary[600] : 'transparent'};
@@ -159,7 +159,7 @@ export const Tab = styled.button<{ $active?: boolean }>`
 export const VerificationSection = styled.div`
   margin-top: ${({ theme }) => theme.spacing[6]};
   padding-top: ${({ theme }) => theme.spacing[6]};
-  border-top: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-top: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const VerificationHeader = styled.div`
@@ -176,7 +176,7 @@ export const CheckButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.white};
+  color: ${({ theme }) => theme.colors.surface.primary};
   background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary[500]}, ${({ theme }) => theme.colors.primary[600]});
   border: none;
   border-radius: ${({ theme }) => theme.radii.md};
@@ -203,9 +203,13 @@ export const VerificationResults = styled.div`
 export const VerificationCard = styled.div<{ $valid: boolean }>`
   padding: ${({ theme }) => theme.spacing[4]};
   background-color: ${({ theme, $valid }) =>
-    $valid ? theme.colors.green[50] : theme.colors.red[50]};
+    $valid
+      ? theme.mode === 'dark' ? `${theme.colors.green[500]}15` : theme.colors.green[50]
+      : theme.mode === 'dark' ? `${theme.colors.red[500]}15` : theme.colors.red[50]};
   border: 1px solid ${({ theme, $valid }) =>
-    $valid ? theme.colors.green[200] : theme.colors.red[200]};
+    $valid
+      ? theme.mode === 'dark' ? `${theme.colors.green[500]}30` : theme.colors.green[200]
+      : theme.mode === 'dark' ? `${theme.colors.red[500]}30` : theme.colors.red[200]};
   border-radius: ${({ theme }) => theme.radii.lg};
 `;
 
@@ -248,12 +252,12 @@ export const DetailRow = styled.div`
 `;
 
 export const DetailLabel = styled.span`
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   min-width: 80px;
 `;
 
 export const DetailValue = styled.span`
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   font-family: ${({ theme }) => theme.fonts.mono};
   word-break: break-all;
 `;

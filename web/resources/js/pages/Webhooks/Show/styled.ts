@@ -15,7 +15,7 @@ export const TitleSection = styled.div``;
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Actions = styled.div`
@@ -28,9 +28,13 @@ export const TestResult = styled.div<{ $success?: boolean }>`
   padding: ${({ theme }) => theme.spacing[4]};
   border-radius: ${({ theme }) => theme.radii.md};
   background-color: ${({ $success, theme }) =>
-    $success ? theme.colors.green[50] : theme.colors.red[50]};
+    $success
+      ? theme.mode === 'dark' ? `${theme.colors.green[500]}15` : theme.colors.green[50]
+      : theme.mode === 'dark' ? `${theme.colors.red[500]}15` : theme.colors.red[50]};
   border: 1px solid
-    ${({ $success, theme }) => ($success ? theme.colors.green[200] : theme.colors.red[200])};
+    ${({ $success, theme }) => $success
+      ? theme.mode === 'dark' ? `${theme.colors.green[500]}30` : theme.colors.green[200]
+      : theme.mode === 'dark' ? `${theme.colors.red[500]}30` : theme.colors.red[200]};
 `;
 
 export const TestResultTitle = styled.div`
@@ -40,7 +44,7 @@ export const TestResultTitle = styled.div`
 
 export const TestResultBody = styled.pre`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[600]};
+  color: ${({ theme }) => theme.colors.text.secondary};
   overflow: auto;
   max-height: 8rem;
 `;
@@ -62,7 +66,7 @@ export const CardContent = styled.div`
 export const CardTitle = styled.h2`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
@@ -75,12 +79,12 @@ export const DefinitionList = styled.dl`
 export const DefinitionTerm = styled.dt`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const DefinitionValue = styled.dd`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   word-break: break-all;
 `;
 
@@ -95,15 +99,16 @@ export const StatCard = styled.div<{ $variant?: 'default' | 'success' | 'error' 
   padding: ${({ theme }) => theme.spacing[4]};
   border-radius: ${({ theme }) => theme.radii.md};
   background-color: ${({ $variant = 'default', theme }) => {
+    const isDark = theme.mode === 'dark';
     switch ($variant) {
       case 'success':
-        return theme.colors.green[50];
+        return isDark ? `${theme.colors.green[500]}15` : theme.colors.green[50];
       case 'error':
-        return theme.colors.red[50];
+        return isDark ? `${theme.colors.red[500]}15` : theme.colors.red[50];
       case 'warning':
-        return '#fefce8';
+        return isDark ? `${theme.colors.yellow[500]}15` : theme.colors.yellow[50];
       default:
-        return theme.colors.gray[50];
+        return theme.colors.surface.secondary;
     }
   }};
 `;
@@ -120,14 +125,14 @@ export const StatValue = styled.div<{ $variant?: 'default' | 'success' | 'error'
       case 'warning':
         return '#ca8a04';
       default:
-        return theme.colors.gray[900];
+        return theme.colors.text.primary;
     }
   }};
 `;
 
 export const StatLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const RulesCard = styled.div`
@@ -145,24 +150,24 @@ export const RuleItem = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
   padding: ${({ theme }) => theme.spacing[3]};
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
   border-radius: ${({ theme }) => theme.radii.md};
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `;
 
 export const RuleField = styled.span`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const RuleOperator = styled.span`
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const RuleValue = styled.span`
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const EmptyText = styled.p`
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;

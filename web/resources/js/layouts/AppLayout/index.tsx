@@ -3,6 +3,7 @@ import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 import { PageProps } from '@/types';
 import { Avatar } from '@/components/Avatar';
+import { ThemeSwitcher } from '@/components/ThemeSwitcher';
 import { useToast } from '@/contexts/ToastContext';
 import * as S from './styled';
 
@@ -131,6 +132,7 @@ export default function AppLayout({ children }: PropsWithChildren) {
             </S.NavLinks>
           </S.NavLeft>
           <S.NavRight>
+            <ThemeSwitcher />
             <S.ProfileLink as={Link} href="/profile">
               {auth?.user && (
                 <Avatar

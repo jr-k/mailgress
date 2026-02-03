@@ -11,20 +11,20 @@ export const Header = styled.div`
 
 export const BackLink = styled.a`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   display: inline-block;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
   transition: color 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const Form = styled.form`
@@ -46,13 +46,13 @@ export const CheckboxWrapper = styled.label`
 
 export const CheckboxText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const HelperText = styled.p`
   margin-top: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const FormActions = styled.div`

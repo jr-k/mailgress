@@ -10,7 +10,7 @@ export const Header = styled.div`
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.semibold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   letter-spacing: -0.02em;
 `;
 
@@ -19,12 +19,12 @@ export const Toolbar = styled.div`
   align-items: center;
   justify-content: space-between;
   padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[6]}`};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const ResultCount = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const TableWrapper = styled.div`
@@ -37,19 +37,19 @@ export const Table = styled.table`
 `;
 
 export const TableHead = styled.thead`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
 `;
 
 export const TableBody = styled.tbody`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
 `;
 
 export const TableRow = styled.tr`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[100]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   transition: background-color ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[50]};
+    background-color: ${({ theme }) => theme.colors.interactive.hover};
   }
 
   &:last-child {
@@ -62,7 +62,7 @@ export const TableHeader = styled.th<{ $align?: 'left' | 'center' | 'right' }>`
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
   white-space: nowrap;
@@ -73,19 +73,19 @@ export const TableCell = styled.td<{ $align?: 'left' | 'center' | 'right' }>`
   white-space: nowrap;
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[700]};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 export const EmptyCell = styled.td`
   padding: ${({ theme }) => theme.spacing[16]};
   text-align: center;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   font-size: ${({ theme }) => theme.fontSizes.sm};
 `;
 
 export const MailboxLink = styled.a`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   text-decoration: none;
   transition: color ${({ theme }) => theme.transitions.fast};
 
@@ -96,13 +96,13 @@ export const MailboxLink = styled.a`
 
 export const Description = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.xs};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   margin-top: ${({ theme }) => theme.spacing[1]};
 `;
 
 export const SecondaryText = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const Actions = styled.div`
@@ -118,14 +118,14 @@ export const IconButton = styled.a`
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-decoration: none;
   border-radius: ${({ theme }) => theme.radii.md};
   transition: all ${({ theme }) => theme.transitions.fast};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
-    background-color: ${({ theme }) => theme.colors.gray[100]};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    background-color: ${({ theme }) => theme.colors.border.primary};
   }
 
   svg {
@@ -140,7 +140,7 @@ export const IconDeleteButton = styled.button`
   justify-content: center;
   width: 32px;
   height: 32px;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   background: none;
   border: none;
   border-radius: ${({ theme }) => theme.radii.md};
@@ -149,7 +149,7 @@ export const IconDeleteButton = styled.button`
 
   &:hover {
     color: ${({ theme }) => theme.colors.red[600]};
-    background-color: ${({ theme }) => theme.colors.red[50]};
+    background-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.red[500]}15` : theme.colors.red[50]};
   }
 
   svg {
@@ -170,7 +170,7 @@ export const EmptyState = styled.div`
 export const EmptyIcon = styled.div`
   width: 48px;
   height: 48px;
-  color: ${({ theme }) => theme.colors.gray[400]};
+  color: ${({ theme }) => theme.colors.text.muted};
   margin-bottom: ${({ theme }) => theme.spacing[4]};
 
   svg {
@@ -182,12 +182,12 @@ export const EmptyIcon = styled.div`
 export const EmptyTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;
 
 export const EmptyDescription = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   margin-bottom: ${({ theme }) => theme.spacing[6]};
 `;

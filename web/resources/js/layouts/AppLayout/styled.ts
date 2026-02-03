@@ -7,9 +7,9 @@ export const Container = styled.div`
 `;
 
 export const SafeModeWarning = styled.div`
-  background-color: #fef2f2;
-  border-bottom: 2px solid #dc2626;
-  color: #b91c1c;
+  background-color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.red[800] : theme.colors.red[50]};
+  border-bottom: 2px solid ${({ theme }) => theme.colors.red[600]};
+  color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.red[200] : theme.colors.red[700]};
   padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
   text-align: center;
   font-size: ${({ theme }) => theme.fontSizes.sm};
@@ -224,9 +224,9 @@ export const AdminBadge = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   border-radius: ${({ theme }) => theme.radii.full};
-  background-color: ${({ theme }) => theme.colors.primary[50]};
-  color: ${({ theme }) => theme.colors.primary[700]};
-  border: 1px solid ${({ theme }) => theme.colors.primary[200]};
+  background-color: ${({ theme }) => theme.mode === 'dark' ? `${theme.colors.primary[500]}20` : theme.colors.primary[50]};
+  color: ${({ theme }) => theme.mode === 'dark' ? theme.colors.primary[400] : theme.colors.primary[700]};
+  border: 1px solid ${({ theme }) => theme.mode === 'dark' ? theme.colors.primary[700] : theme.colors.primary[200]};
 `;
 
 export const LogoutButton = styled.button`

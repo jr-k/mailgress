@@ -6,13 +6,13 @@ export const Header = styled.div`
 
 export const BackLink = styled.a`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   display: inline-block;
   margin-bottom: ${({ theme }) => theme.spacing[2]};
   transition: color 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.gray[700]};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 `;
 
@@ -25,7 +25,7 @@ export const HeaderRow = styled.div`
 export const Title = styled.h1`
   font-size: ${({ theme }) => theme.fontSizes['2xl']};
   font-weight: ${({ theme }) => theme.fontWeights.bold};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
 `;
 
 export const TableWrapper = styled.div`
@@ -38,19 +38,19 @@ export const Table = styled.table`
 `;
 
 export const TableHead = styled.thead`
-  background-color: ${({ theme }) => theme.colors.gray[50]};
+  background-color: ${({ theme }) => theme.colors.surface.secondary};
 `;
 
 export const TableBody = styled.tbody`
-  background-color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
 `;
 
 export const TableRow = styled.tr`
-  border-bottom: 1px solid ${({ theme }) => theme.colors.gray[200]};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.primary};
   transition: background-color 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.gray[50]};
+    background-color: ${({ theme }) => theme.colors.surface.secondary};
   }
 
   &:last-child {
@@ -63,7 +63,7 @@ export const TableHeader = styled.th<{ $align?: 'left' | 'right' }>`
   text-align: ${({ $align = 'left' }) => $align};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
   letter-spacing: 0.05em;
 `;
@@ -76,7 +76,7 @@ export const TableCell = styled.td<{ $align?: 'left' | 'right' }>`
 export const EmptyCell = styled.td`
   padding: ${({ theme }) => `${theme.spacing[8]} ${theme.spacing[6]}`};
   text-align: center;
-  color: ${({ theme }) => theme.colors.gray[500]};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const WebhookLink = styled.a`
@@ -91,7 +91,7 @@ export const WebhookLink = styled.a`
 
 export const UrlText = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.gray[900]};
+  color: ${({ theme }) => theme.colors.text.primary};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -184,9 +184,11 @@ export const IconButton = styled.button<{ $variant?: 'default' | 'danger' }>`
 
   &:hover {
     background: ${({ theme, $variant }) =>
-      $variant === 'danger' ? theme.colors.red[50] : theme.colors.interactive.hover};
+      $variant === 'danger'
+        ? theme.mode === 'dark' ? `${theme.colors.red[500]}15` : theme.colors.red[50]
+        : theme.colors.interactive.hover};
     color: ${({ theme, $variant }) =>
-      $variant === 'danger' ? theme.colors.red[600] : theme.colors.primary[600]};
+      $variant === 'danger' ? theme.colors.red[500] : theme.colors.primary[500]};
   }
 
   svg {
