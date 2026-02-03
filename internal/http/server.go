@@ -83,12 +83,13 @@ func NewServer(
 	r.Use(flashMiddleware.Handle)
 	r.Use(onboardingMiddleware.RequireOnboarding)
 
-	// Serve built assets (Vite outputs to dist/assets/)
+	// Serve static files from web/dist
 	distFS := http.FileServer(http.Dir("web/dist"))
 	r.Handle("/assets/*", distFS)
 	r.Handle("/favicon.ico", distFS)
+	r.Handle("/favicon.png", distFS)
+	r.Handle("/img/*", distFS)
 	r.Handle("/avatars/*", http.StripPrefix("/avatars/", http.FileServer(http.Dir(cfg.StoragePath+"/avatars"))))
-	r.Handle("/img/*", http.StripPrefix("/img/", http.FileServer(http.Dir("web/dist/img"))))
 
 	r.Get("/onboarding", onboardingHandler.Show)
 	r.Post("/onboarding", onboardingHandler.Complete)
