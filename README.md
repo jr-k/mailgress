@@ -94,5 +94,4 @@ volumes:
 
 ## License
 
-See [LICENSE.md](LICENSE.md) file
-[License](LICENSE.md)
+Check [LICENSE.md](LICENSE.md)
