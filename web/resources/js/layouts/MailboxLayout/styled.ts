@@ -110,6 +110,7 @@ export const MailboxSwitcherButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing[2]};
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`};
   background: ${({ theme }) => theme.colors.surface.secondary};
@@ -126,9 +127,16 @@ export const MailboxSwitcherButton = styled.button`
   }
 
   svg {
+    flex-shrink: 0;
     width: 1rem;
     height: 1rem;
     color: ${({ theme }) => theme.colors.text.tertiary};
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 
@@ -137,7 +145,8 @@ export const MailboxSwitcherDropdown = styled.div<{ $isOpen?: boolean }>`
   position: absolute;
   top: 100%;
   left: ${({ theme }) => theme.spacing[4]};
-  right: ${({ theme }) => theme.spacing[4]};
+  min-width: calc(100% - ${({ theme }) => theme.spacing[4]} * 2);
+  width: max-content;
   margin-top: ${({ theme }) => theme.spacing[1]};
   background: ${({ theme }) => theme.colors.surface.elevated};
   border: 1px solid ${({ theme }) => theme.colors.border.primary};
@@ -178,6 +187,7 @@ export const MailboxOption = styled.a<{ $active?: boolean }>`
   text-decoration: none;
   cursor: pointer;
   transition: background ${({ theme }) => theme.transitions.fast};
+  white-space: nowrap;
 
   &:hover {
     background: ${({ theme }) => theme.colors.interactive.hover};
