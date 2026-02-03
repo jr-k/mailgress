@@ -94,7 +94,7 @@ export const TableCell = styled.td<{ $align?: 'left' | 'right' }>`
 
 export const CodeBlock = styled.div`
   position: relative;
-  background-color: ${({ theme }) => theme.colors.text.primary};
+  background-color: ${({ theme }) => theme.mode === 'dark' ? '#1e1e2e' : '#1f2937'};
   border-radius: ${({ theme }) => theme.radii.md};
   padding: ${({ theme }) => theme.spacing[4]};
   overflow-x: auto;
@@ -103,7 +103,7 @@ export const CodeBlock = styled.div`
 export const Code = styled.pre`
   font-family: ${({ theme }) => theme.fonts.mono};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.interactive.hover};
+  color: #e5e7eb;
   margin: 0;
   white-space: pre-wrap;
   word-break: break-all;
@@ -116,16 +116,16 @@ export const CopyButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.border.secondary};
-  background-color: ${({ theme }) => theme.colors.text.primary};
-  border: 1px solid ${({ theme }) => theme.colors.text.secondary};
+  color: #9ca3af;
+  background-color: transparent;
+  border: 1px solid #4b5563;
   border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.surface.primary};
-    background-color: ${({ theme }) => theme.colors.text.secondary};
+    color: #e5e7eb;
+    background-color: #374151;
   }
 `;
 
