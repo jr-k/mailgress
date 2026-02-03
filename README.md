@@ -1,4 +1,4 @@
-# Mailgress
+# go-mailgress
 
 Receive emails on your own server and forward them wherever you need.
 
