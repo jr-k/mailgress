@@ -3,10 +3,12 @@ package smtp
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"io"
 	"log"
 	"mime"
 	"mime/multipart"
+	"mime/quotedprintable"
 	"net/mail"
 	"strings"
 	"time"
@@ -200,26 +202,40 @@ func parseAddress(addr string) (localPart, domain string, err error) {
 	return parts[0], parts[1], nil
 }
 
+func decodeBody(r io.Reader, encoding string) ([]byte, error) {
+	encoding = strings.ToLower(strings.TrimSpace(encoding))
+	switch encoding {
+	case "quoted-printable":
+		return io.ReadAll(quotedprintable.NewReader(r))
+	case "base64":
+		return io.ReadAll(base64.NewDecoder(base64.StdEncoding, r))
+	default:
+		return io.ReadAll(r)
+	}
+}
+
 func extractBodies(msg *mail.Message) (textBody, htmlBody string) {
 	contentType := msg.Header.Get("Content-Type")
+	encoding := msg.Header.Get("Content-Transfer-Encoding")
+
 	if contentType == "" {
-		body, _ := io.ReadAll(msg.Body)
+		body, _ := decodeBody(msg.Body, encoding)
 		return string(body), ""
 	}
 
 	mediaType, params, err := mime.ParseMediaType(contentType)
 	if err != nil {
-		body, _ := io.ReadAll(msg.Body)
+		body, _ := decodeBody(msg.Body, encoding)
 		return string(body), ""
 	}
 
 	if strings.HasPrefix(mediaType, "text/plain") {
-		body, _ := io.ReadAll(msg.Body)
+		body, _ := decodeBody(msg.Body, encoding)
 		return string(body), ""
 	}
 
 	if strings.HasPrefix(mediaType, "text/html") {
-		body, _ := io.ReadAll(msg.Body)
+		body, _ := decodeBody(msg.Body, encoding)
 		return "", string(body)
 	}
 
@@ -232,9 +248,10 @@ func extractBodies(msg *mail.Message) (textBody, htmlBody string) {
 			}
 
 			partType := part.Header.Get("Content-Type")
+			partEncoding := part.Header.Get("Content-Transfer-Encoding")
 			partMediaType, _, _ := mime.ParseMediaType(partType)
 
-			body, _ := io.ReadAll(part)
+			body, _ := decodeBody(part, partEncoding)
 			switch {
 			case strings.HasPrefix(partMediaType, "text/plain") && textBody == "":
 				textBody = string(body)
@@ -269,9 +286,10 @@ func extractFromMultipart(body []byte, contentType string) (textBody, htmlBody s
 		}
 
 		partType := part.Header.Get("Content-Type")
+		partEncoding := part.Header.Get("Content-Transfer-Encoding")
 		partMediaType, _, _ := mime.ParseMediaType(partType)
 
-		partBody, _ := io.ReadAll(part)
+		partBody, _ := decodeBody(part, partEncoding)
 		switch {
 		case strings.HasPrefix(partMediaType, "text/plain") && textBody == "":
 			textBody = string(partBody)
