@@ -60,7 +60,7 @@ docker run -d \
   --name mailgress \
   -p 8080:8080 \
   -p 2525:2525 \
-  -v mailgress_data:/app/data \
+  -v mailgress-data:/app/data \
   -e APP_URL=https://mailgress.example.com \
   -e WEBHOOK_SECRET=your-secret-key \
   ghcr.io/jr-k/mailgress:latest
@@ -78,13 +78,13 @@ services:
       - "8080:8080"
       - "2525:2525"
     volumes:
-      - mailgress_data:/app/data
+      - mailgress-data:/app/data
     environment:
       - APP_URL=https://mailgress.example.com
       - WEBHOOK_SECRET=your-secret-key
 
 volumes:
-  mailgress_data:
+  mailgress-data:
 ```
 
 ### Ports
