@@ -27,6 +27,7 @@ type Server struct {
 
 func NewServer(
 	cfg *config.Config,
+	version string,
 	settingsService *service.SettingsService,
 	authService *service.AuthService,
 	userService *service.UserService,
@@ -54,6 +55,7 @@ func NewServer(
 	}
 
 	inertia.ShareProp("appName", "Mailgress")
+	inertia.ShareProp("appVersion", version)
 
 	onboardingMiddleware := mw.NewOnboardingMiddleware(settingsService)
 	authMiddleware := mw.NewAuthMiddleware(authService, userService, inertia, cfg.SafeMode)
@@ -73,6 +75,7 @@ func NewServer(
 	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher, flashMiddleware)
 	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService, mailboxService, flashMiddleware)
 	tagHandler := handler.NewTagHandler(inertia, tagService, flashMiddleware)
+	aboutHandler := handler.NewAboutHandler(inertia)
 
 	r := chi.NewRouter()
 
@@ -118,6 +121,8 @@ func NewServer(
 		r.Post("/profile/2fa/disable", userHandler.Disable2FA)
 		r.Get("/profile/2fa/backup-codes", userHandler.ShowBackupCodes)
 		r.Post("/profile/2fa/backup-codes/regenerate", userHandler.RegenerateBackupCodes)
+
+		r.Get("/settings/about", aboutHandler.Show)
 
 		r.Get("/mailboxes", mailboxHandler.Index)
 		r.Get("/mailboxes/create", mailboxHandler.Create)

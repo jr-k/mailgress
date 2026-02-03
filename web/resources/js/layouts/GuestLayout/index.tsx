@@ -1,7 +1,11 @@
 import { PropsWithChildren } from 'react';
+import { usePage } from '@inertiajs/react';
+import { PageProps } from '@/types';
 import * as S from './styled';
 
 export default function GuestLayout({ children }: PropsWithChildren) {
+  const { appVersion } = usePage<PageProps>().props;
+
   return (
     <S.Container>
       <S.Content>
@@ -16,6 +20,7 @@ export default function GuestLayout({ children }: PropsWithChildren) {
           <S.BrandName>Mailgress<S.BrandDot /></S.BrandName>
           {children}
         </S.Card>
+        <S.Version>v{appVersion}</S.Version>
       </S.Content>
     </S.Container>
   );

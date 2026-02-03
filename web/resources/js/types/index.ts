@@ -169,6 +169,7 @@ export interface PageProps {
     error?: string;
   };
   appName: string;
+  appVersion: string;
   safeMode?: boolean;
   [key: string]: unknown;
 }

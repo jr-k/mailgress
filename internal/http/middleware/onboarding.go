@@ -18,7 +18,10 @@ func NewOnboardingMiddleware(settingsService *service.SettingsService) *Onboardi
 func (m *OnboardingMiddleware) RequireOnboarding(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Skip for static assets
-		if strings.HasPrefix(r.URL.Path, "/assets/") || r.URL.Path == "/favicon.ico" {
+		if strings.HasPrefix(r.URL.Path, "/assets/") ||
+			strings.HasPrefix(r.URL.Path, "/img/") ||
+			r.URL.Path == "/favicon.ico" ||
+			r.URL.Path == "/favicon.png" {
 			next.ServeHTTP(w, r)
 			return
 		}

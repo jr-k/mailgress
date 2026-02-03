@@ -40,6 +40,8 @@ export default function AppLayout({ children }: PropsWithChildren) {
     );
   };
 
+  const isAboutActive = () => currentPath === '/settings/about';
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -125,9 +127,23 @@ export default function AppLayout({ children }: PropsWithChildren) {
                       >
                         Tags
                       </S.DropdownItem>
+                      <S.DropdownDivider />
+                      <S.DropdownItem
+                        as={Link}
+                        href="/settings/about"
+                        $active={isAboutActive()}
+                        onClick={() => setSettingsOpen(false)}
+                      >
+                        About
+                      </S.DropdownItem>
                     </S.DropdownMenu>
                   )}
                 </S.DropdownContainer>
+              )}
+              {!auth?.user.is_admin && (
+                <S.NavLink as={Link} href="/settings/about" $active={isAboutActive()}>
+                  About
+                </S.NavLink>
               )}
             </S.NavLinks>
           </S.NavLeft>

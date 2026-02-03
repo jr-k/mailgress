@@ -91,7 +91,6 @@ export const Logo = styled.div`
   width: 82px;
   height: 82px;
   border-radius: ${({ theme }) => theme.radii.xl};
-  margin-top: -82px;
   box-shadow:
     0 0 0 1px ${({ theme }) => theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.1)'},
     0 8px 32px rgba(99, 102, 241, 0.4);
@@ -138,4 +137,11 @@ export const BrandDot = styled.span`
   margin-left: ${({ theme }) => theme.spacing[1]};
   border-radius: 50%;
   background-color: ${({ theme }) => theme.colors.primary[500]};
+`;
+
+export const Version = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.mode === 'dark' ? 'rgba(255, 255, 255, 0.4)' : 'rgba(255, 255, 255, 0.6)'};
+  margin-top: ${({ theme }) => theme.spacing[2]};
+  opacity: 0.3
 `;

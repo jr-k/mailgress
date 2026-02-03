@@ -184,6 +184,12 @@ export const DropdownItem = styled.a<{ $active?: boolean }>`
   }
 `;
 
+export const DropdownDivider = styled.div`
+  height: 1px;
+  margin: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}`};
+  background-color: ${({ theme }) => theme.colors.border.primary};
+`;
+
 export const NavRight = styled.div`
   display: flex;
   align-items: center;

@@ -26,7 +26,8 @@ RUN go mod download
 COPY . .
 COPY --from=assets-builder /app/web/dist ./web/dist
 
-RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-w -s" -o mailgress ./cmd/mailgress
+ARG VERSION=master
+RUN CGO_ENABLED=1 GOOS=linux go build -ldflags="-w -s -X github.com/jr-k/mailgress/internal/buildinfo.Version=${VERSION}" -o mailgress ./cmd/mailgress
 
 # ============================================
 # Stage 3: Final production image

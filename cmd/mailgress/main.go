@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jr-k/mailgress/internal/buildinfo"
 	"github.com/jr-k/mailgress/internal/config"
 	"github.com/jr-k/mailgress/internal/database"
 	httpserver "github.com/jr-k/mailgress/internal/http"
@@ -60,6 +61,7 @@ func main() {
 
 	httpServer, err := httpserver.NewServer(
 		cfg,
+		buildinfo.Version,
 		settingsService,
 		authService,
 		userService,
