@@ -1,6 +1,24 @@
+<p align="center">
+  <img src="docs/pics/mailgress-icon.png" alt="Mailgress" width="92
+  ">
+</p>
+
 # go-mailgress
 
 Receive emails on your own server and forward them wherever you need.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/pics/screenshot1.png" alt="Screenshot 1"></td>
+    <td><img src="docs/pics/screenshot2.png" alt="Screenshot 2"></td>
+  </tr>
+  <tr>
+    <td><img src="docs/pics/screenshot3.png" alt="Screenshot 3"></td>
+    <td><img src="docs/pics/screenshot4.png" alt="Screenshot 4"></td>
+  </tr>
+</table>
 
 ## What it does
 
