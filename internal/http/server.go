@@ -70,7 +70,7 @@ func NewServer(
 	authHandler := handler.NewAuthHandler(inertia, authService, userService, totpService)
 	dashboardHandler := handler.NewDashboardHandler(inertia, mailboxService, emailService, domainService)
 	userHandler := handler.NewUserHandler(inertia, userService, avatarService, totpService, authService, flashMiddleware)
-	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService, flashMiddleware)
+	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService, flashMiddleware, dispatcher)
 	emailHandler := handler.NewEmailHandler(inertia, emailService, mailboxService, storage)
 	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher, flashMiddleware)
 	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService, mailboxService, flashMiddleware)
@@ -134,6 +134,7 @@ func NewServer(
 		r.Put("/mailboxes/{id}/tags", mailboxHandler.SetTags)
 		r.Post("/mailboxes/{id}/emails/{emailId}/read", mailboxHandler.MarkEmailAsRead)
 		r.Post("/mailboxes/{id}/emails/{emailId}/unread", mailboxHandler.MarkEmailAsUnread)
+		r.Post("/mailboxes/{id}/emails/{emailId}/retrigger-webhooks", mailboxHandler.RetriggerWebhooks)
 		r.Delete("/mailboxes/{id}/emails/{emailId}", mailboxHandler.DeleteEmail)
 
 		r.Get("/mailboxes/{mailboxId}/emails/{id}", emailHandler.Show)

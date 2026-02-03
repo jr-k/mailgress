@@ -10,6 +10,7 @@ import (
 	"github.com/jr-k/mailgress/internal/domain"
 	mw "github.com/jr-k/mailgress/internal/http/middleware"
 	"github.com/jr-k/mailgress/internal/service"
+	"github.com/jr-k/mailgress/internal/webhook"
 	"github.com/romsar/gonertia"
 )
 
@@ -21,6 +22,7 @@ type MailboxHandler struct {
 	domainService  *service.DomainService
 	tagService     *service.TagService
 	flash          *mw.FlashMiddleware
+	dispatcher     *webhook.Dispatcher
 }
 
 func NewMailboxHandler(
@@ -31,6 +33,7 @@ func NewMailboxHandler(
 	domainService *service.DomainService,
 	tagService *service.TagService,
 	flash *mw.FlashMiddleware,
+	dispatcher *webhook.Dispatcher,
 ) *MailboxHandler {
 	return &MailboxHandler{
 		inertia:        inertia,
@@ -40,6 +43,7 @@ func NewMailboxHandler(
 		domainService:  domainService,
 		tagService:     tagService,
 		flash:          flash,
+		dispatcher:     dispatcher,
 	}
 }
 
@@ -556,6 +560,43 @@ func (h *MailboxHandler) DeleteEmail(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "Failed to delete email"})
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})
+}
+
+func (h *MailboxHandler) RetriggerWebhooks(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+
+	mailboxID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Mailbox not found"})
+		return
+	}
+
+	emailID, err := strconv.ParseInt(chi.URLParam(r, "emailId"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Email not found"})
+		return
+	}
+
+	mailbox, err := h.mailboxService.GetByID(r.Context(), mailboxID)
+	if err != nil || (!user.IsAdmin && (mailbox.OwnerID == nil || *mailbox.OwnerID != user.ID)) {
+		w.WriteHeader(http.StatusForbidden)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Forbidden"})
+		return
+	}
+
+	email, err := h.emailService.GetByID(r.Context(), emailID)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": "Email not found"})
+		return
+	}
+
+	h.dispatcher.Dispatch(mailboxID, email)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true})

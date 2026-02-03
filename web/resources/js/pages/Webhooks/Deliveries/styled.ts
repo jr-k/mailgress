@@ -19,6 +19,7 @@ export const Subtitle = styled.p`
 
 export const TableWrapper = styled.div`
   overflow: hidden;
+  overflow-x: auto;
 `;
 
 export const Table = styled.table`
@@ -131,7 +132,7 @@ export const DangerButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.surface.primary};
+  color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme }) => theme.colors.red[600]};
   border: 1px solid ${({ theme }) => theme.colors.red[700]};
   border-radius: ${({ theme }) => theme.radii.md};
@@ -155,7 +156,7 @@ export const WarningButton = styled.button`
   padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   font-weight: ${({ theme }) => theme.fontWeights.medium};
-  color: ${({ theme }) => theme.colors.surface.primary};
+  color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme }) => theme.colors.yellow[500]};
   border: 1px solid ${({ theme }) => theme.colors.yellow[700]};
   border-radius: ${({ theme }) => theme.radii.md};

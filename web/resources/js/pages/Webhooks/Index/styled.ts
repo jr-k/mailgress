@@ -30,6 +30,7 @@ export const Title = styled.h1`
 
 export const TableWrapper = styled.div`
   overflow: hidden;
+  overflow-x: auto;
 `;
 
 export const Table = styled.table`
@@ -95,7 +96,7 @@ export const UrlText = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-width: 16rem;
+  max-width: 20rem;
 `;
 
 export const DeliveryStats = styled.div`
@@ -105,7 +106,7 @@ export const DeliveryStats = styled.div`
 `;
 
 export const SuccessCount = styled.span`
-  color: ${({ theme }) => theme.colors.green[800]};
+  color: ${({ theme }) => theme.colors.green[500]};
 `;
 
 export const FailedCount = styled.span`

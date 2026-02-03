@@ -1,4 +1,22 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+export const Spinner = styled.div`
+  width: 18px;
+  height: 18px;
+  border: 2px solid ${({ theme }) => theme.colors.border.secondary};
+  border-top-color: ${({ theme }) => theme.colors.primary[500]};
+  border-radius: 50%;
+  animation: ${spin} 0.6s linear infinite;
+`;
 
 export const Header = styled.div`
   margin-bottom: ${({ theme }) => theme.spacing[6]};
@@ -71,12 +89,14 @@ export const EmailItem = styled.div<{ $selected?: boolean; $unread?: boolean }>`
   border-bottom: 1px solid ${({ theme }) => theme.colors.interactive.hover};
   cursor: pointer;
   transition: background-color 0.15s ease;
+  border-left: 3px solid
+    ${({ $selected, theme }) => ($selected ? theme.colors.primary[500] : 'transparent')};
   background-color: ${({ $selected, $unread, theme }) => {
     if ($selected) {
       return theme.mode === 'dark' ? `${theme.colors.primary[500]}20` : theme.colors.primary[50];
     }
     if ($unread) {
-      return theme.mode === 'dark' ? `${theme.colors.blue[500]}15` : theme.colors.blue[50];
+      return theme.mode === 'dark' ? `${theme.colors.gray[700]}` : theme.colors.gray[100];
     }
     return 'transparent';
   }};

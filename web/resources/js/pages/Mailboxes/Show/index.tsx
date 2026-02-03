@@ -5,6 +5,7 @@ import { Badge } from '@/components/Badge';
 import { Button } from '@/components/Button';
 import { Input } from '@/components/Input';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { useToast } from '@/contexts/ToastContext';
 import { Mailbox, Email, Pagination, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -28,6 +29,8 @@ export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmai
   });
   const [searchQuery, setSearchQuery] = useState(search || '');
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isRetriggering, setIsRetriggering] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     setEmails(initialEmails);
@@ -45,7 +48,10 @@ export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmai
   };
 
   const handleRefresh = () => {
-    router.reload({ only: ['emails', 'pagination'] });
+    router.reload({
+      only: ['emails', 'pagination'],
+      onSuccess: () => showToast('Inbox refreshed', 'success'),
+    });
   };
 
   const handleSelectEmail = (email: Email) => {
@@ -65,6 +71,23 @@ export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmai
     await fetch(`/mailboxes/${mailbox.id}/emails/${selectedEmail.id}/unread`, { method: 'POST' });
     setEmails(emails.map(e => e.id === selectedEmail.id ? { ...e, is_read: false } : e));
     setSelectedEmail({ ...selectedEmail, is_read: false });
+  };
+
+  const handleRetriggerWebhooks = async () => {
+    if (!selectedEmail || isRetriggering) return;
+    setIsRetriggering(true);
+    try {
+      const response = await fetch(`/mailboxes/${mailbox.id}/emails/${selectedEmail.id}/retrigger-webhooks`, { method: 'POST' });
+      if (response.ok) {
+        showToast('Webhooks triggered successfully', 'success');
+      } else {
+        showToast('Failed to trigger webhooks', 'error');
+      }
+    } catch {
+      showToast('Failed to trigger webhooks', 'error');
+    } finally {
+      setIsRetriggering(false);
+    }
   };
 
   const handleDeleteClick = () => {
@@ -221,13 +244,20 @@ export default function MailboxShow({ mailbox, allMailboxes, emails: initialEmai
                     {selectedEmail.subject || '(No subject)'}
                   </S.EmailDetailSubject>
                   <S.EmailActions>
-                    {selectedEmail.is_read && (
+                      <S.ActionButton onClick={handleRetriggerWebhooks} disabled={isRetriggering} title="Retrigger webhooks">
+                        {isRetriggering ? (
+                          <S.Spinner />
+                        ) : (
+                          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        )}
+                      </S.ActionButton>
                       <S.ActionButton onClick={handleMarkAsUnread} title="Mark as unread">
                         <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                         </svg>
                       </S.ActionButton>
-                    )}
                     <S.ActionButton onClick={handleDeleteClick} $danger title="Delete email">
                       <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

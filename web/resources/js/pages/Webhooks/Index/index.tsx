@@ -81,8 +81,9 @@ export default function WebhooksIndex({ mailbox, allMailboxes, webhooks }: Props
                     <S.TableCell>
                       {webhook.delivery_stats && (
                         <S.DeliveryStats>
-                          <S.SuccessCount>{webhook.delivery_stats.success_count} ok</S.SuccessCount>
-                          <S.FailedCount>{webhook.delivery_stats.failed_count} failed</S.FailedCount>
+                          <S.SuccessCount>{webhook.delivery_stats.success_count}</S.SuccessCount>
+                          -
+                          <S.FailedCount>{webhook.delivery_stats.failed_count}</S.FailedCount>
                           {webhook.delivery_stats.pending_count > 0 && (
                             <S.PendingCount>{webhook.delivery_stats.pending_count} pending</S.PendingCount>
                           )}
