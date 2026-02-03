@@ -296,9 +296,16 @@ func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Render(w, r, "Profile/Index", gonertia.Props{
+	props := gonertia.Props{
 		"user": user,
-	})
+	}
+
+	// Include flash from context if present
+	if flash := mw.GetFlash(r); flash != nil {
+		props["flash"] = flash
+	}
+
+	h.inertia.Render(w, r, "Profile/Index", props)
 }
 
 func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
@@ -330,7 +337,7 @@ func (h *UserHandler) UpdateProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/profile")
+	h.inertia.Back(w, r)
 }
 
 func (h *UserHandler) UploadProfileAvatar(w http.ResponseWriter, r *http.Request) {
