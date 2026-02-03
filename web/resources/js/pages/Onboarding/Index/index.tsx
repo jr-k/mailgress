@@ -13,9 +13,9 @@ interface Props {
 
 export default function Onboarding({ error, admin_email, domain_name }: Props) {
   const { data, setData, post, processing } = useForm({
-    admin_email: admin_email || 'test@sa.test',
-    admin_password: 'admin',
-    domain_name: domain_name || 'sa.test',
+    admin_email: admin_email || '',
+    admin_password: '',
+    domain_name: domain_name || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -26,7 +26,6 @@ export default function Onboarding({ error, admin_email, domain_name }: Props) {
   return (
     <GuestLayout>
       <S.Header>
-        <S.Title>Welcome to Mailgress</S.Title>
         <S.Subtitle>Let's set up your email server</S.Subtitle>
       </S.Header>
 
