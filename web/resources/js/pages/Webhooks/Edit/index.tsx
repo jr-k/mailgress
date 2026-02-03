@@ -88,7 +88,9 @@ export default function WebhookEdit({ mailbox, allMailboxes, webhook, error }: P
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`);
+    put(`/mailboxes/${mailbox.id}/webhooks/${webhook.id}`, {
+      preserveScroll: true,
+    });
   };
 
   const addRule = () => {

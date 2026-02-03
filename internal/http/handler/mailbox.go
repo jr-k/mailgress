@@ -20,6 +20,7 @@ type MailboxHandler struct {
 	userService    *service.UserService
 	domainService  *service.DomainService
 	tagService     *service.TagService
+	flash          *mw.FlashMiddleware
 }
 
 func NewMailboxHandler(
@@ -29,6 +30,7 @@ func NewMailboxHandler(
 	userService *service.UserService,
 	domainService *service.DomainService,
 	tagService *service.TagService,
+	flash *mw.FlashMiddleware,
 ) *MailboxHandler {
 	return &MailboxHandler{
 		inertia:        inertia,
@@ -37,6 +39,7 @@ func NewMailboxHandler(
 		userService:    userService,
 		domainService:  domainService,
 		tagService:     tagService,
+		flash:          flash,
 	}
 }
 
@@ -310,14 +313,21 @@ func (h *MailboxHandler) Edit(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	h.inertia.Render(w, r, "Mailboxes/Edit", gonertia.Props{
+	props := gonertia.Props{
 		"mailbox":      mailbox,
 		"allMailboxes": allMailboxes,
 		"users":        users,
 		"domains":      domains,
 		"allTags":      allTags,
 		"mailboxTags":  mailboxTags,
-	})
+	}
+
+	// Include flash from context if present
+	if flash := mw.GetFlash(r); flash != nil {
+		props["flash"] = flash
+	}
+
+	h.inertia.Render(w, r, "Mailboxes/Edit", props)
 }
 
 func (h *MailboxHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -385,7 +395,8 @@ func (h *MailboxHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/mailboxes/"+strconv.FormatInt(id, 10)+"/edit")
+	h.flash.SetSuccess(r, "Changes saved")
+	h.inertia.Back(w, r)
 }
 
 func (h *MailboxHandler) Delete(w http.ResponseWriter, r *http.Request) {

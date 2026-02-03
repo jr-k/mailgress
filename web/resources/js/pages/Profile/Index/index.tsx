@@ -6,6 +6,7 @@ import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input } from '@/components/Input';
 import { Avatar } from '@/components/Avatar';
+import { useToast } from '@/contexts/ToastContext';
 import { User, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -15,6 +16,7 @@ interface Props extends PageProps {
 }
 
 export default function Profile({ user, error }: Props) {
+  const { showToast } = useToast();
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [disablePassword, setDisablePassword] = useState('');
   const [disableError, setDisableError] = useState('');
@@ -57,6 +59,7 @@ export default function Profile({ user, error }: Props) {
     e.preventDefault();
     put('/profile', {
       onSuccess: () => {
+        showToast('Changes saved');
         router.reload({ only: ['auth'] });
       },
     });

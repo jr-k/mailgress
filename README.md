@@ -4,13 +4,13 @@ Receive emails on your own server and forward them wherever you need.
 
 ## What it does
 
-**Receive** — Host your own email inbox on any domain or subdomain.
+**Receive**: Host your own email inbox on any domain or subdomain.
 
-**Filter** — Create rules to sort emails by sender, subject, attachments, or size.
+**Filter**: Create rules to sort emails by sender, subject, attachments, or size.
 
-**Forward** — Send matching emails to your apps via webhooks.
+**Forward**: Send matching emails to your apps via webhooks.
 
-**Manage** — Browse, search, and read your emails from a clean web interface.
+**Manage**: Browse, search, and read your emails from a clean web interface.
 
 ## Key features
 

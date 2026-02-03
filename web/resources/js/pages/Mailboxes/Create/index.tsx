@@ -4,6 +4,7 @@ import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input, Select } from '@/components/Input';
+import { useToast } from '@/contexts/ToastContext';
 import { User, Domain, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -41,6 +42,7 @@ export default function MailboxCreate({ users, domains, error, slug, description
     return domains.length > 0 ? String(domains[0].id) : '';
   };
 
+  const { showToast } = useToast();
   const { data, setData, post, processing } = useForm({
     slug: slug || '',
     description: description || '',
@@ -50,7 +52,9 @@ export default function MailboxCreate({ users, domains, error, slug, description
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/mailboxes');
+    post('/mailboxes', {
+      onSuccess: () => showToast('Mailbox créée avec succès'),
+    });
   };
 
   const selectedDomain = domains.find((d) => String(d.id) === data.domain_id);

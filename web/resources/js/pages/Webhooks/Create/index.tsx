@@ -5,6 +5,7 @@ import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input, Checkbox, Select } from '@/components/Input';
+import { useToast } from '@/contexts/ToastContext';
 import { Mailbox, PageProps, WebhookRule } from '@/types';
 import * as S from './styled';
 
@@ -15,6 +16,7 @@ interface Props extends PageProps {
 }
 
 export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
+  const { showToast } = useToast();
   const [rules, setRules] = useState<Partial<WebhookRule>[]>([]);
   const [customHeaders, setCustomHeaders] = useState<{ key: string; value: string }[]>([]);
   const [payloadType, setPayloadType] = useState<'default' | 'json' | 'key_value'>('default');
@@ -54,7 +56,9 @@ export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(`/mailboxes/${mailbox.id}/webhooks`);
+    post(`/mailboxes/${mailbox.id}/webhooks`, {
+      onSuccess: () => showToast('Webhook créé avec succès'),
+    });
   };
 
   const addRule = () => {

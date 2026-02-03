@@ -42,7 +42,9 @@ export default function DomainsEdit({ domain, allDomains, allTags, domainTags, e
       setTagsSaving(false);
     }
 
-    put(`/domains/${domain.id}`);
+    put(`/domains/${domain.id}`, {
+      preserveScroll: true,
+    });
   };
 
   const selectedTags = allTags.filter((t) => selectedTagIds.includes(t.id));

@@ -4,6 +4,7 @@ import AppLayout from '@/layouts/AppLayout';
 import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input } from '@/components/Input';
+import { useToast } from '@/contexts/ToastContext';
 import { PageProps } from '@/types';
 import * as S from './styled';
 
@@ -14,6 +15,7 @@ interface Props extends PageProps {
 }
 
 export default function TwoFactorSetup({ secret, qrUrl, error }: Props) {
+  const { showToast } = useToast();
   const [copied, setCopied] = useState(false);
   const { data, setData, post, processing } = useForm({
     secret: secret,
@@ -28,7 +30,9 @@ export default function TwoFactorSetup({ secret, qrUrl, error }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/profile/2fa/enable');
+    post('/profile/2fa/enable', {
+      onSuccess: () => showToast('2FA activé avec succès'),
+    });
   };
 
   return (

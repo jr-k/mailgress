@@ -1,6 +1,8 @@
 import { createInertiaApp } from '@inertiajs/react';
 import { createRoot } from 'react-dom/client';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ToastProvider } from './contexts/ToastContext';
+import { ToastContainer } from './components/Toast';
 import { GlobalStyles } from './styles/GlobalStyles';
 
 createInertiaApp({
@@ -12,8 +14,11 @@ createInertiaApp({
   setup({ el, App, props }) {
     createRoot(el).render(
       <ThemeProvider>
-        <GlobalStyles />
-        <App {...props} />
+        <ToastProvider>
+          <GlobalStyles />
+          <App {...props} />
+          <ToastContainer />
+        </ToastProvider>
       </ThemeProvider>
     );
   },

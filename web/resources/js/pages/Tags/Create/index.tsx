@@ -4,6 +4,7 @@ import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input } from '@/components/Input';
+import { useToast } from '@/contexts/ToastContext';
 import { PageProps } from '@/types';
 import * as S from './styled';
 
@@ -27,6 +28,7 @@ interface Props extends PageProps {
 }
 
 export default function TagsCreate({ error, name: initialName, color: initialColor }: Props) {
+  const { showToast } = useToast();
   const { data, setData, post, processing } = useForm({
     name: initialName || '',
     color: initialColor || '#6366f1',
@@ -34,7 +36,9 @@ export default function TagsCreate({ error, name: initialName, color: initialCol
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/tags');
+    post('/tags', {
+      onSuccess: () => showToast('Tag créé avec succès'),
+    });
   };
 
   return (

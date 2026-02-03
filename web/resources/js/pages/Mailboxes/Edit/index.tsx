@@ -51,7 +51,9 @@ export default function MailboxEdit({ mailbox, allMailboxes, users, domains, all
       setTagsSaving(false);
     }
 
-    put(`/mailboxes/${mailbox.id}`);
+    put(`/mailboxes/${mailbox.id}`, {
+      preserveScroll: true,
+    });
   };
 
   const handleDeleteConfirm = () => {

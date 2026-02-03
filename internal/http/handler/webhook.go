@@ -19,6 +19,7 @@ type WebhookHandler struct {
 	mailboxService  *service.MailboxService
 	domainService   *service.DomainService
 	dispatcher      *webhook.Dispatcher
+	flash           *mw.FlashMiddleware
 }
 
 func NewWebhookHandler(
@@ -28,6 +29,7 @@ func NewWebhookHandler(
 	mailboxService *service.MailboxService,
 	domainService *service.DomainService,
 	dispatcher *webhook.Dispatcher,
+	flash *mw.FlashMiddleware,
 ) *WebhookHandler {
 	return &WebhookHandler{
 		inertia:         inertia,
@@ -36,6 +38,7 @@ func NewWebhookHandler(
 		mailboxService:  mailboxService,
 		domainService:   domainService,
 		dispatcher:      dispatcher,
+		flash:           flash,
 	}
 }
 
@@ -270,11 +273,18 @@ func (h *WebhookHandler) Edit(w http.ResponseWriter, r *http.Request) {
 
 	allMailboxes := h.getAllMailboxesWithDomain(r)
 
-	h.inertia.Render(w, r, "Webhooks/Edit", gonertia.Props{
+	props := gonertia.Props{
 		"mailbox":      mailbox,
 		"allMailboxes": allMailboxes,
 		"webhook":      wh,
-	})
+	}
+
+	// Include flash from context if present
+	if flash := mw.GetFlash(r); flash != nil {
+		props["flash"] = flash
+	}
+
+	h.inertia.Render(w, r, "Webhooks/Edit", props)
 }
 
 func (h *WebhookHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -347,7 +357,8 @@ func (h *WebhookHandler) Update(w http.ResponseWriter, r *http.Request) {
 		h.webhookService.CreateRule(r.Context(), webhookID, rule.RuleGroup, rule.Field, rule.Operator, rule.Value, rule.HeaderName)
 	}
 
-	h.inertia.Location(w, r, "/mailboxes/"+strconv.FormatInt(mailboxID, 10)+"/webhooks/"+strconv.FormatInt(webhookID, 10)+"/edit")
+	h.flash.SetSuccess(r, "Changes saved")
+	h.inertia.Back(w, r)
 }
 
 func (h *WebhookHandler) Delete(w http.ResponseWriter, r *http.Request) {

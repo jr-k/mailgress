@@ -4,6 +4,7 @@ import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input, Checkbox } from '@/components/Input';
+import { useToast } from '@/contexts/ToastContext';
 import { PageProps } from '@/types';
 import * as S from './styled';
 
@@ -13,6 +14,7 @@ interface Props extends PageProps {
 }
 
 export default function UserCreate({ error, email }: Props) {
+  const { showToast } = useToast();
   const { data, setData, post, processing } = useForm({
     email: email || '',
     password: '',
@@ -23,7 +25,9 @@ export default function UserCreate({ error, email }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/users');
+    post('/users', {
+      onSuccess: () => showToast('Utilisateur créé avec succès'),
+    });
   };
 
   return (

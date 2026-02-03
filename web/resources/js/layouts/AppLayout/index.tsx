@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import { PropsWithChildren } from 'react';
 import { PageProps } from '@/types';
-import { Alert } from '@/components/Alert';
 import { Avatar } from '@/components/Avatar';
+import { useToast } from '@/contexts/ToastContext';
 import * as S from './styled';
 
 export default function AppLayout({ children }: PropsWithChildren) {
@@ -11,6 +11,17 @@ export default function AppLayout({ children }: PropsWithChildren) {
   const currentPath = typeof url === 'string' ? url : window.location.pathname;
   const [settingsOpen, setSettingsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { showToast } = useToast();
+
+  // Display flash messages as toasts
+  useEffect(() => {
+    if (flash?.success) {
+      showToast(flash.success, 'success');
+    }
+    if (flash?.error) {
+      showToast(flash.error, 'error');
+    }
+  }, [flash?.success, flash?.error, showToast]);
 
   const isActive = (path: string) => {
     if (path === '/dashboard') {
@@ -143,18 +154,6 @@ export default function AppLayout({ children }: PropsWithChildren) {
           </S.NavRight>
         </S.NavInner>
       </S.Nav>
-
-      {flash?.success && (
-        <S.FlashContainer>
-          <Alert variant="success">{flash.success}</Alert>
-        </S.FlashContainer>
-      )}
-
-      {flash?.error && (
-        <S.FlashContainer>
-          <Alert variant="error">{flash.error}</Alert>
-        </S.FlashContainer>
-      )}
 
       <S.Main>{children}</S.Main>
     </S.Container>

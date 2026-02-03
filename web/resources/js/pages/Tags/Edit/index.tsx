@@ -4,6 +4,7 @@ import { Card } from '@/components/Card';
 import { Alert } from '@/components/Alert';
 import { Button, LinkButton } from '@/components/Button';
 import { FormGroup, Input } from '@/components/Input';
+import { useToast } from '@/contexts/ToastContext';
 import { Tag, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -26,6 +27,7 @@ interface Props extends PageProps {
 }
 
 export default function TagsEdit({ tag, error }: Props) {
+  const { showToast } = useToast();
   const { data, setData, put, processing } = useForm({
     name: tag.name,
     color: tag.color,
@@ -33,7 +35,9 @@ export default function TagsEdit({ tag, error }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(`/tags/${tag.id}`);
+    put(`/tags/${tag.id}`, {
+      onSuccess: () => showToast('Changes saved'),
+    });
   };
 
   return (

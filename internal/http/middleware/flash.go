@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/romsar/gonertia"
@@ -53,6 +54,13 @@ func (m *FlashMiddleware) SetError(r *http.Request, message string) {
 
 func (m *FlashMiddleware) Handle(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Skip flash handling for static assets to prevent consuming flash before page load
+		path := r.URL.Path
+		if strings.HasPrefix(path, "/assets/") || strings.HasPrefix(path, "/avatars/") || strings.HasPrefix(path, "/img/") || path == "/favicon.ico" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		cookie, _ := r.Cookie("session_token")
 		var sessionID string
 		if cookie != nil {

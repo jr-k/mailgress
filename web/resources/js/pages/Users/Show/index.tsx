@@ -5,6 +5,7 @@ import { Alert } from '@/components/Alert';
 import { Button } from '@/components/Button';
 import { FormGroup, Input } from '@/components/Input';
 import { AvatarUpload } from '@/components/AvatarUpload';
+import { useToast } from '@/contexts/ToastContext';
 import { User, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -14,6 +15,7 @@ interface Props extends PageProps {
 }
 
 export default function UserShow({ user, error }: Props) {
+  const { showToast } = useToast();
   const { data, setData, put, processing } = useForm({
     email: user.email,
     password: '',
@@ -24,7 +26,12 @@ export default function UserShow({ user, error }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    put(`/users/${user.id}`);
+    put(`/users/${user.id}`, {
+      preserveScroll: true,
+      onSuccess: () => {
+        setTimeout(() => showToast('Changes saved'), 100);
+      },
+    });
   };
 
   return (

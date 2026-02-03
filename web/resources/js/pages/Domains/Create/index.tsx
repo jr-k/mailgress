@@ -4,6 +4,7 @@ import { Card } from '@/components/Card';
 import { Input } from '@/components/Input';
 import { Button, LinkButton } from '@/components/Button';
 import { Alert } from '@/components/Alert';
+import { useToast } from '@/contexts/ToastContext';
 import { PageProps } from '@/types';
 import * as S from './styled';
 
@@ -13,13 +14,16 @@ interface Props extends PageProps {
 }
 
 export default function DomainsCreate({ error, name }: Props) {
+  const { showToast } = useToast();
   const { data, setData, post, processing } = useForm({
     name: name || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post('/domains');
+    post('/domains', {
+      onSuccess: () => showToast('Domaine ajouté avec succès'),
+    });
   };
 
   return (

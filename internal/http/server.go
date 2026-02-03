@@ -68,10 +68,10 @@ func NewServer(
 	authHandler := handler.NewAuthHandler(inertia, authService, userService, totpService)
 	dashboardHandler := handler.NewDashboardHandler(inertia, mailboxService, emailService, domainService)
 	userHandler := handler.NewUserHandler(inertia, userService, avatarService, totpService, authService, flashMiddleware)
-	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService)
+	mailboxHandler := handler.NewMailboxHandler(inertia, mailboxService, emailService, userService, domainService, tagService, flashMiddleware)
 	emailHandler := handler.NewEmailHandler(inertia, emailService, mailboxService, storage)
-	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher)
-	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService, mailboxService)
+	webhookHandler := handler.NewWebhookHandler(inertia, webhookService, deliveryService, mailboxService, domainService, dispatcher, flashMiddleware)
+	domainHandler := handler.NewDomainHandler(inertia, domainService, dnsService, tagService, mailboxService, flashMiddleware)
 	tagHandler := handler.NewTagHandler(inertia, tagService, flashMiddleware)
 
 	r := chi.NewRouter()

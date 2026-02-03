@@ -17,6 +17,7 @@ type DomainHandler struct {
 	dnsService     *service.DNSService
 	tagService     *service.TagService
 	mailboxService *service.MailboxService
+	flash          *mw.FlashMiddleware
 }
 
 func NewDomainHandler(
@@ -25,6 +26,7 @@ func NewDomainHandler(
 	dnsService *service.DNSService,
 	tagService *service.TagService,
 	mailboxService *service.MailboxService,
+	flash *mw.FlashMiddleware,
 ) *DomainHandler {
 	return &DomainHandler{
 		inertia:        inertia,
@@ -32,6 +34,7 @@ func NewDomainHandler(
 		dnsService:     dnsService,
 		tagService:     tagService,
 		mailboxService: mailboxService,
+		flash:          flash,
 	}
 }
 
@@ -158,12 +161,19 @@ func (h *DomainHandler) Edit(w http.ResponseWriter, r *http.Request) {
 	allTags, _ := h.tagService.List(r.Context())
 	domainTags, _ := h.tagService.GetTagsForDomain(r.Context(), id)
 
-	h.inertia.Render(w, r, "Domains/Edit", gonertia.Props{
+	props := gonertia.Props{
 		"domain":     domain,
 		"allDomains": allDomains,
 		"allTags":    allTags,
 		"domainTags": domainTags,
-	})
+	}
+
+	// Include flash from context if present
+	if flash := mw.GetFlash(r); flash != nil {
+		props["flash"] = flash
+	}
+
+	h.inertia.Render(w, r, "Domains/Edit", props)
 }
 
 func (h *DomainHandler) Mailboxes(w http.ResponseWriter, r *http.Request) {
@@ -276,7 +286,8 @@ func (h *DomainHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.inertia.Location(w, r, "/domains/"+strconv.FormatInt(id, 10)+"/edit")
+	h.flash.SetSuccess(r, "Changes saved")
+	h.inertia.Back(w, r)
 }
 
 func (h *DomainHandler) Delete(w http.ResponseWriter, r *http.Request) {
