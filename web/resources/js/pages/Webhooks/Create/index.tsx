@@ -334,6 +334,7 @@ export default function WebhookCreate({ mailbox, allMailboxes, error }: Props) {
                           <option value="subject">Subject</option>
                           <option value="from">From</option>
                           <option value="to">To</option>
+                          <option value="body">Body</option>
                           <option value="has_attachments">Has attachments</option>
                           <option value="size">Size</option>
                         </S.RuleSelect>

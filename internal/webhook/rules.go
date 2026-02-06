@@ -52,6 +52,11 @@ func (e *RuleEvaluator) evaluateRule(rule domain.WebhookRule, email *domain.Emai
 		fieldValue = email.FromAddress
 	case domain.RuleFieldTo:
 		fieldValue = email.ToAddress
+	case domain.RuleFieldBody:
+		fieldValue = email.TextBody
+		if fieldValue == "" {
+			fieldValue = email.HTMLBody
+		}
 	case domain.RuleFieldHeader:
 		if email.Headers != nil {
 			fieldValue = email.Headers[rule.HeaderName]

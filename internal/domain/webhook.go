@@ -82,6 +82,7 @@ const (
 	RuleFieldFrom           = "from"
 	RuleFieldTo             = "to"
 	RuleFieldHeader         = "header"
+	RuleFieldBody           = "body"
 	RuleFieldHasAttachments = "has_attachments"
 	RuleFieldSize           = "size"
 )
