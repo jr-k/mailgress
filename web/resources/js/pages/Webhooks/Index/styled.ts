@@ -84,6 +84,11 @@ export const WebhookLink = styled.a`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   color: ${({ theme }) => theme.colors.primary[600]};
   transition: color 0.15s ease;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 14rem;
 
   &:hover {
     color: ${({ theme }) => theme.colors.primary[800]};
