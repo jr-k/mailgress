@@ -109,14 +109,34 @@ export const PageLinks = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-export const PageLink = styled.a`
+export const PageLink = styled.a<{ $active?: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 ${({ theme }) => theme.spacing[2]};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.primary[600]};
-  transition: color 0.15s ease;
+  border-radius: ${({ theme }) => theme.radii.md};
+  transition: all 0.15s ease;
+  text-decoration: none;
+  color: ${({ $active, theme }) => ($active ? theme.colors.white : theme.colors.text.secondary)};
+  background-color: ${({ $active, theme }) => ($active ? theme.colors.primary[600] : 'transparent')};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary[800]};
+    background-color: ${({ $active, theme }) => ($active ? theme.colors.primary[700] : theme.colors.surface.secondary)};
+    color: ${({ $active, theme }) => ($active ? theme.colors.white : theme.colors.text.primary)};
   }
+`;
+
+export const PageEllipsis = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `;
 
 export const HeaderActions = styled.div`

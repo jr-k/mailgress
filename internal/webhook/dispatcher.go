@@ -129,7 +129,6 @@ func (d *Dispatcher) processJob(job *Job) {
 		errorMsg = err.Error()
 		if job.Attempt < job.Webhook.MaxRetries {
 			status = domain.DeliveryStatusRetrying
-			d.scheduleRetry(job)
 		} else {
 			status = domain.DeliveryStatusFailed
 		}
@@ -139,7 +138,6 @@ func (d *Dispatcher) processJob(job *Job) {
 		errorMsg = "Non-2xx response"
 		if job.Attempt < job.Webhook.MaxRetries {
 			status = domain.DeliveryStatusRetrying
-			d.scheduleRetry(job)
 		} else {
 			status = domain.DeliveryStatusFailed
 		}
@@ -154,20 +152,6 @@ func (d *Dispatcher) processJob(job *Job) {
 	if err != nil {
 		log.Printf("Failed to update delivery status: %v", err)
 	}
-}
-
-func (d *Dispatcher) scheduleRetry(job *Job) {
-	delay := time.Duration(1<<uint(job.Attempt)) * time.Second
-
-	time.AfterFunc(delay, func() {
-		select {
-		case <-d.ctx.Done():
-			return
-		case d.jobs <- &Job{Webhook: job.Webhook, Email: job.Email, Attempt: job.Attempt + 1}:
-		default:
-			log.Printf("Job queue full, could not schedule retry for webhook %d", job.Webhook.ID)
-		}
-	})
 }
 
 func (d *Dispatcher) retryWorker() {
@@ -203,15 +187,27 @@ func (d *Dispatcher) processPendingRetries() {
 			continue
 		}
 
+		// Check if max retries exceeded - mark as failed and skip
+		if delivery.Attempt >= webhook.MaxRetries {
+			d.deliveryService.UpdateStatus(d.ctx, delivery.ID, domain.DeliveryStatusFailed, nil, "", "Max retries exceeded", nil)
+			continue
+		}
+
 		email, err := d.emailService.GetByID(d.ctx, delivery.EmailID)
 		if err != nil {
 			log.Printf("Failed to get email %d for retry: %v", delivery.EmailID, err)
+			d.deliveryService.UpdateStatus(d.ctx, delivery.ID, domain.DeliveryStatusFailed, nil, "", "Email not found", nil)
 			continue
 		}
+
+		// Mark the current delivery as failed before scheduling the retry
+		// This prevents the retryWorker from picking it up again
+		d.deliveryService.UpdateStatus(d.ctx, delivery.ID, domain.DeliveryStatusFailed, delivery.StatusCode, delivery.ResponseBody, delivery.ErrorMessage+" (retry scheduled)", delivery.DurationMs)
 
 		select {
 		case d.jobs <- &Job{Webhook: webhook, Email: email, Attempt: delivery.Attempt + 1}:
 		default:
+			log.Printf("Job queue full, could not schedule retry for webhook %d", webhook.ID)
 		}
 	}
 }
