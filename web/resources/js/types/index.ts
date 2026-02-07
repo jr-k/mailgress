@@ -146,6 +146,10 @@ export interface Pagination {
   current_page: number;
   total: number;
   per_page: number;
+  total_pages: number;
+  from: number;
+  to: number;
+  pages: number[]; // 0 = ellipsis
 }
 
 export interface Tag {

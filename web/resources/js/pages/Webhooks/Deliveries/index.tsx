@@ -135,56 +135,45 @@ export default function WebhookDeliveries({ mailbox, allMailboxes, webhook, deli
             </S.TableBody>
           </S.Table>
 
-          {pagination.total > pagination.per_page && (() => {
-            const totalPages = Math.ceil(pagination.total / pagination.per_page);
-            const current = pagination.current_page;
-            const baseUrl = `/mailboxes/${mailbox.id}/webhooks/${webhook.id}/deliveries`;
-            const from = (current - 1) * pagination.per_page + 1;
-            const to = Math.min(current * pagination.per_page, pagination.total);
-
-            const pages: (number | 'ellipsis')[] = [];
-            pages.push(1);
-            if (current > 3) pages.push('ellipsis');
-            for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
-              pages.push(i);
-            }
-            if (current < totalPages - 2) pages.push('ellipsis');
-            if (totalPages > 1) pages.push(totalPages);
-
-            return (
-              <S.Pagination>
-                <S.PageInfo>
-                  {from}-{to} of {pagination.total.toLocaleString()}
-                </S.PageInfo>
-                <S.PageLinks>
-                  {current > 1 && (
-                    <S.PageLink as={Link} href={`${baseUrl}?page=${current - 1}`}>
-                      &laquo;
+          {pagination.total_pages > 1 && (
+            <S.Pagination>
+              <S.PageInfo>
+                {pagination.from}-{pagination.to} of {pagination.total.toLocaleString()}
+              </S.PageInfo>
+              <S.PageLinks>
+                {pagination.current_page > 1 && (
+                  <S.PageLink
+                    as={Link}
+                    href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}/deliveries?page=${pagination.current_page - 1}`}
+                  >
+                    &laquo;
+                  </S.PageLink>
+                )}
+                {pagination.pages.map((page, idx) =>
+                  page === 0 ? (
+                    <S.PageEllipsis key={`ellipsis-${idx}`}>&hellip;</S.PageEllipsis>
+                  ) : (
+                    <S.PageLink
+                      key={page}
+                      as={Link}
+                      href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}/deliveries?page=${page}`}
+                      $active={page === pagination.current_page}
+                    >
+                      {page}
                     </S.PageLink>
-                  )}
-                  {pages.map((page, idx) =>
-                    page === 'ellipsis' ? (
-                      <S.PageEllipsis key={`ellipsis-${idx}`}>&hellip;</S.PageEllipsis>
-                    ) : (
-                      <S.PageLink
-                        key={page}
-                        as={Link}
-                        href={`${baseUrl}?page=${page}`}
-                        $active={page === current}
-                      >
-                        {page}
-                      </S.PageLink>
-                    )
-                  )}
-                  {current < totalPages && (
-                    <S.PageLink as={Link} href={`${baseUrl}?page=${current + 1}`}>
-                      &raquo;
-                    </S.PageLink>
-                  )}
-                </S.PageLinks>
-              </S.Pagination>
-            );
-          })()}
+                  )
+                )}
+                {pagination.current_page < pagination.total_pages && (
+                  <S.PageLink
+                    as={Link}
+                    href={`/mailboxes/${mailbox.id}/webhooks/${webhook.id}/deliveries?page=${pagination.current_page + 1}`}
+                  >
+                    &raquo;
+                  </S.PageLink>
+                )}
+              </S.PageLinks>
+            </S.Pagination>
+          )}
         </S.TableWrapper>
       </Card>
     </MailboxLayout>

@@ -444,6 +444,35 @@ func (h *WebhookHandler) Deliveries(w http.ResponseWriter, r *http.Request) {
 	deliveries, _ := h.deliveryService.ListByWebhook(r.Context(), webhookID, perPage, offset)
 	total, _ := h.deliveryService.CountByWebhook(r.Context(), webhookID)
 
+	totalPages := int((total + perPage - 1) / perPage)
+	if totalPages < 1 {
+		totalPages = 1
+	}
+	if page > totalPages {
+		page = totalPages
+	}
+	from := (page-1)*int(perPage) + 1
+	to := page * int(perPage)
+	if int64(to) > total {
+		to = int(total)
+	}
+
+	// Build page numbers with ellipsis (0 = ellipsis)
+	var pages []int
+	pages = append(pages, 1)
+	if page > 3 {
+		pages = append(pages, 0)
+	}
+	for i := max(2, page-1); i <= min(totalPages-1, page+1); i++ {
+		pages = append(pages, i)
+	}
+	if page < totalPages-2 {
+		pages = append(pages, 0)
+	}
+	if totalPages > 1 {
+		pages = append(pages, totalPages)
+	}
+
 	mailbox, _ := h.mailboxService.GetByID(r.Context(), mailboxID)
 	if mailbox.DomainID != nil {
 		domain, _ := h.domainService.GetByID(r.Context(), *mailbox.DomainID)
@@ -463,6 +492,10 @@ func (h *WebhookHandler) Deliveries(w http.ResponseWriter, r *http.Request) {
 			"current_page": page,
 			"total":        total,
 			"per_page":     perPage,
+			"total_pages":  totalPages,
+			"from":         from,
+			"to":           to,
+			"pages":        pages,
 		},
 	})
 }
