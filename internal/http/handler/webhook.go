@@ -361,6 +361,33 @@ func (h *WebhookHandler) Update(w http.ResponseWriter, r *http.Request) {
 	h.inertia.Back(w, r)
 }
 
+func (h *WebhookHandler) ToggleActive(w http.ResponseWriter, r *http.Request) {
+	mailboxID, ok := h.checkMailboxAccess(w, r)
+	if !ok {
+		return
+	}
+
+	webhookID, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	wh, err := h.webhookService.GetByID(r.Context(), webhookID)
+	if err != nil || wh.MailboxID != mailboxID {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	_, err = h.webhookService.ToggleActive(r.Context(), webhookID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	h.inertia.Back(w, r)
+}
+
 func (h *WebhookHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	mailboxID, ok := h.checkMailboxAccess(w, r)
 	if !ok {

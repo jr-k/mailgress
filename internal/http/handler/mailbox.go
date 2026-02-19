@@ -403,6 +403,28 @@ func (h *MailboxHandler) Update(w http.ResponseWriter, r *http.Request) {
 	h.inertia.Back(w, r)
 }
 
+func (h *MailboxHandler) ToggleActive(w http.ResponseWriter, r *http.Request) {
+	user := mw.GetUser(r)
+	if !user.IsAdmin {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	_, err = h.mailboxService.ToggleActive(r.Context(), id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	h.inertia.Back(w, r)
+}
+
 func (h *MailboxHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	user := mw.GetUser(r)
 	if !user.IsAdmin {

@@ -29,6 +29,9 @@ SET slug = ?, owner_id = ?, domain_id = ?, description = ?, is_active = ?,
 WHERE id = ?
 RETURNING *;
 
+-- name: ToggleMailboxActive :one
+UPDATE mailboxes SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ? RETURNING *;
+
 -- name: DeleteMailbox :exec
 DELETE FROM mailboxes WHERE id = ?;
 

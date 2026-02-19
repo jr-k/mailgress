@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Link, router } from '@inertiajs/react';
 import MailboxLayout from '@/layouts/MailboxLayout';
 import { Card } from '@/components/Card';
-import { Badge } from '@/components/Badge';
 import { LinkButton } from '@/components/Button';
 import { ConfirmModal } from '@/components/ConfirmModal';
+import { ToggleSwitch } from '@/components/ToggleSwitch';
 import { Mailbox, Webhook, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -19,6 +19,7 @@ export default function WebhooksIndex({ mailbox, allMailboxes, webhooks }: Props
     isOpen: false,
     webhook: null,
   });
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   const handleDeleteClick = (webhook: Webhook) => {
     setDeleteModal({ isOpen: true, webhook });
@@ -34,6 +35,14 @@ export default function WebhooksIndex({ mailbox, allMailboxes, webhooks }: Props
 
   const handleDeleteCancel = () => {
     setDeleteModal({ isOpen: false, webhook: null });
+  };
+
+  const handleToggleActive = (webhook: Webhook) => {
+    setTogglingId(webhook.id);
+    router.post(`/mailboxes/${mailbox.id}/webhooks/${webhook.id}/toggle`, {}, {
+      preserveScroll: true,
+      onFinish: () => setTogglingId(null),
+    });
   };
 
   return (
@@ -74,9 +83,11 @@ export default function WebhooksIndex({ mailbox, allMailboxes, webhooks }: Props
                       <S.UrlText title={webhook.url}>{webhook.url}</S.UrlText>
                     </S.TableCell>
                     <S.TableCell>
-                      <Badge variant={webhook.is_active ? 'success' : 'gray'} dot>
-                        {webhook.is_active ? 'Active' : 'Inactive'}
-                      </Badge>
+                      <ToggleSwitch
+                        active={webhook.is_active}
+                        disabled={togglingId === webhook.id}
+                        onClick={() => handleToggleActive(webhook)}
+                      />
                     </S.TableCell>
                     <S.TableCell>
                       {webhook.delivery_stats && (

@@ -10,6 +10,29 @@ import (
 	"database/sql"
 )
 
+const toggleMailboxActive = `-- name: ToggleMailboxActive :one
+UPDATE mailboxes SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ? RETURNING id, slug, owner_id, description, is_active, created_at, updated_at, domain_id, max_email_size_mb, max_attachment_size_mb, retention_days
+`
+
+func (q *Queries) ToggleMailboxActive(ctx context.Context, id int64) (Mailbox, error) {
+	row := q.db.QueryRowContext(ctx, toggleMailboxActive, id)
+	var i Mailbox
+	err := row.Scan(
+		&i.ID,
+		&i.Slug,
+		&i.OwnerID,
+		&i.Description,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DomainID,
+		&i.MaxEmailSizeMb,
+		&i.MaxAttachmentSizeMb,
+		&i.RetentionDays,
+	)
+	return i, err
+}
+
 const countMailboxes = `-- name: CountMailboxes :one
 SELECT COUNT(*) FROM mailboxes
 `

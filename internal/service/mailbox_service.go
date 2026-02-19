@@ -165,6 +165,14 @@ func (s *MailboxService) Update(ctx context.Context, id int64, params UpdateMail
 	return s.toDomain(dbMailbox), nil
 }
 
+func (s *MailboxService) ToggleActive(ctx context.Context, id int64) (*domain.Mailbox, error) {
+	dbMailbox, err := s.queries.ToggleMailboxActive(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return s.toDomain(dbMailbox), nil
+}
+
 func (s *MailboxService) Delete(ctx context.Context, id int64) error {
 	return s.queries.DeleteMailbox(ctx, id)
 }

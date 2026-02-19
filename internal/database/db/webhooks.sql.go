@@ -210,6 +210,34 @@ func (q *Queries) ListWebhooksByMailbox(ctx context.Context, mailboxID int64) ([
 	return items, nil
 }
 
+const toggleWebhookActive = `-- name: ToggleWebhookActive :one
+UPDATE webhooks SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ? RETURNING id, mailbox_id, name, url, method, headers, payload_type, custom_payload, hmac_secret, timeout_sec, max_retries, include_body, include_attachments, is_active, created_at, updated_at
+`
+
+func (q *Queries) ToggleWebhookActive(ctx context.Context, id int64) (Webhook, error) {
+	row := q.db.QueryRowContext(ctx, toggleWebhookActive, id)
+	var i Webhook
+	err := row.Scan(
+		&i.ID,
+		&i.MailboxID,
+		&i.Name,
+		&i.Url,
+		&i.Method,
+		&i.Headers,
+		&i.PayloadType,
+		&i.CustomPayload,
+		&i.HmacSecret,
+		&i.TimeoutSec,
+		&i.MaxRetries,
+		&i.IncludeBody,
+		&i.IncludeAttachments,
+		&i.IsActive,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const updateWebhook = `-- name: UpdateWebhook :one
 UPDATE webhooks
 SET name = ?, url = ?, method = ?, headers = ?, payload_type = ?, custom_payload = ?, hmac_secret = ?,

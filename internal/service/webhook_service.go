@@ -208,6 +208,14 @@ func (s *WebhookService) Update(ctx context.Context, params UpdateWebhookParams)
 	return s.toDomain(dbWebhook), nil
 }
 
+func (s *WebhookService) ToggleActive(ctx context.Context, id int64) (*domain.Webhook, error) {
+	dbWebhook, err := s.queries.ToggleWebhookActive(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return s.toDomain(dbWebhook), nil
+}
+
 func (s *WebhookService) Delete(ctx context.Context, id int64) error {
 	return s.queries.DeleteWebhook(ctx, id)
 }

@@ -2,10 +2,10 @@ import { useState, useMemo } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import DomainLayout from '@/layouts/DomainLayout';
 import { Card } from '@/components/Card';
-import { Badge } from '@/components/Badge';
 import { LinkButton } from '@/components/Button';
 import { ConfirmModal } from '@/components/ConfirmModal';
 import { SearchInput } from '@/components/SearchInput';
+import { ToggleSwitch } from '@/components/ToggleSwitch';
 import { Mailbox, Domain, PageProps } from '@/types';
 import * as S from './styled';
 
@@ -22,6 +22,7 @@ export default function DomainMailboxes({ domain, allDomains, mailboxes }: Props
     mailbox: null,
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [togglingId, setTogglingId] = useState<number | null>(null);
 
   const getEmailAddress = (mailbox: Mailbox) => {
     return `${mailbox.slug}@${domain.name}`;
@@ -55,6 +56,14 @@ export default function DomainMailboxes({ domain, allDomains, mailboxes }: Props
 
   const handleDeleteCancel = () => {
     setDeleteModal({ isOpen: false, mailbox: null });
+  };
+
+  const handleToggleActive = (mailbox: Mailbox) => {
+    setTogglingId(mailbox.id);
+    router.post(`/mailboxes/${mailbox.id}/toggle`, {}, {
+      preserveScroll: true,
+      onFinish: () => setTogglingId(null),
+    });
   };
 
   return (
@@ -130,9 +139,19 @@ export default function DomainMailboxes({ domain, allDomains, mailboxes }: Props
                           <S.SecondaryText>{mailbox.stats?.email_count || 0}</S.SecondaryText>
                         </S.TableCell>
                         <S.TableCell>
-                          <Badge variant={mailbox.is_active ? 'success' : 'gray'} dot>
-                            {mailbox.is_active ? 'Active' : 'Inactive'}
-                          </Badge>
+                          {auth?.user.is_admin ? (
+                            <ToggleSwitch
+                              active={mailbox.is_active}
+                              disabled={togglingId === mailbox.id}
+                              onClick={() => handleToggleActive(mailbox)}
+                            />
+                          ) : (
+                            <ToggleSwitch
+                              active={mailbox.is_active}
+                              disabled
+                              onClick={() => {}}
+                            />
+                          )}
                         </S.TableCell>
                         <S.TableCell $align="right">
                           <S.Actions>

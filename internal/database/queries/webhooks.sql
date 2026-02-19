@@ -27,5 +27,8 @@ RETURNING *;
 -- name: DeleteWebhook :exec
 DELETE FROM webhooks WHERE id = ?;
 
+-- name: ToggleWebhookActive :one
+UPDATE webhooks SET is_active = CASE WHEN is_active = 1 THEN 0 ELSE 1 END, updated_at = CURRENT_TIMESTAMP WHERE id = ? RETURNING *;
+
 -- name: CountWebhooksByMailbox :one
 SELECT COUNT(*) FROM webhooks WHERE mailbox_id = ?;
